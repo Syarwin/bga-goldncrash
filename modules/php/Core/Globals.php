@@ -32,7 +32,7 @@ class Globals extends \GNC\Helpers\DB_Manager
   {
     static::setTurn(0);
     static::setFirstPlayer($activePlayerId);
-    static::setCheatMode($options[OPTION_DEBUG] == 1);
+    // static::setCheatMode($options[OPTION_DEBUG] == 1);
   }
 
   /*
