@@ -45,47 +45,7 @@ class view_goldncrash_goldncrash extends game_view
         /*********** Place your code below:  ************/
         global $g_user;
         $playerId = $g_user->get_id();
-        if (!array_key_exists($playerId, $players)) {
-            $playerId = array_values($players)[0]['player_id'];
-        }
-        $this->tpl['MY_ID'] = $playerId;
-        $this->tpl['TYPE'] = $players[$playerId]['player_no'];
-        $this->tpl['MY_GNCOR'] = $players[$playerId]['player_color'];
-        $this->tpl['MY_NAME'] = $players[$playerId]['player_name'];
-
-        /*
         
-        // Examples: set the value of some element defined in your tpl file like this: {MY_VARIABLE_ELEMENT}
-
-        // Display a specific number / string
-        $this->tpl['MY_VARIABLE_ELEMENT'] = $number_to_display;
-
-        // Display a string to be translated in all languages: 
-        $this->tpl['MY_VARIABLE_ELEMENT'] = self::_("A string to be translated");
-
-        // Display some HTML content of your own:
-        $this->tpl['MY_VARIABLE_ELEMENT'] = self::raw( $some_html_code );
-        
-        */
-
-
-        // Example: display a specific HTML block for each player in this game.
-        // (note: the block is defined in your .tpl file like this:
-        //      <!-- BEGIN myblock --> 
-        //          ... my HTML code ...
-        //      <!-- END myblock --> 
-
-
-        $this->page->begin_block("goldncrash_goldncrash", "playerBlock");
-        foreach ($players as $player) {
-            if ($player['player_id'] == $playerId) continue;
-            $this->page->insert_block("playerBlock", array(
-                "PLAYER_ID" => $player['player_id'],
-                "TYPE" => $player['player_no'],
-                "PLAYER_GNCOR" => $player['player_color'],
-                "PLAYER_NAME" => $player['player_name']
-            ));
-        }
 
 
 

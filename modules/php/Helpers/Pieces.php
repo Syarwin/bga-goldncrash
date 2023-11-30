@@ -547,6 +547,26 @@ class Pieces extends DB_Manager
         return $pieces;
     }
 
+    public static function pickForLocationPId(
+        $nbr,
+        $fromLocation,
+        $toLocation,
+        $pId,
+        $state = 0,
+        $deckReform = true
+    ){
+        $pieces = static::pickForLocation(
+            $nbr,
+            $fromLocation,
+            $toLocation,
+            $state = 0,
+            $deckReform = true
+        );
+        foreach ($pieces as $key => $piece) {
+            $piece->setPlayerId($pId);
+        }
+    }
+
     public static function pickOneForLocation(
         $fromLocation,
         $toLocation,

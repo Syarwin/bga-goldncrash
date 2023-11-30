@@ -113,7 +113,8 @@ class GoldnCrash extends Table
         return [
             'prefs' => Preferences::getUiData($pId),
             'players' => Players::getUiData($pId),
-            'cheatModule' => Globals::isCheatMode() ? CheatModule::getUiData() : null
+            'cheatModule' => Globals::isCheatMode() ? CheatModule::getUiData() : null,
+            'cards' => Cards::getUiData($pId)
         ];
     }
 
@@ -198,32 +199,6 @@ class GoldnCrash extends Table
 
         if ($state['type'] === "activeplayer") {
             switch ($statename) {
-
-                case 'call':
-                    $args = $this->argCall();
-                    $callablePlayers = $args['callablePlayers'];
-                    $pId2 = $callablePlayers[bga_rand(0, count($callablePlayers) - 1)]->getId();
-                    $cardId = 0;
-                    $color = [BLUE, YELLOW, RED, PURPLE, GREEN, GREY];
-                    $choosenColor = null;
-                    $choosenValue = null;
-                    while (true) {
-                        $choosenColor = $color[bga_rand(0, count($color) - 1)];
-                        $choosenValue = bga_rand(1, 3);
-                        foreach ($args['uncallableCards'] as $id => $card) {
-                            if ($card->getColor() == $choosenColor && $card->getValue() == $choosenValue)
-                                continue;
-                        }
-                        break;
-                    }
-                    $this->actCall($pId2, $choosenColor, $choosenValue, Players::getActiveId());
-                    break;
-                case 'giveCard':
-                    $possibleCards = $this->argGiveCard()['_private']['active']['substitutes'];
-                    $card = $possibleCards[bga_rand(0, count($possibleCards) - 1)];
-                    $this->actGiveCard($card->getId(), Players::getActiveId());
-                    break;
-
 
                 default:
                     $this->gamestate->nextState("zombiePass");

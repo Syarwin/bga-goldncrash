@@ -25,30 +25,38 @@ class Player extends \GNC\Helpers\DB_Model
     'eliminated' => 'player_eliminated',
     'score' => ['player_score', 'int'],
     'scoreAux' => ['player_score_aux', 'int'],
-    'canUndo' => ['player_can_undo', 'int'],
-    'pendingAction' => 'player_pending_action',
-    'nuggets' => ['player_nuggets', 'int'],
-    'zombie' => 'player_zombie',
-    'rewards' => ['player_rewards', 'obj']
+    'character' => 'character'
   ];
 
   public function getUiData($currentPlayerId = null)
   {
-    $data = parent::getUiData();
-    // $isCurrent = $this->id == $currentPlayerId;
-    // $data['hand'] = $this->getCardsInHand($isCurrent);
-    // $data['table'] = $this->getCardsOnTable();
-    // $data['score1'] = Cells::getScore1($this->id);
-    // $data['rewards'] = $this->getRewards();
-    // $data['score2'] = array_sum($data['rewards']);
-    // $data['score3'] = $this->getScore();
+    $data = parent::getUiData();  
 
     return $data;
   }
 
+  public function is($character){
+    return $character === $this->getCharacter();
+  }
+
   public function getCardsInHand($isCurrent = true)
   {
-    return ($isCurrent) ? Cards::getInLocation('hand', $this->id) : Cards::countInLocation('hand', $this->id);
+    return ($isCurrent) ? Cards::getInLocationPId(HAND, $this->id) : Cards::getInLocationPId(HAND, $this->id)->count();
+  }
+
+  public function getHosts($n = null){
+    $location = $this->is(CHAMOURAI) ? HOSTS_CHAMOURAI : HOSTS_POULPIRATE;
+    return Cards::getInLocation($location, $n);
+  }
+
+  public function getBalloons($n = null){
+    $location = $this->is(CHAMOURAI) ? BALLOONS_CHAMOURAI : BALLOONS_POULPIRATE;
+    return Cards::bindCard(Cards::getInLocation($location, $n)->first());
+  }
+
+  public function getColumn($n){ 
+    $location = 'column_' . $n . '_' . $this->getCharacter();
+    return Cards::getInLocation($location, $n);
   }
 
   public function getCardsOnTable()

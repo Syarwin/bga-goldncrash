@@ -24,6 +24,9 @@ class Players extends \GNC\Helpers\DB_Manager
 
   public static function setupNewGame($players, $options)
   {
+    $characters = [CHAMOURAI, POULPIRATE];
+    shuffle($characters);
+
     // Create players
     $gameInfos = Game::get()->getGameinfos();
     $colors = $gameInfos['player_colors'];
@@ -33,11 +36,12 @@ class Players extends \GNC\Helpers\DB_Manager
       'player_canal',
       'player_name',
       'player_avatar',
-      'player_rewards'
+      'character'
     ]);
 
     $values = [];
     foreach ($players as $pId => $player) {
+      $character = array_shift($characters);
       $color = array_shift($colors);
 
       $values[] = [
@@ -46,7 +50,7 @@ class Players extends \GNC\Helpers\DB_Manager
         $player['player_canal'],
         $player['player_name'],
         $player['player_avatar'],
-        '[]'
+        $character
       ];
     }
 
@@ -159,15 +163,18 @@ class Players extends \GNC\Helpers\DB_Manager
             ░░░░░                                                               
 */
 
-  public static function getMaxNbRewards()
-  {
+  public static function getCharacterPId($character){
+    if (!in_array($character, CHARACTERS)){
+      throw new \feException(
+        $character . 'is not a correct character in this game.'
+    );
+
     $players = static::getAll();
-    $max = 0;
-    foreach ($players as $id => $player) {
-      // echo $player->getScore();
-      // exit();
-      $max = max($max, count($player->getRewards()));
+    foreach ($players as $pId => $player) {
+      if ($player->is($character)) {
+        return $pId;
+      }
     }
-    return $max;
+    }
   }
 }

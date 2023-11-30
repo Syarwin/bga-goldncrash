@@ -17,15 +17,14 @@ class Card extends \GNC\Helpers\DB_Model
         'location' => 'card_location',
         'state' => ['card_state', 'int'],
         'extraDatas' => ['extra_datas', 'obj'],
-        // 'playerId' => ['player_id', 'int'],
-        'color' => 'color',
-        'value' => ['value', 'int'],
+        'flipped' => ['flipped', 'int'],
+        'playerId' => ['player_id', 'int'],
     ];
 
     protected $staticAttributes = [
-        // 'color',
-        // ['value', 'int'],
-        'action',
+        'deck',
+        'type',
+        ['value', 'int'],
     ];
 
     public function __construct($row, $datas)
