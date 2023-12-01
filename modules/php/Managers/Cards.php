@@ -35,8 +35,7 @@ class Cards extends \GNC\Helpers\Pieces
             $treasure = 'treasure_' . $character;
             $data[$pId] = [
                 'hand' => $player->getCardsInHand($isCurrent),
-                'nDiscard' => static::countInLocation($discard),
-                'lastDiscard' => static::getTopOf($discard),
+                'discard' => static::getInLocation($discard),
                 'nTreasure' => static::countInLocation($treasure),
                 'lastTreasure' => static::getLastTreasure($character),
                 'nDeck' => static::countInLocation($deck),
@@ -60,17 +59,19 @@ class Cards extends \GNC\Helpers\Pieces
         return $data;
     }
 
-    public static function bindCard($card, $forced = false){
+    public static function bindCard($card, $forced = false)
+    {
         if (is_null($card)) return $card;
 
-        if ($card->getFlipped() == 1 || $forced){
+        if ($card->getFlipped() == 1 || $forced) {
             $card->id = 0;
         }
         return $card;
     }
 
-    public static function getLastTreasure($character){
-        return static::bindCard(static::getTopOf('treasure_'.$character), true);
+    public static function getLastTreasure($character)
+    {
+        return static::bindCard(static::getTopOf('treasure_' . $character), true);
     }
 
     /* Creation of the Cards */
