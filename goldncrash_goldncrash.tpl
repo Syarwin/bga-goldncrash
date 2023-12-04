@@ -1,91 +1,65 @@
 {OVERALL_GAME_HEADER}
-
-<!-- 
---------
--- BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
--- GoldnCrash implementation : ©  Timothée Pecatte <tim.pecatte@gmail.com>, Emmanuel Albisser <emmanuel.albisser@gmail.com> 
--- 
--- This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
--- See http://en.boardgamearena.com/#!doc/Studio for more information.
--------
-
-    goldncrash_goldncrash.tpl
-    
-    This is the HTML template of your game.
-    
-    Everything you are writing in this file will be displayed in the HTML page of your game user interface,
-    in the "main game zone" of the screen.
-    
-    You can use in this template:
-    _ variables, with the format {MY_VARIABLE_ELEMENT}.
-    _ HTML block, with the BEGIN/END format
-    
-    See your "view" PHP file to check how to set variables and control blocks
-    
-    Please REMOVE this comment before publishing your game on BGA
--->
-
-<div id="card_choice">
-    <div id="card_choice_hint_card">
-        <div id="card_choice_hint_text"></div>
-        <div id="card_choice_button"></div>
-    </div>
-    
-</div>
-
-
-
-<div id="table_{MY_ID}">
-    <div class="board_wrapper">
-        <div id="board_{MY_ID}" data-type="{TYPE}" class="board my_board">
-            <div class="name" style="color: #{MY_GNCOR}">{MY_NAME}</div>
-        </div>
-    </div>
-    <div id="play_area_{MY_ID}">
-        <div>
-            <div id="main_table">
-                <div id="discard" class="deck empty card">
+<div id="goldncrash-main-container">
+    <div id="top-player" class="goldncrash-player-board">
+        <div class='side-zone'>
+            <div class='hand-holder'><div class='hand' id='hand-top'></div></div>
+            <div class='side-zone-holder'>
+                <div class='discard-holder' id='discard-top'></div>
+                <div class='banner-chest-holder'>
+                    <div class='banner-holder' id='banner-top'></div>
+                    <div class='chest-holder' id='chest-top'></div>
                 </div>
-                
-                <div id="deck" class="deck card">
-                </div>
+                <div class='deck-holder' id='deck-top'></div>
             </div>
         </div>
-
-        <div id="cards_{MY_ID}" class="whiteblock"></div>
-        <div id="hand_{MY_ID}"></div>
-    </div>
-    
-    <div id="main_board"></div>
-</div>
-
-<div id="links">
-
-</div>
-
-<div id="tables">
-    <!-- BEGIN playerBlock --> 
-    <div id="table_{PLAYER_ID}" class="other_table">
-        <div id="board_{PLAYER_ID}" data-type="{TYPE}" class="board">
-            <div class="name" style="color: #{PLAYER_GNCOR}">{PLAYER_NAME}</div>
-        </div>
-        <div id="play_area_{PLAYER_ID}">
-            <div id="cards_{PLAYER_ID}" class="whiteblock"></div>
-            <div id="hand_{PLAYER_ID}"></div>
+        <div class='columns-zone'>
+            <div class='column-holder'>
+                <div class='column-cards-holder' id='column-top-0'></div>
+                <div class='zeppelin-holder' id='zeppelin-top-0'></div>
+                <div class='guest-holder' id='guest-top-0'></div>
+            </div>
+            <div class='column-holder'>
+                <div class='column-cards-holder' id='column-top-1'></div>
+                <div class='zeppelin-holder' id='zeppelin-top-1'></div>
+                <div class='guest-holder' id='guest-top-1'></div>
+            </div>
+            <div class='column-holder'>
+                <div class='column-cards-holder' id='column-top-2'></div>
+                <div class='zeppelin-holder' id='zeppelin-top-2'></div>
+                <div class='guest-holder' id='guest-top-2'></div>
+            </div>
         </div>
     </div>
-    <!-- END playerBlock --> 
+    <div id="bottom-player" class="goldncrash-player-board">
+        <div class='side-zone'>
+            <div class='hand-holder'><div class='hand' id='hand-bottom'></div></div>
+            <div class='side-zone-holder'>
+                <div class='discard-holder' id='discard-bottom'></div>
+                <div class='banner-chest-holder'>
+                    <div class='banner-holder' id='banner-bottom'></div>
+                    <div class='chest-holder' id='chest-bottom'></div>
+                </div>
+                <div class='deck-holder' id='deck-bottom'></div>
+            </div>
+        </div>
+        <div class='columns-zone'>
+            <div class='column-holder'>
+                <div class='column-cards-holder' id='column-bottom-0'></div>
+                <div class='zeppelin-holder' id='zeppelin-bottom-0'></div>
+                <div class='guest-holder' id='guest-bottom-0'></div>
+            </div>
+            <div class='column-holder'>
+                <div class='column-cards-holder' id='column-bottom-1'></div>
+                <div class='zeppelin-holder' id='zeppelin-bottom-1'></div>
+                <div class='guest-holder' id='guest-bottom-1'></div>
+            </div>
+            <div class='column-holder'>
+                <div class='column-cards-holder' id='column-bottom-2'></div>
+                <div class='zeppelin-holder' id='zeppelin-bottom-2'></div>
+                <div class='guest-holder' id='guest-bottom-2'></div>
+            </div>
+        </div>
+    </div>
 
 </div>
-
-<script type="text/javascript">
-    // Javascript HTML templates
-
-    /*
-    // Example:
-    var jstpl_some_game_item='<div class="my_game_item" id="my_game_item_${MY_ITEM_ID}"></div>';
-
-    */
-</script>
-
 {OVERALL_GAME_FOOTER}

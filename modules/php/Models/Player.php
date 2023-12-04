@@ -25,36 +25,45 @@ class Player extends \GNC\Helpers\DB_Model
     'eliminated' => 'player_eliminated',
     'score' => ['player_score', 'int'],
     'scoreAux' => ['player_score_aux', 'int'],
-    'character' => 'character'
+    'character' => 'character',
   ];
 
   public function getUiData($currentPlayerId = null)
   {
-    $data = parent::getUiData();  
+    $data = parent::getUiData();
 
     return $data;
   }
 
-  public function is($character){
+  public function is($character)
+  {
     return $character === $this->getCharacter();
   }
 
   public function getCardsInHand($isCurrent = true)
   {
-    return ($isCurrent) ? Cards::getInLocationPId(HAND, $this->id) : Cards::getInLocationPId(HAND, $this->id)->count();
+    return Cards::getInLocationPId(HAND, $this->id);
   }
 
-  public function getHosts($n = null){
+  public function getHosts($n = null)
+  {
     $location = $this->is(CHAMOURAI) ? HOSTS_CHAMOURAI : HOSTS_POULPIRATE;
     return Cards::getInLocation($location, $n);
   }
 
-  public function getBalloons($n = null){
+  public function getHost($n)
+  {
+    return $this->getHosts($n)->first();
+  }
+
+  public function getBalloons($n = null)
+  {
     $location = $this->is(CHAMOURAI) ? BALLOONS_CHAMOURAI : BALLOONS_POULPIRATE;
     return Cards::bindCard(Cards::getInLocation($location, $n)->first());
   }
 
-  public function getColumn($n){ 
+  public function getColumn($n)
+  {
     $location = 'column_' . $n . '_' . $this->getCharacter();
     return Cards::getInLocation($location, $n);
   }
@@ -71,13 +80,12 @@ class Player extends \GNC\Helpers\DB_Model
     $unplayableCards = $this->getCardsOnTable();
 
     foreach ($cards as $id => $card) {
-      if ($card->getValue() > $costMax) continue;
+      if ($card->getValue() > $costMax) {
+        continue;
+      }
       $playable = true;
       foreach ($unplayableCards as $id => $unplayableCard) {
-        if (
-          $card->getValue() == $unplayableCard->getValue() &&
-          $card->getColor() == $unplayableCard->getColor()
-        ) {
+        if ($card->getValue() == $unplayableCard->getValue() && $card->getColor() == $unplayableCard->getColor()) {
           $playable = false;
           break;
         }

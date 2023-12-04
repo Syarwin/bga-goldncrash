@@ -3,7 +3,7 @@
 /**
  *------
  * BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
- * GoldnCrash implementation : ©  Timothée Pecatte <tim.pecatte@gmail.com>, Emmanuel Albisser <emmanuel.albisser@gmail.com> 
+ * GoldnCrash implementation : ©  Timothée Pecatte <tim.pecatte@gmail.com>, Emmanuel Albisser <emmanuel.albisser@gmail.com>
  *
  * This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
  * See http://en.boardgamearena.com/#!doc/Studio for more information.
@@ -25,31 +25,18 @@
  *
  */
 
-require_once(APP_BASE_PATH . "view/common/game.view.php");
-require_once('modules/php/constants.inc.php');
+require_once APP_BASE_PATH . 'view/common/game.view.php';
+require_once 'modules/php/constants.inc.php';
 
 class view_goldncrash_goldncrash extends game_view
 {
-    protected function getGameName()
-    {
-        // Used for translations and stuff. Please do not modify.
-        return "goldncrash";
-    }
+  protected function getGameName()
+  {
+    // Used for translations and stuff. Please do not modify.
+    return 'goldncrash';
+  }
 
-    function build_page($viewArgs)
-    {
-        // Get players & players number
-        $players = $this->game->loadPlayersBasicInfos();
-        $players_nbr = count($players);
-
-        /*********** Place your code below:  ************/
-        global $g_user;
-        $playerId = $g_user->get_id();
-        
-
-
-
-
-        /*********** Do not change anything below this line  ************/
-    }
+  function build_page($viewArgs)
+  {
+  }
 }

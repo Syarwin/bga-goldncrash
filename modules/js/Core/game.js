@@ -4,10 +4,8 @@ var debug = isDebug ? console.info.bind(window.console) : function () {};
 define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouislider.min.js', 'ebg/core/gamegui'], (
   dojo,
   declare,
-  noUiSlider,
+  noUiSlider
 ) => {
-  const isPromise = (v) => typeof v === 'object' && typeof v.then === 'function';
-
   return declare('customgame.game', ebg.core.gamegui, {
     /*
      * Constructor
@@ -24,6 +22,7 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
       this._registeredCustomTooltips = {};
 
       this._notif_uid_to_log_id = {};
+      this._notif_uid_to_mobile_log_id = {};
       this._last_notif = null;
       dojo.place('loader_mask', 'overall-content', 'before');
       dojo.style('loader_mask', {
@@ -57,6 +56,7 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
         this.instantaneousMode = false;
         dojo.style('leftright_page_wrapper', 'display', 'block');
         dojo.style('loader_mask', 'display', 'none');
+        this.updateLayout();
       }
     },
 
@@ -73,7 +73,6 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
 
     onLoadingComplete() {
       debug('Loading complete');
-      //      this.cancelLogs(this.gamedatas.canceledNotifIds);
     },
 
     /*
@@ -91,6 +90,7 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
       dojo.connect(this.notifqueue, 'addToLog', () => {
         this.checkLogCancel(this._last_notif == null ? null : this._last_notif.msg.uid);
         this.addLogClass();
+        this.attachRegisteredTooltips();
       });
     },
 
@@ -107,6 +107,8 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
     takeAction(action, data, check = true, checkLock = true) {
       if (check && !this.checkAction(action)) return false;
       if (!check && checkLock && !this.checkLock()) return false;
+      // Stop any ongoing timed button
+      this.stopActionTimer();
 
       data = data || {};
       if (data.lock === undefined) {
@@ -122,7 +124,7 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
           (data) => resolve(data),
           (isError, message, code) => {
             if (isError) reject(message, code);
-          },
+          }
         );
       });
     },
@@ -137,7 +139,6 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
      */
     onEnteringState(stateName, args) {
       debug('Entering state: ' + stateName, args);
-      this.stateName = stateName; //modified
       if (this.isFastMode()) return;
       if (this._activeStates.includes(stateName) && !this.isCurrentPlayerActive()) return;
 
@@ -162,11 +163,16 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
       var methodName = 'onLeavingState' + stateName.charAt(0).toUpperCase() + stateName.slice(1);
       if (this[methodName] !== undefined) this[methodName]();
     },
-
-    clearPossible() {
+    clearTitleBar() {
       this.removeActionButtons();
-      dojo.empty('customActions');
-      dojo.empty('restartAction');
+      this.empty('customActions');
+      this.empty('restartAction');
+      this.empty('anytimeActions');
+      // $('gameaction_status').innerHTML = '';
+      // $('pagemaintitletext').innerHTML = '';
+    },
+    clearPossible() {
+      this.clearTitleBar();
 
       this._connections.forEach(dojo.disconnect);
       this._connections = [];
@@ -175,6 +181,18 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
       });
       this._selectableNodes = [];
       dojo.query('.unselectable').removeClass('unselectable');
+      dojo.query('.selected').removeClass('selected');
+    },
+
+    empty(container) {
+      container = $(container);
+      container.childNodes.forEach((node) => {
+        if (this.tooltips[node.id]) {
+          this.tooltips[node.id].close();
+          delete this.tooltips[node.id];
+        }
+      });
+      container.innerHTML = '';
     },
 
     /**
@@ -188,7 +206,6 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
 
         // Call appropriate method
         var methodName = 'onUpdateActivity' + stateName.charAt(0).toUpperCase() + stateName.slice(1);
-        debug(methodName);
         if (this[methodName] !== undefined) this[methodName](args, status);
       }
     },
@@ -196,24 +213,40 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
     /*
      * setupNotifications
      */
+    getVisibleTitleContainer() {
+      function isVisible(elem) {
+        return !!(elem.offsetWidth || elem.offsetHeight || elem.getClientRects().length);
+      }
+
+      if (isVisible($('pagemaintitletext'))) {
+        return $('pagemaintitletext');
+      } else {
+        return $('gameaction_status');
+      }
+    },
+
     setupNotifications() {
-      debug(this._notifications);
+      console.log(this._notifications);
       this._notifications.forEach((notif) => {
         var functionName = 'notif_' + notif[0];
 
         let wrapper = (args) => {
-          let msg = this.format_string_recursive(args.log, args.args);
+          let msg = this.formatString(this.format_string_recursive(args.log, args.args));
           if (msg != '') {
+            this.clearTitleBar();
             $('gameaction_status').innerHTML = msg;
             $('pagemaintitletext').innerHTML = msg;
           }
-
           let timing = this[functionName](args);
+          if (args.args.scores) {
+            Object.keys(args.args.scores).forEach((pId) => {
+              this.gamedatas.scores[pId] = args.args.scores[pId];
+              this.updatePlayerScores(pId);
+            });
+          }
           if (timing === undefined) {
             if (notif[1] === undefined) {
-              console.error(
-                "A notification don't have default timing and didn't send a timing as return value : " + notif[0],
-              );
+              console.error("A notification don't have default timing and didn't send a timing as return value : " + notif[0]);
               return;
             }
 
@@ -221,17 +254,21 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
             timing = this.isFastMode() ? 0 : notif[1];
           }
 
-          if (timing !== null && !isPromise(timing)) {
+          if (timing !== null) {
             this.notifqueue.setSynchronousDuration(timing);
           }
         };
 
         dojo.subscribe(notif[0], this, wrapper);
-        this.notifqueue.setSynchronous(notif[0]);
 
         if (notif[2] != undefined) {
           this.notifqueue.setIgnoreNotificationCheck(notif[0], notif[2]);
+          this.notifqueue.setSynchronous(notif[0], notif[1]); // Ignorable notif must have a default timing
+        } else {
+          this.notifqueue.setSynchronous(notif[0]);
         }
+
+        this.notifqueue.setIgnoreNotificationCheck(notif[0], (notif) => notif.args.ignore && notif.args.ignore == this.player_id);
       });
 
       // Load production bug report handler
@@ -321,10 +358,11 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
         } else {
           debug('Timer ' + buttonId + ' execute');
           button.click();
+          this.stopActionTimer();
         }
       };
       this._actionTimerFunction();
-      this._actionTimerId = window.setInterval(this._actionTimerFunction, 1000);
+      this._actionTimerId = window.setInterval(this._actionTimerFunction.bind(this), 1000);
       debug('Timer #' + this._actionTimerId + ' ' + buttonId + ' start');
     },
 
@@ -353,7 +391,16 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
         suffix = 'generic';
       }
 
-      if (!this.gamedatas.gamestate['descriptionmyturn' + suffix]) return;
+      let state = this.gamedatas.gamestate;
+      if (state.private_state && this.isCurrentPlayerActive()) {
+        state = state.private_state;
+        if (!state['descriptionmyturn' + suffix]) return;
+        state.descriptionmyturn = state['descriptionmyturn' + suffix];
+        this.updatePageTitle(state);
+        return;
+      }
+
+      if (!this.gamedatas.gamestate['descriptionmyturn' + suffix] && this.isCurrentPlayerActive()) return;
 
       if (save) {
         this.gamedatas.gamestate.descriptionmyturngeneric = this.gamedatas.gamestate.descriptionmyturn;
@@ -400,9 +447,7 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
     setPreferenceValue(number, newValue) {
       var optionSel = 'option[value="' + newValue + '"]';
       dojo
-        .query(
-          '#preference_control_' + number + ' > ' + optionSel + ', #preference_fontrol_' + number + ' > ' + optionSel,
-        )
+        .query('#preference_control_' + number + ' > ' + optionSel + ', #preference_fontrol_' + number + ' > ' + optionSel)
         .attr('selected', true);
       var select = $('preference_control_' + number);
       if (dojo.isIE) {
@@ -485,10 +530,7 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
     tplPreferenceSelect(pref) {
       let values = Object.keys(pref.values)
         .map(
-          (val) =>
-            `<option value='${val}' ${pref.value == val ? 'selected="selected"' : ''}>${_(
-              pref.values[val].name,
-            )}</option>`,
+          (val) => `<option value='${val}' ${pref.value == val ? 'selected="selected"' : ''}>${_(pref.values[val].name)}</option>`
         )
         .join('');
 
@@ -513,18 +555,20 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
     /************************
      ******* SETTINGS ********
      ************************/
+    isMobile() {
+      return $('ebd-body').classList.contains('mobile_version');
+    },
+
     setupSettings() {
       dojo.connect($('show-settings'), 'onclick', () => this.toggleSettings());
       this.addTooltip('show-settings', '', _('Display some settings about the game.'));
       let container = $('settings-controls-container');
 
-      if (this._settingsSections) {
+      if (this.getSettingsSections) {
+        this._settingsSections = this.getSettingsSections();
         dojo.place(`<div id='settings-controls-header'></div><div id='settings-controls-wrapper'></div>`, container);
         Object.keys(this._settingsSections).forEach((sectionName, i) => {
-          dojo.place(
-            `<div id='settings-section-${sectionName}' class='settings-section'></div>`,
-            'settings-controls-wrapper',
-          );
+          dojo.place(`<div id='settings-section-${sectionName}' class='settings-section'></div>`, 'settings-controls-wrapper');
           let div = dojo.place(`<div>${this._settingsSections[sectionName]}</div>`, 'settings-controls-header');
           let openSection = () => {
             dojo.query('#settings-controls-header div').removeClass('open');
@@ -540,6 +584,7 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
       }
 
       this.settings = {};
+      this._settingsConfig = this.getSettingsConfig();
       Object.keys(this._settingsConfig).forEach((settingName) => {
         let config = this._settingsConfig[settingName];
         let localContainer = container;
@@ -557,7 +602,9 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
         }
 
         let suffix = settingName.charAt(0).toUpperCase() + settingName.slice(1);
-        let value = this.getConfig(this.game_name + suffix, config.default);
+        let defaultValue =
+          typeof config.default === 'function' ? config.default(this.isMobile(), this.isTouchDevice) : config.default;
+        let value = this.getConfig(this.game_name + suffix, defaultValue);
         this.settings[settingName] = value;
 
         // Slider type => create DOM and initialize noUiSlider
@@ -565,9 +612,7 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
           this.place('tplSettingSlider', { desc: config.name, id: settingName }, localContainer);
           config.sliderConfig.start = [value];
           noUiSlider.create($('setting-' + settingName), config.sliderConfig);
-          $('setting-' + settingName).noUiSlider.on('slide', (arg) =>
-            this.changeSetting(settingName, parseInt(arg[0])),
-          );
+          $('setting-' + settingName).noUiSlider.on('slide', (arg) => this.changeSetting(settingName, parseInt(arg[0])));
         } else if (config.type == 'multislider') {
           this.place('tplSettingSlider', { desc: config.name, id: settingName }, localContainer);
           config.sliderConfig.start = value;
@@ -634,9 +679,7 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
         <div class='row-label'>${_(setting.name)}</div>
         <div class='row-value'>
           <label class="switch" for="setting-${setting.id}">
-            <input type="checkbox" id="setting-${setting.id}" ${
-        this.settings[setting.id] == 1 ? 'checked="checked"' : ''
-      } />
+            <input type="checkbox" id="setting-${setting.id}" ${this.settings[setting.id] == 1 ? 'checked="checked"' : ''} />
             <div class="slider round"></div>
           </label>
         </div>
@@ -649,8 +692,8 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
         .map(
           (val) =>
             `<option value='${val}' ${this.settings[setting.id] == val ? 'selected="selected"' : ''}>${_(
-              setting.values[val],
-            )}</option>`,
+              setting.values[val]
+            )}</option>`
         )
         .join('');
 
@@ -659,9 +702,7 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
           <div class="row-data row-data-large">
             <div class="row-label">${_(setting.name)}</div>
             <div class="row-value">
-              <select id="setting-${
-                setting.id
-              }" class="preference_control game_local_preference_control" style="display: block;">
+              <select id="setting-${setting.id}" class="preference_control game_local_preference_control" style="display: block;">
                 ${values}
               </select>
             </div>
@@ -724,7 +765,7 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
 
           phantom: true,
         },
-        options,
+        options
       );
       config.phantomStart = config.phantomStart || config.phantom;
       config.phantomEnd = config.phantomEnd || config.phantom;
@@ -777,14 +818,7 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
         const animation =
           config.pos == null
             ? this.slideToObject(mobile, config.to || targetId, config.duration, config.delay)
-            : this.slideToObjectPos(
-                mobile,
-                config.to || targetId,
-                config.pos.x,
-                config.pos.y,
-                config.duration,
-                config.delay,
-              );
+            : this.slideToObjectPos(mobile, config.to || targetId, config.pos.x, config.pos.y, config.duration, config.delay);
 
         dojo.connect(animation, 'onEnd', () => {
           dojo.style(mobile, 'zIndex', null);
@@ -794,11 +828,19 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
             dojo.removeClass(mobileElt, 'phantom');
             mobile = mobileElt;
           }
-          if (config.changeParent) {
+          if (config.destroy) {
+            if (this.tooltips[mobile.id]) {
+              this.tooltips[mobile.id].close();
+              delete this.tooltips[mobile.id];
+            }
+            dojo.destroy(mobile);
+            resolve();
+            return;
+          }
+          if (config.changeParent || config.attach) {
             if (config.phantomEnd) dojo.place(mobile, targetId, 'replace');
             else this.changeParent(mobile, newParent);
           }
-          if (config.destroy) dojo.destroy(mobile);
           if (config.clearPos && !config.destroy) dojo.style(mobile, { top: null, left: null, position: null });
           resolve();
         });
@@ -869,7 +911,7 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
             </div>
           </div>`,
           target,
-          'after',
+          'after'
         );
         dojo.place(target, container.querySelector('.flip-back'));
         dojo.place(newNode, container.querySelector('.flip-front'));
@@ -895,14 +937,7 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
       if (this.gamedatas.players[this.player_id] && this.gamedatas.players[this.player_id].color_back) {
         color_bg = 'background-color:#' + this.gamedatas.players[this.player_id].color_back + ';';
       }
-      var you =
-        '<span style="font-weight:bold;color:#' +
-        color +
-        ';' +
-        color_bg +
-        '">' +
-        __('lang_mainsite', 'You') +
-        '</span>';
+      var you = '<span style="font-weight:bold;color:#' + color + ';' + color_bg + '">' + __('lang_mainsite', 'You') + '</span>';
       return you;
     },
 
@@ -911,38 +946,25 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
       if (player == undefined) return '<!--PNS--><span class="playername">' + name + '</span><!--PNE-->';
 
       const color = player.color;
-      const color_bg = player.color_back
-        ? 'background-color:#' + this.gamedatas.players[this.player_id].color_back + ';'
-        : '';
-      return (
-        '<!--PNS--><span class="playername" style="color:#' + color + ';' + color_bg + '">' + name + '</span><!--PNE-->'
-      );
+      const color_bg = player.color_back ? 'background-color:#' + this.gamedatas.players[this.player_id].color_back + ';' : '';
+      return '<!--PNS--><span class="playername" style="color:#' + color + ';' + color_bg + '">' + name + '</span><!--PNE-->';
     },
 
     /*
      * Overwrite to allow to more player coloration than player_name and player_name2
-     * and add images
      */
     format_string_recursive(log, args) {
       try {
-        if (log && args && !args.processed) {
-          args.processed = true;
-          
+        if (log && args) {
+          //          if (args.msgYou && args.player_id == this.player_id) log = args.msgYou;
+
           let player_keys = Object.keys(args).filter((key) => key.substr(0, 11) == 'player_name');
           player_keys.forEach((key) => {
             args[key] = this.coloredPlayerName(args[key]);
           });
 
-          // list of special keys we want to replace with images
-          var keys = ['color','value', 'value2'];
-
-        
-          for ( var i in keys) {
-              const key = keys[i];
-              if (key in args) args[key] = this.getTokenDiv(key, args);                            
-
-          }
-      }
+          //          args.You = this.coloredYou();
+        }
       } catch (e) {
         console.error(log, args, 'Exception thrown', e.stack);
       }
@@ -966,9 +988,7 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
 
     /* Helper to work with local storage */
     getConfig(value, v) {
-      return localStorage.getItem(value) == null || isNaN(localStorage.getItem(value))
-        ? v
-        : localStorage.getItem(value);
+      return localStorage.getItem(value) == null || isNaN(localStorage.getItem(value)) ? v : localStorage.getItem(value);
     },
 
     /**********************
@@ -1042,37 +1062,49 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
     },
     attachRegisteredTooltips() {
       Object.keys(this._registeredCustomTooltips).forEach((id) => {
-        if (!$(id)) {
-          console.error('Trying to attack tooltip on a null element', id);
-        } else {
-          this.addCustomTooltip(id, this._registeredCustomTooltips[id]);
+        if ($(id)) {
+          this.addCustomTooltip(id, this._registeredCustomTooltips[id], { forceRecreate: true });
         }
       });
       this._registeredCustomTooltips = {};
     },
-    addCustomTooltip(id, html, delay) {
-      if (this.tooltips[id]) {
-        this.tooltips[id].label = html;
+    addCustomTooltip(id, html, config = {}) {
+      config = Object.assign(
+        {
+          delay: 400,
+          midSize: true,
+          forceRecreate: false,
+        },
+        config
+      );
+
+      // Handle dynamic content out of the box
+      let getContent = () => {
+        let content = typeof html === 'function' ? html() : html;
+        if (config.midSize) {
+          content = '<div class="midSizeDialog">' + content + '</div>';
+        }
+        return content;
+      };
+
+      if (this.tooltips[id] && !config.forceRecreate) {
+        this.tooltips[id].getContent = getContent;
         return;
       }
 
-      html = '<div class="midSizeDialog">' + html + '</div>';
-      delay = delay || 400;
       let tooltip = new dijit.Tooltip({
         //        connectId: [id],
-        label: html,
+        getContent,
         position: this.defaultTooltipPosition,
-        showDelay: delay,
+        showDelay: config.delay,
       });
       this.tooltips[id] = tooltip;
       dojo.addClass(id, 'tooltipable');
       dojo.place(
-        `
-        <div class='help-marker'>
+        `<div class='help-marker'>
           <svg><use href="#help-marker-svg" /></svg>
-        </div>
-      `,
-        id,
+        </div>`,
+        id
       );
 
       dojo.connect($(id), 'click', (evt) => {
@@ -1092,20 +1124,33 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
       });
 
       tooltip.showTimeout = null;
-      dojo.connect($(id), 'mouseenter', () => {
+      dojo.connect($(id), 'mouseenter', (evt) => {
+        evt.stopPropagation();
         if (!this._helpMode && !this._dragndropMode) {
           if (tooltip.showTimeout != null) clearTimeout(tooltip.showTimeout);
 
-          tooltip.showTimeout = setTimeout(() => tooltip.open($(id)), delay);
+          tooltip.showTimeout = setTimeout(() => {
+            if ($(id)) tooltip.open($(id));
+          }, config.delay);
         }
       });
 
-      dojo.connect($(id), 'mouseleave', () => {
+      dojo.connect($(id), 'mouseleave', (evt) => {
+        evt.stopPropagation();
         if (!this._helpMode && !this._dragndropMode) {
           tooltip.close();
           if (tooltip.showTimeout != null) clearTimeout(tooltip.showTimeout);
         }
       });
+    },
+
+    destroy(elem) {
+      if (this.tooltips[elem.id]) {
+        this.tooltips[elem.id].destroy();
+        delete this.tooltips[elem.id];
+      }
+
+      elem.remove();
     },
 
     /*
@@ -1114,10 +1159,13 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
      */
     onPlaceLogOnChannel(msg) {
       var currentLogId = this.notifqueue.next_log_id;
+      var currentMobileLogId = this.next_log_id;
       var res = this.inherited(arguments);
       this._notif_uid_to_log_id[msg.uid] = currentLogId;
+      this._notif_uid_to_mobile_log_id[msg.uid] = currentMobileLogId;
       this._last_notif = {
         logId: currentLogId,
+        mobileLogId: currentMobileLogId,
         msg,
       };
       return res;
@@ -1139,17 +1187,28 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
           let logId = this._notif_uid_to_log_id[uid];
           if ($('log_' + logId)) dojo.addClass('log_' + logId, 'cancel');
         }
+        if (this._notif_uid_to_mobile_log_id.hasOwnProperty(uid)) {
+          let mobileLogId = this._notif_uid_to_mobile_log_id[uid];
+          if ($('dockedlog_' + mobileLogId)) dojo.addClass('dockedlog_' + mobileLogId, 'cancel');
+        }
       });
     },
 
     addLogClass() {
       if (this._last_notif == null) return;
-      let notif = this._last_notif;
-      if ($('log_' + notif.logId)) {
-        let type = notif.msg.type;
-        if (type == 'history_history') type = notif.msg.args.originalType;
 
+      let notif = this._last_notif;
+      let type = notif.msg.type;
+      if (type == 'history_history') type = notif.msg.args.originalType;
+
+      if ($('log_' + notif.logId)) {
         dojo.addClass('log_' + notif.logId, 'notif_' + type);
+
+        var methodName = 'onAdding' + type.charAt(0).toUpperCase() + type.slice(1) + 'ToLog';
+        if (this[methodName] !== undefined) this[methodName](notif);
+      }
+      if ($('dockedlog_' + notif.mobileLogId)) {
+        dojo.addClass('dockedlog_' + notif.mobileLogId, 'notif_' + type);
       }
     },
 
@@ -1242,7 +1301,7 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
         text = _('Cancel');
       }
 
-      this.addSecondaryActionButton('btnCancel', text, () => this.clearClientState());
+      this.addSecondaryActionButton('btnCancel', text, () => this.clearClientState(), 'restartAction');
     },
 
     clearClientState() {
@@ -1252,9 +1311,9 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
 
     translate(t) {
       if (typeof t === 'object') {
-        return this.format_string_recursive(t.log, t.args);
+        return this.format_string_recursive(_(t.log), t.args);
       } else {
-        return _(t);
+        return this.format_string_recursive(_(t), {});
       }
     },
 
@@ -1262,43 +1321,89 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
       return this.format_string_recursive(log, args);
     },
 
-    onSelectN(elements, n, callback) {
+    onSelectN(options) {
+      let config = Object.assign(
+        {
+          elements: [],
+          n: 0,
+          autoConfirm: false,
+          confirmText: _('Confirm'),
+          confirmBtn: true,
+          cancelText: _('Cancel'),
+          cancelBtn: true,
+          callback: null,
+          updateCallback: null,
+          optional: false,
+          canPass: false,
+          passCallback: null,
+          btnContainer: 'customActions',
+          class: '',
+        },
+        options
+      );
+
+      let elemIds = Object.keys(config.elements);
       let selectedElements = [];
       let updateStatus = () => {
         if ($('btnConfirmChoice')) $('btnConfirmChoice').remove();
-        if (selectedElements.length == n) {
-          this.addPrimaryActionButton('btnConfirmChoice', _('Confirm'), () => {
-            if (callback(selectedElements)) {
-              selectedElements = [];
-              updateStatus();
-            }
-          });
+        if (
+          ((config.optional === false && selectedElements.length == config.n) ||
+            (config.optional === true && selectedElements.length <= config.n)) &&
+          config.confirmBtn
+        ) {
+          let otherElems = elemIds.filter((id) => !selectedElements.includes(id));
+          if (config.autoConfirm) {
+            config.callback(selectedElements, otherElems);
+            return;
+          } else {
+            this.addPrimaryActionButton(
+              'btnConfirmChoice',
+              config.confirmText,
+              () => config.callback(selectedElements, otherElems),
+              config.btnContainer
+            );
+          }
         }
 
         if ($('btnCancelChoice')) $('btnCancelChoice').remove();
-        if (selectedElements > 0) {
-          this.addSecondaryActionButton('btnCancelChoice', _('Cancel'), () => {
-            selectedElements = [];
-            updateStatus();
-          });
+        if (selectedElements.length > 0 && config.cancelBtn) {
+          this.addSecondaryActionButton(
+            'btnCancelChoice',
+            _('Cancel'),
+            () => {
+              selectedElements = [];
+              updateStatus();
+            },
+            config.btnContainer
+          );
         }
 
-        Object.keys(elements).forEach((id) => {
-          let elt = elements[id];
+        elemIds.forEach((id) => {
+          let elt = config.elements[id];
           let selected = selectedElements.includes(id);
           elt.classList.toggle('selected', selected);
-          elt.classList.toggle('selectable', selected || selectedElements.length < n);
+          if (config.class != '') elt.classList.toggle(config.class, selected);
+          elt.classList.toggle('selectable', selected || selectedElements.length < config.n);
         });
+
+        if (config.updateCallback !== null) {
+          config.updateCallback(selectedElements);
+        }
       };
 
-      Object.keys(elements).forEach((id) => {
-        let elt = elements[id];
+      if ($('btnPass')) $('btnPass').remove();
+      if (config.canPass) {
+        this.addSecondaryActionButton('btnPass', _('Pass action'), () => config.passCallback(), config.btnContainer);
+      }
+
+      Object.keys(config.elements).forEach((id) => {
+        let elt = config.elements[id];
 
         this.onClick(elt, () => {
           let index = selectedElements.findIndex((t) => t == id);
 
           if (index === -1) {
-            if (selectedElements.length >= n) return;
+            if (selectedElements.length >= config.n) return;
             selectedElements.push(id);
           } else {
             selectedElements.splice(index, 1);

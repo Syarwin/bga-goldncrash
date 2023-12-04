@@ -26,7 +26,7 @@
 -- ALTER TABLE `player` ADD `player_my_custom_field` INT UNSIGNED NOT NULL DEFAULT '0';
 
 CREATE TABLE IF NOT EXISTS `cards` (
-`card_id` int(5) NOT NULL AUTO_INCREMENT,
+`card_id` int(5) NOT NULL,
 `card_state` int(10) DEFAULT 0,
 `card_location` varchar(32) NOT NULL,
 `flipped` int(3) default 0,

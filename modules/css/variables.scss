@@ -1,0 +1,7 @@
+:root {
+    --cardScale: 0.4;
+}
+
+$cardWidth: 292px;
+$cardW: calc(var(--cardScale) * #{$cardWidth});
+$cardH: calc(var(--cardScale) * 416px);

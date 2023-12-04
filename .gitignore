@@ -1,1 +1,7 @@
-.vscode
+.vscode/package.json
+.vscode/settings.json
+.vscode/sftp.json
+.sass-cache/
+.gitignore
+.prettierrc
+deploy.sh

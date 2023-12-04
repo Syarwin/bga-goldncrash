@@ -36,7 +36,7 @@ class Players extends \GNC\Helpers\DB_Manager
       'player_canal',
       'player_name',
       'player_avatar',
-      'character'
+      'character',
     ]);
 
     $values = [];
@@ -44,14 +44,7 @@ class Players extends \GNC\Helpers\DB_Manager
       $character = array_shift($characters);
       $color = array_shift($colors);
 
-      $values[] = [
-        $pId,
-        $color,
-        $player['player_canal'],
-        $player['player_name'],
-        $player['player_avatar'],
-        $character
-      ];
+      $values[] = [$pId, $color, $player['player_canal'], $player['player_name'], $player['player_avatar'], $character];
     }
 
     $query->values($values);
@@ -103,8 +96,6 @@ class Players extends \GNC\Helpers\DB_Manager
     $table = Game::get()->getNextPlayerTable();
     return $table[$pId];
   }
-
-
 
   /*
    * Return the number of players
@@ -163,18 +154,17 @@ class Players extends \GNC\Helpers\DB_Manager
             ░░░░░                                                               
 */
 
-  public static function getCharacterPId($character){
-    if (!in_array($character, CHARACTERS)){
-      throw new \feException(
-        $character . 'is not a correct character in this game.'
-    );
+  public static function getCharacterPId($character)
+  {
+    if (!in_array($character, CHARACTERS)) {
+      throw new \feException($character . 'is not a correct character in this game.');
 
-    $players = static::getAll();
-    foreach ($players as $pId => $player) {
-      if ($player->is($character)) {
-        return $pId;
+      $players = static::getAll();
+      foreach ($players as $pId => $player) {
+        if ($player->is($character)) {
+          return $pId;
+        }
       }
-    }
     }
   }
 }
