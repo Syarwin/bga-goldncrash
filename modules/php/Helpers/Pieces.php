@@ -547,6 +547,21 @@ class Pieces extends DB_Manager
         return $pieces;
     }
 
+    public static function pickOneForLocation(
+        $fromLocation,
+        $toLocation,
+        $state = 0,
+        $deckReform = true
+    ) {
+        return self::pickForLocation(
+            1,
+            $fromLocation,
+            $toLocation,
+            $state,
+            $deckReform
+        )->first();
+    }
+
     public static function pickForLocationPId(
         $nbr,
         $fromLocation,
@@ -582,21 +597,6 @@ class Pieces extends DB_Manager
             $deckReform
         );
         $piece->setPlayerId($pId);
-    }
-
-    public static function pickOneForLocation(
-        $fromLocation,
-        $toLocation,
-        $state = 0,
-        $deckReform = true
-    ) {
-        return self::pickForLocation(
-            1,
-            $fromLocation,
-            $toLocation,
-            $state,
-            $deckReform
-        )->first();
     }
 
     /*
