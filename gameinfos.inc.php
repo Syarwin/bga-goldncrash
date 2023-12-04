@@ -16,25 +16,25 @@ $gameinfos = array(
     'game_name' => "GoldnCrash",
 
     // Game designer (or game designers, separated by commas)
-    'designer' => 'Joachim Thôme',
+    'designer' => 'Antoine Bauza, Corentin Lebrat, Ludovic Maublanc, Théo Rivière',
 
     // Game artist (or game artists, separated by commas)
-    'artist' => 'Emir Durmišević',
+    'artist' => 'Camille Chaussy, Valériane Holley',
 
     // Year of FIRST publication of this game. Can be negative.
-    'year' => 2023,
+    'year' => 2024,
 
     // Game publisher (use empty string if there is no publisher)
-    'publisher' => 'Sylex',
+    'publisher' => 'GRRRE Games',
 
     // Url of game publisher website
-    'publisher_website' => 'https://sylex-edition.fr/',
+    'publisher_website' => 'https://www.grrre-games.com/',
 
     // Board Game Geek ID of the publisher
-    'publisher_bgg_id' => 36803,
+    'publisher_bgg_id' => 40652,
 
     // Board game geek ID of the game
-    'bgg_id' => 366397,
+    'bgg_id' => 0,
 
 
     // Players configuration that can be played (ex: 2 to 4 players)
@@ -67,7 +67,7 @@ $gameinfos = array(
     // Note: if you are NOT using any tie breaker, leave the empty string.
     //
     // Example: 'tie_breaker_description' => totranslate( "Number of remaining cards in hand" ),
-    'tie_breaker_description' => totranslate("Number of sheriff stars then number of gold nuggets"),
+    'tie_breaker_description' => totranslate(""),
 
     // If in the game, all losers are equal (no score to rank them or explicit in the rules that losers are not ranked between them), set this to true 
     // The game end result will display "Winner" for the 1st player and "Loser" for all other players
@@ -132,11 +132,10 @@ $gameinfos = array(
     // Each paragraph must be wrapped with totranslate() for translation and should not contain html (plain text without formatting).
     // A good length for this text is between 100 and 150 words (about 6 to 9 lines on a standard display)
     'presentation' => array(
-        totranslate('Explore the American West with a pen and cards as your equipment. To succeed in
-        your expeditions, call the right cards and give the ones you like to trigger the most
-        advantageous effects.'),
-        totranslate('You’ll also need to match characters with their favorite tools and transportation to
-        open doors to new regions. Can you become the best explorer?')
+        totranslate('The big day is here!'),
+        totranslate('The great zeppelins annual final race can start! The Octopirates vs. the Meowmurais.'),
+        totranslate('For the occasion, esteemed guests paid through their noses for a seat on board of these two exceptional ships.'),
+        totranslate('But as soon as the race begins, it is war: save the gold or destroy the opposing zeppelin sounds like great ideas!'),
     ),
 
     //////// BGA SANDBOX ONLY PARAMETERS (DO NOT MODIFY)
