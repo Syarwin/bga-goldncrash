@@ -14,7 +14,7 @@ use GNC\Models\Player;
 
 trait TurnTrait
 {
-	public function argPlay()
+	public function argPlayerTurn()
 	{
 		$activePlayer = Players::getActive();
 
@@ -23,39 +23,24 @@ trait TurnTrait
 		];
 	}
 
-	public function stPlay()
-	{
-	}
-
-	public function actPlay($pId2, $color, $value, $pId = null)
+	public function actDrawPlay()
 	{
 		// get infos
-		if (!$pId) {
-			$pId = Game::get()->getCurrentPlayerId();
-			self::checkAction('actPlay');
-		}
+		$pId = Game::get()->getCurrentPlayerId();
+		self::checkAction('actDraw');
 
 		$currentPlayer = Players::get($pId);
-		$calledPlayer = Players::get($pId2);
 
 		$args = $this->getArgs();
 
-		if (!in_array($calledPlayer, $args['callablePlayers'])) {
-			throw new \BgaVisibleSystemException("You can't call this player.");
+		if (!$args['canDraw']) {
+			throw new \BgaVisibleSystemException("You can't draw a card, your deck is empty.");
 		}
 
-		foreach ($args['uncallableCards'] as $id => $card) {
-			if ($card->getColor() == $color && $card->getValue() == $value)
-				throw new \BgaVisibleSystemException("You can't ask this card.");
-		}
+		$card = Cards::pickOneForLocationPId($currentPlayer->getDeckName(), 'hand', $pId);
 
-		Notifications::call($currentPlayer, $calledPlayer, $color, $value);
+		Notifications::draw($currentPlayer, $card);
 
-		Globals::setCalledPlayer($pId2);
-		Globals::setCalledValue($value);
-		Globals::setCalledColor($color);
-
-
-		$this->gamestate->nextState('');
+		$this->gamestate->nextState(END_TURN);
 	}
 }

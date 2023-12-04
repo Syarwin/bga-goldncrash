@@ -73,30 +73,21 @@ class Player extends \GNC\Helpers\DB_Model
     return Cards::getInLocation('table', $this->id);
   }
 
-  public function getPlayableCardsIds($costMax = 3)
+  public function getDeckName()
   {
-    $result = [];
-    $cards = $this->getCardsInHand();
-    $unplayableCards = $this->getCardsOnTable();
-
-    foreach ($cards as $id => $card) {
-      if ($card->getValue() > $costMax) {
-        continue;
-      }
-      $playable = true;
-      foreach ($unplayableCards as $id => $unplayableCard) {
-        if ($card->getValue() == $unplayableCard->getValue() && $card->getColor() == $unplayableCard->getColor()) {
-          $playable = false;
-          break;
-        }
-      }
-      if ($playable) {
-        $result[] = $card->getId();
-      }
-    }
-
-    return $result;
+    return 'deck_' . $this->getCharacter();
   }
+
+  public function getDiscardName()
+  {
+    return 'discard' . $this->getCharacter();
+  }
+
+  public function getTreasureName()
+  {
+    return 'treasure_' . $this->getCharacter();
+  }
+
 
   /*
      █████████                                          ███                  

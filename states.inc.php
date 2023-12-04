@@ -87,7 +87,7 @@ $machinestates = [
         "possibleactions" => ['actConfirm', 'actUndo'],
         "transitions" => [
             UNDO => ST_PLAYER_TURN,
-            'second_move' => ST_PLAYER_TURN,
+            AGAIN => ST_PLAYER_TURN,
             END_TURN => ST_NEXT_PLAYER,
         ]
     ],
