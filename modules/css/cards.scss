@@ -9,18 +9,22 @@
     }
     &.selected {
         outline: 4px solid rgb(28, 175, 28);
-        box-shadow: 2px 2px 6px -1px black;
     }
 
     width: $cardW;
     height: $cardH;
-    border-radius: calc(var(--cardScale) * 35px);
+    border-radius: calc(var(--cardScale) * 30px);
+    box-shadow: 2px 2px 6px -1px black;
+    .card-inner {
+        border-radius: calc(var(--cardScale) * 30px);
+    }
+
     &.horizontal {
         width: $cardH;
         height: $cardW;
 
         .card-inner {
-            transform-origin: 50% 36%;
+            transform-origin: 50.5% 35%;
             transform: rotate(-90deg);
         }
     }
@@ -28,13 +32,15 @@
     .card-inner {
         width: $cardW;
         height: $cardH;
+        box-sizing: border-box;
+        border: 1px solid black;
 
         &[data-deck="CHAMOURAI"] {
             background-image: url("img/chamourai.jpg");
             background-size: 600% 400%;
         }
         &[data-deck="POULPIRATE"] {
-            background-image: url("img/chamourai.jpg");
+            background-image: url("img/poulpirate.jpg");
             background-size: 600% 400%;
         }
         &[data-type="RED"] {

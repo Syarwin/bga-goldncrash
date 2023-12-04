@@ -216,7 +216,7 @@ define([
       card.uid = card.uid || card.id;
       if (card.uid == -1) card.uid = this._fakeCardCounter--;
       else {
-        card = Object.assign(this.getCardData(card), card);
+        card = Object.assign(card, this.getCardData(card));
       }
 
       if ($('card-' + card.uid)) return;
@@ -267,10 +267,12 @@ define([
       let cardId = card.id;
       if (card.flipped) {
         let t = card.location.split('_');
+        let deck = t[1].toUpperCase();
         return {
           id: 0,
+          uid: `balloon-${deck}-${card.state}`,
           type: BALLOON,
-          deck: t[1].toUpperCase(),
+          deck,
           value: 'back',
         };
       }

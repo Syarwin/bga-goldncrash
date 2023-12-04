@@ -13,6 +13,9 @@
  * GoldnCrash stylesheet
  *
  */
+html {
+  background: #f7e296; }
+
 /*! nouislider - 14.6.0 - 6/27/2020 */
 .noUi-target, .noUi-target * {
   -webkit-touch-callout: none;
@@ -283,29 +286,33 @@
 .goldncrash-card {
   box-sizing: border-box;
   width: calc(var(--cardScale) * 292px);
-  height: calc(var(--cardScale) * 416px);
-  border-radius: calc(var(--cardScale) * 35px); }
+  height: calc(var(--cardScale) * 415px);
+  border-radius: calc(var(--cardScale) * 30px);
+  box-shadow: 2px 2px 6px -1px black; }
   .goldncrash-card.selectable {
     cursor: pointer; }
     .goldncrash-card.selectable:hover {
       transform: scale(1.05); }
   .goldncrash-card.selected {
-    outline: 4px solid #1caf1c;
-    box-shadow: 2px 2px 6px -1px black; }
+    outline: 4px solid #1caf1c; }
+  .goldncrash-card .card-inner {
+    border-radius: calc(var(--cardScale) * 30px); }
   .goldncrash-card.horizontal {
-    width: calc(var(--cardScale) * 416px);
+    width: calc(var(--cardScale) * 415px);
     height: calc(var(--cardScale) * 292px); }
     .goldncrash-card.horizontal .card-inner {
-      transform-origin: 50% 36%;
+      transform-origin: 50.5% 35%;
       transform: rotate(-90deg); }
   .goldncrash-card .card-inner {
     width: calc(var(--cardScale) * 292px);
-    height: calc(var(--cardScale) * 416px); }
+    height: calc(var(--cardScale) * 415px);
+    box-sizing: border-box;
+    border: 1px solid black; }
     .goldncrash-card .card-inner[data-deck="CHAMOURAI"] {
       background-image: url("img/chamourai.jpg");
       background-size: 600% 400%; }
     .goldncrash-card .card-inner[data-deck="POULPIRATE"] {
-      background-image: url("img/chamourai.jpg");
+      background-image: url("img/poulpirate.jpg");
       background-size: 600% 400%; }
     .goldncrash-card .card-inner[data-type="RED"][data-value="1"] {
       background-position: 0% 0%; }
@@ -379,54 +386,73 @@
       display: flex;
       flex-flow: column;
       margin-right: 10px;
-      min-width: calc(var(--cardScale) * 5 * 292px + 10px); }
+      min-width: calc(var(--cardScale) * 5 * 292px + 20px); }
       #goldncrash-main-container .goldncrash-player-board .side-zone .hand-holder {
-        background: red;
-        height: calc(var(--cardScale) * 416px); }
+        height: calc(var(--cardScale) * 415px);
+        padding: 5px 0px; }
       #goldncrash-main-container .goldncrash-player-board .side-zone .side-zone-holder {
-        background: blue;
         display: flex;
         align-items: center;
         justify-content: space-evenly; }
         #goldncrash-main-container .goldncrash-player-board .side-zone .side-zone-holder .discard-holder {
           margin: 0px 5px 0px 10px;
-          background: green;
           width: calc(var(--cardScale) * 292px);
-          height: calc(var(--cardScale) * 416px); }
+          height: calc(var(--cardScale) * 415px); }
         #goldncrash-main-container .goldncrash-player-board .side-zone .side-zone-holder .banner-chest-holder {
           display: flex;
           flex-flow: column;
           margin: 0px 5px; }
           #goldncrash-main-container .goldncrash-player-board .side-zone .side-zone-holder .banner-chest-holder .banner-holder {
-            background: orange;
-            width: calc(var(--cardScale) * 416px);
-            height: calc(var(--cardScale) * 292px); }
+            width: calc(var(--cardScale) * 415px);
+            height: calc(var(--cardScale) * 292px);
+            margin: 2px 0px; }
+            #goldncrash-main-container .goldncrash-player-board .side-zone .side-zone-holder .banner-chest-holder .banner-holder::before {
+              content: "";
+              display: block;
+              width: calc(var(--cardScale) * 292px);
+              height: calc(var(--cardScale) * 415px);
+              transform-origin: 50.5% 35%;
+              transform: rotate(-90deg);
+              background-size: 600% 400%;
+              background-position: 100% 100%;
+              border-radius: calc(var(--cardScale) * 30px);
+              box-sizing: border-box;
+              border: 1px solid black;
+              box-shadow: 2px 2px 6px -1px black; }
           #goldncrash-main-container .goldncrash-player-board .side-zone .side-zone-holder .banner-chest-holder .chest-holder {
+            margin: 2px 0px;
             background: yellow;
-            width: calc(var(--cardScale) * 416px);
+            width: calc(var(--cardScale) * 415px);
             height: calc(var(--cardScale) * 292px); }
         #goldncrash-main-container .goldncrash-player-board .side-zone .side-zone-holder .deck-holder {
           margin: 0px 10px 0px 5px;
-          background: green;
           width: calc(var(--cardScale) * 292px);
-          height: calc(var(--cardScale) * 416px); }
+          height: calc(var(--cardScale) * 415px);
+          background-size: 600% 400%;
+          background-position: 60% 100%;
+          border-radius: calc(var(--cardScale) * 30px);
+          box-sizing: border-box;
+          border: 1px solid black;
+          box-shadow: 2px 2px 6px -1px black; }
     #goldncrash-main-container .goldncrash-player-board .columns-zone {
       display: flex; }
       #goldncrash-main-container .goldncrash-player-board .columns-zone .column-holder {
-        width: calc(var(--cardScale) * 416px);
+        width: calc(var(--cardScale) * 415px);
+        margin: 0px 5px;
         display: flex;
         flex-flow: column;
         align-items: center; }
         #goldncrash-main-container .goldncrash-player-board .columns-zone .column-holder .column-cards-holder {
           width: calc(var(--cardScale) * 292px);
-          min-height: calc(var(--cardScale) * 416px);
-          background: grey; }
+          min-height: calc(var(--cardScale) * 415px);
+          border: 1px dashed black;
+          border-radius: calc(var(--cardScale) * 30px); }
         #goldncrash-main-container .goldncrash-player-board .columns-zone .column-holder .zeppelin-holder {
-          width: calc(var(--cardScale) * 416px);
+          width: calc(var(--cardScale) * 415px);
           height: calc(var(--cardScale) * 292px);
-          background: black; }
+          margin: 5px 0px; }
         #goldncrash-main-container .goldncrash-player-board .columns-zone .column-holder .guest-holder {
-          height: calc(var(--cardScale) * 416px);
+          height: calc(var(--cardScale) * 415px);
           width: calc(var(--cardScale) * 292px); }
     #goldncrash-main-container .goldncrash-player-board#bottom-player .side-zone .hand-holder {
       order: 2; }
@@ -434,6 +460,8 @@
       order: 1; }
       #goldncrash-main-container .goldncrash-player-board#bottom-player .side-zone .side-zone-holder .banner-chest-holder .banner-holder {
         order: 2; }
+        #goldncrash-main-container .goldncrash-player-board#bottom-player .side-zone .side-zone-holder .banner-chest-holder .banner-holder::before {
+          background-position: 80% 100%; }
       #goldncrash-main-container .goldncrash-player-board#bottom-player .side-zone .side-zone-holder .banner-chest-holder .chest-holder {
         order: 1; }
     #goldncrash-main-container .goldncrash-player-board#bottom-player .columns-zone .column-holder .column-cards-holder {
@@ -442,6 +470,14 @@
       order: 2; }
     #goldncrash-main-container .goldncrash-player-board#bottom-player .columns-zone .column-holder .guest-holder {
       order: 1; }
+    #goldncrash-main-container .goldncrash-player-board[data-character="Poulpirate"] .side-zone .side-zone-holder .deck-holder {
+      background-image: url("img/poulpirate.jpg"); }
+    #goldncrash-main-container .goldncrash-player-board[data-character="Poulpirate"] .side-zone .side-zone-holder .banner-chest-holder .banner-holder::before {
+      background-image: url("img/poulpirate.jpg"); }
+    #goldncrash-main-container .goldncrash-player-board[data-character="Chamourai"] .side-zone .side-zone-holder .deck-holder {
+      background-image: url("img/chamourai.jpg"); }
+    #goldncrash-main-container .goldncrash-player-board[data-character="Chamourai"] .side-zone .side-zone-holder .banner-chest-holder .banner-holder::before {
+      background-image: url("img/chamourai.jpg"); }
 
 .player-info {
   display: flex;
