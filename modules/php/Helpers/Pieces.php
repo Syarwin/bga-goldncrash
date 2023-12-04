@@ -589,8 +589,7 @@ class Pieces extends DB_Manager
         $state = 0,
         $deckReform = true
     ) {
-        $piece = static::pickForLocation(
-            1,
+        $piece = static::pickOneForLocation(
             $fromLocation,
             $toLocation,
             $state,

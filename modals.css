@@ -1,0 +1,51 @@
+#popin_showSettings,
+.goldncrash_popin_cards {
+  background-color: #ebd5bd;
+  border-radius: 8px;
+  box-shadow: 0 3px 8px black;
+  position: relative;
+}
+#popin_showSettings .goldncrash_popin_closeicon,
+#popin_showSettings .goldncrash_popin_cards_closeicon,
+.goldncrash_popin_cards .goldncrash_popin_closeicon,
+.goldncrash_popin_cards .goldncrash_popin_cards_closeicon {
+  background-color: #a47a77;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: absolute;
+  top: -18px;
+  right: -18px;
+  font-size: 90%;
+  color: white !important;
+  border: 1px solid #35302d;
+  z-index: 2;
+}
+#popin_showSettings .goldncrash_popin_closeicon:hover,
+#popin_showSettings .goldncrash_popin_cards_closeicon:hover,
+.goldncrash_popin_cards .goldncrash_popin_closeicon:hover,
+.goldncrash_popin_cards .goldncrash_popin_cards_closeicon:hover {
+  text-decoration: none;
+  color: #ccc !important;
+  transform: scale(1.1);
+}
+#popin_showSettings .goldncrash_popin_closeicon i,
+#popin_showSettings .goldncrash_popin_cards_closeicon i,
+.goldncrash_popin_cards .goldncrash_popin_closeicon i,
+.goldncrash_popin_cards .goldncrash_popin_cards_closeicon i {
+  margin-top: -2px;
+}
+#popin_showSettings h2,
+.goldncrash_popin_cards h2 {
+  font-family: MyriadPro-Semibold;
+  text-align: center;
+  font-size: 25px;
+  margin: 0px;
+  background: #b79570;
+  border-radius: 8px 8px 0px 0px;
+  padding: 11px 0px 3px;
+  border-bottom: 1px solid #734f2a;
+}

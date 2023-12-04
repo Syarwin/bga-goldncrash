@@ -45,15 +45,15 @@ class Player extends \GNC\Helpers\DB_Model
     return Cards::getInLocationPId(HAND, $this->id);
   }
 
-  public function getHosts($n = null)
+  public function getGuests($n = null)
   {
-    $location = $this->is(CHAMOURAI) ? HOSTS_CHAMOURAI : HOSTS_POULPIRATE;
+    $location = $this->is(CHAMOURAI) ? GUESTS_CHAMOURAI : GUESTS_POULPIRATE;
     return Cards::getInLocation($location, $n);
   }
 
-  public function getHost($n)
+  public function getGuest($n)
   {
-    return $this->getHosts($n)->first();
+    return $this->getGuests($n)->first();
   }
 
   public function getBalloons($n = null)

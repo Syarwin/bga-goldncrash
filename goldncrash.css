@@ -346,24 +346,24 @@ html {
       background-position: 40% 66.66%; }
     .goldncrash-card .card-inner[data-type="BALLOON"][data-value="back"] {
       background-position: 100% 66.66%; }
-    .goldncrash-card .card-inner[data-deck="HOST"] {
+    .goldncrash-card .card-inner[data-deck="GUEST"] {
       background-image: url("img/guests.jpg");
       background-size: 300% 300%; }
-      .goldncrash-card .card-inner[data-deck="HOST"][data-id="1"] {
+      .goldncrash-card .card-inner[data-deck="GUEST"][data-id="1"] {
         background-position: 50% 0%; }
-      .goldncrash-card .card-inner[data-deck="HOST"][data-id="2"] {
+      .goldncrash-card .card-inner[data-deck="GUEST"][data-id="2"] {
         background-position: 50% 0%; }
-      .goldncrash-card .card-inner[data-deck="HOST"][data-id="3"] {
+      .goldncrash-card .card-inner[data-deck="GUEST"][data-id="3"] {
         background-position: 0% 50%; }
-      .goldncrash-card .card-inner[data-deck="HOST"][data-id="4"] {
+      .goldncrash-card .card-inner[data-deck="GUEST"][data-id="4"] {
         background-position: 50% 50%; }
-      .goldncrash-card .card-inner[data-deck="HOST"][data-id="5"] {
+      .goldncrash-card .card-inner[data-deck="GUEST"][data-id="5"] {
         background-position: 100% 50%; }
-      .goldncrash-card .card-inner[data-deck="HOST"][data-id="6"] {
+      .goldncrash-card .card-inner[data-deck="GUEST"][data-id="6"] {
         background-position: 0% 100%; }
-      .goldncrash-card .card-inner[data-deck="HOST"][data-id="7"] {
+      .goldncrash-card .card-inner[data-deck="GUEST"][data-id="7"] {
         background-position: 50% 100%; }
-      .goldncrash-card .card-inner[data-deck="HOST"][data-id="8"] {
+      .goldncrash-card .card-inner[data-deck="GUEST"][data-id="8"] {
         background-position: 100% 100%; }
 
 .icon-container {

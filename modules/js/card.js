@@ -1,40 +1,37 @@
 let $f = (data) => {
   return {
     ID: data[0],
-DECK: data[1],
-TYPE: data[2],
-VALUE: data[3],
-
+    DECK: data[1],
+    TYPE: data[2],
+    VALUE: data[3],
   };
 };
 
+/*
+ * Game Constants
+ */
 
-        /*
-        * Game Constants
-        */
-        
-        const CHAMOURAI = 'CHAMOURAI';
-const HOST = 'HOST';
-const BALLOON = 'BALLOON';
-const BROWN = 'BROWN';
-const PURPLE = 'PURPLE';
-const GREEN = 'GREEN';
-const POULPIRATE = 'POULPIRATE';
-const YELLOW = 'YELLOW';
-const BLUE = 'BLUE';
-const RED = 'RED';
-
+const CHAMOURAI = "CHAMOURAI";
+const GUEST = "GUEST";
+const BALLOON = "BALLOON";
+const BROWN = "BROWN";
+const PURPLE = "PURPLE";
+const GREEN = "GREEN";
+const POULPIRATE = "POULPIRATE";
+const YELLOW = "YELLOW";
+const BLUE = "BLUE";
+const RED = "RED";
 
 // prettier-ignore
 const CARDS_DATA = {
-    1 : $f([1, HOST, HOST, 5]),
-2 : $f([2, HOST, HOST, 4]),
-3 : $f([3, HOST, HOST, 5]),
-4 : $f([4, HOST, HOST, 6]),
-5 : $f([5, HOST, HOST, 5]),
-6 : $f([6, HOST, HOST, 5]),
-7 : $f([7, HOST, HOST, 5]),
-8 : $f([8, HOST, HOST, 5]),
+    1 : $f([1, GUEST, GUEST, 5]),
+2 : $f([2, GUEST, GUEST, 4]),
+3 : $f([3, GUEST, GUEST, 5]),
+4 : $f([4, GUEST, GUEST, 6]),
+5 : $f([5, GUEST, GUEST, 5]),
+6 : $f([6, GUEST, GUEST, 5]),
+7 : $f([7, GUEST, GUEST, 5]),
+8 : $f([8, GUEST, GUEST, 5]),
 9 : $f([9, POULPIRATE, RED, 1]),
 10 : $f([10, POULPIRATE, RED, 1]),
 11 : $f([11, POULPIRATE, RED, 1]),

@@ -1,137 +1,137 @@
 .goldncrash-card {
-    box-sizing: border-box;
+  box-sizing: border-box;
 
-    &.selectable {
-        cursor: pointer;
-        &:hover {
-            transform: scale(1.05);
-        }
+  &.selectable {
+    cursor: pointer;
+    &:hover {
+      transform: scale(1.05);
     }
-    &.selected {
-        outline: 4px solid rgb(28, 175, 28);
-    }
+  }
+  &.selected {
+    outline: 4px solid rgb(28, 175, 28);
+  }
 
+  width: $cardW;
+  height: $cardH;
+  border-radius: calc(var(--cardScale) * 30px);
+  box-shadow: 2px 2px 6px -1px black;
+  .card-inner {
+    border-radius: calc(var(--cardScale) * 30px);
+  }
+
+  &.horizontal {
+    width: $cardH;
+    height: $cardW;
+
+    .card-inner {
+      transform-origin: 50.5% 35%;
+      transform: rotate(-90deg);
+    }
+  }
+
+  .card-inner {
     width: $cardW;
     height: $cardH;
-    border-radius: calc(var(--cardScale) * 30px);
-    box-shadow: 2px 2px 6px -1px black;
-    .card-inner {
-        border-radius: calc(var(--cardScale) * 30px);
+    box-sizing: border-box;
+    border: 1px solid black;
+
+    &[data-deck="CHAMOURAI"] {
+      background-image: url("img/chamourai.jpg");
+      background-size: 600% 400%;
+    }
+    &[data-deck="POULPIRATE"] {
+      background-image: url("img/poulpirate.jpg");
+      background-size: 600% 400%;
+    }
+    &[data-type="RED"] {
+      &[data-value="1"] {
+        background-position: 0% 0%;
+      }
+      &[data-value="2"] {
+        background-position: 20% 0%;
+      }
+      &[data-value="3"] {
+        background-position: 40% 0%;
+      }
+    }
+    &[data-type="GREEN"] {
+      &[data-value="1"] {
+        background-position: 60% 0%;
+      }
+      &[data-value="2"] {
+        background-position: 80% 0%;
+      }
+      &[data-value="3"] {
+        background-position: 100% 0%;
+      }
+    }
+    &[data-type="PURPLE"] {
+      &[data-value="1"] {
+        background-position: 0% 33.33%;
+      }
+      &[data-value="2"] {
+        background-position: 20% 33.33%;
+      }
+      &[data-value="3"] {
+        background-position: 40% 33.33%;
+      }
+    }
+    &[data-type="BROWN"] {
+      &[data-value="1"] {
+        background-position: 60% 33.33%;
+      }
+      &[data-value="2"] {
+        background-position: 80% 33.33%;
+      }
+      &[data-value="3"] {
+        background-position: 100% 33.33%;
+      }
+    }
+    &[data-type="BLUE"] {
+      &[data-value="1"] {
+        background-position: 0% 66.66%;
+      }
+      &[data-value="2"] {
+        background-position: 20% 66.66%;
+      }
+      &[data-value="3"] {
+        background-position: 40% 66.66%;
+      }
     }
 
-    &.horizontal {
-        width: $cardH;
-        height: $cardW;
-
-        .card-inner {
-            transform-origin: 50.5% 35%;
-            transform: rotate(-90deg);
-        }
+    &[data-type="BALLOON"] {
+      &[data-value="back"] {
+        background-position: 100% 66.66%;
+      }
     }
 
-    .card-inner {
-        width: $cardW;
-        height: $cardH;
-        box-sizing: border-box;
-        border: 1px solid black;
-
-        &[data-deck="CHAMOURAI"] {
-            background-image: url("img/chamourai.jpg");
-            background-size: 600% 400%;
-        }
-        &[data-deck="POULPIRATE"] {
-            background-image: url("img/poulpirate.jpg");
-            background-size: 600% 400%;
-        }
-        &[data-type="RED"] {
-            &[data-value="1"] {
-                background-position: 0% 0%;
-            }
-            &[data-value="2"] {
-                background-position: 20% 0%;
-            }
-            &[data-value="3"] {
-                background-position: 40% 0%;
-            }
-        }
-        &[data-type="GREEN"] {
-            &[data-value="1"] {
-                background-position: 60% 0%;
-            }
-            &[data-value="2"] {
-                background-position: 80% 0%;
-            }
-            &[data-value="3"] {
-                background-position: 100% 0%;
-            }
-        }
-        &[data-type="PURPLE"] {
-            &[data-value="1"] {
-                background-position: 0% 33.33%;
-            }
-            &[data-value="2"] {
-                background-position: 20% 33.33%;
-            }
-            &[data-value="3"] {
-                background-position: 40% 33.33%;
-            }
-        }
-        &[data-type="BROWN"] {
-            &[data-value="1"] {
-                background-position: 60% 33.33%;
-            }
-            &[data-value="2"] {
-                background-position: 80% 33.33%;
-            }
-            &[data-value="3"] {
-                background-position: 100% 33.33%;
-            }
-        }
-        &[data-type="BLUE"] {
-            &[data-value="1"] {
-                background-position: 0% 66.66%;
-            }
-            &[data-value="2"] {
-                background-position: 20% 66.66%;
-            }
-            &[data-value="3"] {
-                background-position: 40% 66.66%;
-            }
-        }
-
-        &[data-type="BALLOON"] {
-            &[data-value="back"] {
-                background-position: 100% 66.66%;
-            }
-        }
-
-        &[data-deck="HOST"] {
-            background-image: url("img/guests.jpg");
-            background-size: 300% 300%;
-            &[data-id="1"] {
-                background-position: 50% 0%;
-            }
-            &[data-id="2"] {
-                background-position: 50% 0%;
-            }
-            &[data-id="3"] {
-                background-position: 0% 50%;
-            }
-            &[data-id="4"] {
-                background-position: 50% 50%;
-            }
-            &[data-id="5"] {
-                background-position: 100% 50%;
-            }
-            &[data-id="6"] {
-                background-position: 0% 100%;
-            }
-            &[data-id="7"] {
-                background-position: 50% 100%;
-            }
-            &[data-id="8"] {
-                background-position: 100% 100%;
-            }
-        }
+    &[data-deck="GUEST"] {
+      background-image: url("img/guests.jpg");
+      background-size: 300% 300%;
+      &[data-id="1"] {
+        background-position: 50% 0%;
+      }
+      &[data-id="2"] {
+        background-position: 100% 0%;
+      }
+      &[data-id="3"] {
+        background-position: 0% 50%;
+      }
+      &[data-id="4"] {
+        background-position: 50% 50%;
+      }
+      &[data-id="5"] {
+        background-position: 100% 50%;
+      }
+      &[data-id="6"] {
+        background-position: 0% 100%;
+      }
+      &[data-id="7"] {
+        background-position: 50% 100%;
+      }
+      &[data-id="8"] {
+        background-position: 100% 100%;
+      }
     }
+  }
 }

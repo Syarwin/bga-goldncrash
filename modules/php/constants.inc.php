@@ -4,7 +4,7 @@
 */
 
 const CHAMOURAI = 'Chamourai';
-const HOST = 'host';
+const GUEST = 'guest';
 const BALLOON = 'balloon';
 const BROWN = 'brown';
 const PURPLE = 'purple';
@@ -26,14 +26,14 @@ const COLUMN_1_CHAMOURAI = 'column_1_' . CHAMOURAI;
 const COLUMN_2_CHAMOURAI = 'column_2_' . CHAMOURAI;
 const DECK_POULPIRATE = 'deck_' . POULPIRATE;
 const DECK_CHAMOURAI = 'deck_' . CHAMOURAI;
-const DECK_HOST = 'deck_' . HOST;
+const DECK_GUEST = 'deck_' . GUEST;
 const TREASURE_POULPIRATE = 'treasure_' . POULPIRATE;
 const TREASURE_CHAMOURAI = 'treasure_' . CHAMOURAI;
 const DISCARD_POULPIRATE = 'discard_' . POULPIRATE;
 const DISCARD_CHAMOURAI = 'discard_' . CHAMOURAI;
 
-const HOSTS_POULPIRATE = 'host_' . POULPIRATE; //state 0, 1, 2 for column
-const HOSTS_CHAMOURAI = 'host_' . CHAMOURAI; //state 0, 1, 2 for column
+const GUESTS_POULPIRATE = 'guest_' . POULPIRATE; //state 0, 1, 2 for column
+const GUESTS_CHAMOURAI = 'guest_' . CHAMOURAI; //state 0, 1, 2 for column
 const BALLOONS_POULPIRATE = 'balloon_' . POULPIRATE; //state 0, 1, 2 for column
 const BALLOONS_CHAMOURAI = 'balloon_' . CHAMOURAI; //state 0, 1, 2 for column
 
