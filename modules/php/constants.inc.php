@@ -18,12 +18,12 @@ const CHARACTERS = [CHAMOURAI, POULPIRATE];
 
 //Possible locations
 const HAND = 'hand';
-const COLUMN_0_POULPIRATE = 'column_0_'.POULPIRATE;
-const COLUMN_1_POULPIRATE = 'column_1_'.POULPIRATE;
-const COLUMN_2_POULPIRATE = 'column_2_'.POULPIRATE;
-const COLUMN_0_CHAMOURAI = 'column_1_'.CHAMOURAI;
-const COLUMN_1_CHAMOURAI = 'column_2_'.CHAMOURAI;
-const COLUMN_2_CHAMOURAI = 'column_3_'.CHAMOURAI;
+const COLUMN_0_POULPIRATE = 'column_0_' . POULPIRATE;
+const COLUMN_1_POULPIRATE = 'column_1_' . POULPIRATE;
+const COLUMN_2_POULPIRATE = 'column_2_' . POULPIRATE;
+const COLUMN_0_CHAMOURAI = 'column_0_' . CHAMOURAI;
+const COLUMN_1_CHAMOURAI = 'column_1_' . CHAMOURAI;
+const COLUMN_2_CHAMOURAI = 'column_2_' . CHAMOURAI;
 const DECK_POULPIRATE = 'deck_' . POULPIRATE;
 const DECK_CHAMOURAI = 'deck_' . CHAMOURAI;
 const DECK_HOST = 'deck_' . HOST;
@@ -32,10 +32,10 @@ const TREASURE_CHAMOURAI = 'treasure_' . CHAMOURAI;
 const DISCARD_POULPIRATE = 'discard_' . POULPIRATE;
 const DISCARD_CHAMOURAI = 'discard_' . CHAMOURAI;
 
-const HOSTS_POULPIRATE = 'host_' . POULPIRATE; //state 1, 2, 3 for column
-const HOSTS_CHAMOURAI = 'host_' . CHAMOURAI; //state 1, 2, 3 for column
-const BALLOONS_POULPIRATE = 'balloon_' . POULPIRATE; //state 1, 2, 3 for column
-const BALLOONS_CHAMOURAI = 'balloon_' . CHAMOURAI; //state 1, 2, 3 for column
+const HOSTS_POULPIRATE = 'host_' . POULPIRATE; //state 0, 1, 2 for column
+const HOSTS_CHAMOURAI = 'host_' . CHAMOURAI; //state 0, 1, 2 for column
+const BALLOONS_POULPIRATE = 'balloon_' . POULPIRATE; //state 0, 1, 2 for column
+const BALLOONS_CHAMOURAI = 'balloon_' . CHAMOURAI; //state 0, 1, 2 for column
 
 
 /*

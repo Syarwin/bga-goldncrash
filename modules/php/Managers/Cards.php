@@ -50,9 +50,9 @@ class Cards extends \GNC\Helpers\Pieces
                     $player->getBalloons(2),
                 ],
                 'columns' => [
+                    $player->getColumn(0),
                     $player->getColumn(1),
                     $player->getColumn(2),
-                    $player->getColumn(3),
                 ],
             ];
         }
