@@ -43,7 +43,17 @@ const BALLOONS_CHAMOURAI = 'balloon_' . CHAMOURAI; //state 0, 1, 2 for column
  */
 const ST_GAME_SETUP = 1;
 
-// const ST_PLAY = 2;
+const ST_PLAYER_TURN = 2;
+const ST_CONFIRM = 3;
+const ST_NEXT_PLAYER = 4;
+
+//after play card
+const ST_SECURE = 5;
+
+//after discard card
+const ST_MOVE = 10;
+const ST_CALL_BACK = 11;
+const ST_OBSERVE = 12;
 
 
 
@@ -95,5 +105,12 @@ const OPTION_DEBUG_ON = 1;
 const GAME = "game";
 const MULTI = "multipleactiveplayer";
 const PRIVATESTATE = "private";
-const END_TURN = 'endTurn';
 const ACTIVE_PLAYER = "activeplayer";
+
+//transitions
+
+const END_TURN = 'endTurn';
+const END_GAME = 'endGame';
+const UNDO = 'undo';
+const PASS = 'pass';
+const AGAIN = 'again';

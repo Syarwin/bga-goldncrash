@@ -59,20 +59,97 @@ $machinestates = [
         "type" => "manager",
         "action" => "stGameSetup",
         "transitions" => [
-            "" => 2,
+            "" => ST_PLAYER_TURN,
         ]
     ],
 
-    2 => [
-        "name" => "play",
-        "description" => clienttranslate('${player_name} must play'),
-        "descriptionmyturn" => clienttranslate('${you} must play'), //won't be displayed
+    ST_PLAYER_TURN => [
+        "name" => "playerTurn",
+        "description" => clienttranslate('${actplayer} must draw, play or discard a card'),
+        "descriptionmyturn" => clienttranslate('${you} must draw, play or discard a card'),
         "type" => ACTIVE_PLAYER,
-        "args" => "argPlay",
-        "action" => "stPlay",
-        "possibleactions" => ['actPlay'], //this action is possible if player is not in any private state which usually happens when they are inactive
+        "args" => "argPlayerTurn",
+        "possibleactions" => ['actPlay', 'actDraw', 'actDiscard'],
         "transitions" => [
-            END_TURN => ST_PRE_END_OF_GAME
+            'secure' => ST_SECURE,
+            'move' => ST_MOVE,
+            'callBack' => ST_CALL_BACK,
+            'observer' => ST_OBSERVE,
+            END_TURN => ST_CONFIRM
+        ]
+    ],
+
+    ST_CONFIRM => [
+        "name" => "playerTurn",
+        "description" => clienttranslate('${actplayer} must confirm his turn'),
+        "descriptionmyturn" => clienttranslate('${you} must confirm your turn'),
+        "type" => ACTIVE_PLAYER,
+        "possibleactions" => ['actConfirm', 'actUndo'],
+        "transitions" => [
+            UNDO => ST_PLAYER_TURN,
+            'second_move' => ST_PLAYER_TURN,
+            END_TURN => ST_NEXT_PLAYER,
+        ]
+    ],
+
+    ST_NEXT_PLAYER => [
+        "name" => "nextPlayer",
+        "description" => clienttranslate('Next player'),
+        "type" => GAME,
+        "transitions" => [
+            END_GAME => ST_PRE_END_OF_GAME,
+            END_TURN => ST_NEXT_PLAYER,
+        ]
+    ],
+
+    ST_SECURE => [
+        "name" => "secure",
+        "description" => clienttranslate('${actplayer} must secure a card from one of his adjacent columns (X {remainingMoves})'),
+        "descriptionmyturn" => clienttranslate('${you} must secure a card from one of your adjacent columns (X {remainingMoves})'),
+        "type" => ACTIVE_PLAYER,
+        "args" => "argSecure",
+        'action' => 'stSecure',
+        "possibleactions" => ['actSecure'],
+        "transitions" => [
+            AGAIN => ST_SECURE,
+            END_TURN => ST_CONFIRM
+        ]
+    ],
+
+    ST_MOVE => [
+        "name" => "move",
+        "description" => clienttranslate('${actplayer} must move a card from one of his adjacent columns'),
+        "descriptionmyturn" => clienttranslate('${you} must move a card from one of your adjacent columns'),
+        "type" => ACTIVE_PLAYER,
+        "args" => "argMove",
+        "possibleactions" => ['actMove'],
+        "transitions" => [
+            END_TURN => ST_CONFIRM
+        ]
+    ],
+
+    ST_CALL_BACK => [
+        "name" => "secure",
+        "description" => clienttranslate('${actplayer} must call back a card from one of his columns'),
+        "descriptionmyturn" => clienttranslate('${you} must call back a card from one of your columns'),
+        "type" => ACTIVE_PLAYER,
+        "args" => "argCallBack",
+        'action' => 'stCallBack',
+        "possibleactions" => ['actCallBack'],
+        "transitions" => [
+            END_TURN => ST_CONFIRM
+        ]
+    ],
+
+    ST_OBSERVE => [
+        "name" => "secure",
+        "description" => clienttranslate('${actplayer} can observe the 2 first cards of his Crew deck and replace them on the top or on the bottom'),
+        "descriptionmyturn" => clienttranslate('${you} can observe the 2 first cards of your Crew deck and replace them on the top or on the bottom'),
+        "type" => ACTIVE_PLAYER,
+        "args" => "argObserve",
+        "possibleactions" => ['actReplace'],
+        "transitions" => [
+            END_TURN => ST_NEXT_PLAYER
         ]
     ],
 

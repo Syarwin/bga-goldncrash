@@ -13,11 +13,11 @@ class Globals extends \GNC\Helpers\DB_Manager
   protected static $variables = [
     'turn' => 'int',
     'firstPlayer' => 'int',
-    'cheatMode' => 'bool'
-    // 'pendingAction' => 'obj',
-    // 'calledValue' => 'int',
-    // 'calledColor' => 'str',
-    // 'calledPlayer' => 'int'
+    'cheatMode' => 'bool',
+    'lastTurn' => 'bool',
+    'moveNumber' => 'int', //0, 1 depending if it's first or second action
+    'activeColumn' => 'int', //0,1,2 to store which are 'adjacents columns' (and detect special guest activation)
+    'remainingActions' => 'int' //3,2,1 depending on how many cards in the column
   ];
 
   protected static $table = 'global_variables';
@@ -32,7 +32,16 @@ class Globals extends \GNC\Helpers\DB_Manager
   {
     static::setTurn(0);
     static::setFirstPlayer($activePlayerId);
+    static::setLastTurn(false);
     // static::setCheatMode($options[OPTION_DEBUG] == 1);
+  }
+
+  public static function newTurn()
+  {
+    static::incTurn(1);
+    static::setMoveNumber(0);
+    static::setActiveColumn(-1);
+    static::setRemainingActions(0);
   }
 
   /*
