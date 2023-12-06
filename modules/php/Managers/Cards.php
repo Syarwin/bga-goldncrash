@@ -36,7 +36,7 @@ class Cards extends \GNC\Helpers\Pieces
             $data[$pId] = [
                 'hand' => $isCurrent ? $player->getCardsInHand($isCurrent)->toArray() : [],
                 'nHand' => $player->getCardsInHand($isCurrent)->count(),
-                'nDiscard' => static::countInLocation($discard),
+                'discard' => static::getInLocation($discard),
                 'lastDiscard' => static::getTopOf($discard),
                 'nTreasure' => static::countInLocation($treasure),
                 'lastTreasure' => static::getLastTreasure($character),
@@ -47,6 +47,96 @@ class Cards extends \GNC\Helpers\Pieces
             ];
         }
         return $data;
+    }
+
+    public static function getPlayableColorsInColumn($player)
+    {
+        $result = [];
+        $columnIds = static::getLowestColumns($player);
+
+        foreach ($columnIds as $columnId) {
+            $result[$columnId] = [
+                RED => true,
+                BLUE => $player->getOpponent()->getColumn($columnId)->count() >= (static::getNOfColor($player, $columnId, BLUE) + 1),
+                PURPLE => static::countInLocation($player->getDiscardName()) >= (static::getNOfColor($player, $columnId, PURPLE) + 1),
+                GREEN => static::countInLocation($player->getDeckName()) >= (static::getNOfColor($player, $columnId, GREEN) + 1),
+                BROWN => static::isAdjacentAvailable($player, $columnId, (static::getNOfColor($player, $columnId, BROWN) + 1)),
+                YELLOW => true,
+            ];
+        }
+        return $result;
+    }
+
+    public static function getDiscardableColumn($player)
+    {
+        $result = [];
+        for ($i = 1; $i <= 3; $i++) {
+            $card = $player->getLastCardOfColumn($i);
+
+            //if there is no card, pass
+            if (!$card) {
+                continue;
+            }
+            $type = $card->getType();
+            switch ($type) {
+                case RED:
+                    if (static::getLastTreasure($player->getCharacter())->getDeck() != GUEST) {
+                        $result[$i] = $card->getId();
+                    }
+                    break;
+                case BLUE:
+                case PURPLE:
+                    //need to have at least 2 cards in all columns
+                    if ($player->getColumn(1)->count() + $player->getColumn(2)->count() + $player->getColumn(3)->count() >= 2) {
+                        $result[$i] = $card->getId();
+                    }
+                    break;
+                case GREEN:
+                    if (static::countInLocation($player->getDeckName()) > 2) {
+                        $result[$i] = $card->getId();
+                    }
+                    break;
+                case BROWN:
+                    if (static::countInLocation($player->getOpponent()->getDiscardName()) > 1) {
+                        $result[$i] = $card->getId();
+                    }
+                    break;
+                    //yellow can't be discarded
+            }
+        }
+        return $result;
+    }
+
+    //check if there are n available cards in adjacents
+    public static function isAdjacentAvailable($player, $columnId, $n = 1)
+    {
+        $adjacentColumns = [
+            1 => [2],
+            2 => [1, 3],
+            3 => [2]
+        ];
+
+        $nCards = 0;
+        foreach ($adjacentColumns[$columnId] as $column) {
+            $nCards += $player->getColumn($column)->count();
+        }
+        return $nCards >= $n;
+    }
+
+    public static function getLowestColumns($player)
+    {
+        $columnSizes = [];
+        for ($i = 1; $i <= 3; $i++) {
+            $columnSizes[$i] = $player->getColumn($i)->count();
+        }
+        $max = max(array_values($columnSizes));
+        $lowests = array_keys(array_filter($columnSizes, fn ($value) => $value != $max));
+        return $lowests ? $lowests : [1, 2, 3]; //if all columns are max, return all
+    }
+
+    public static function getNOfColor($player, $columnId, $color)
+    {
+        return $player->getColumn($columnId)->filter(fn ($card) => $card->getColor() == $color)->count();
     }
 
     public static function bindCard($card, $forced = false)

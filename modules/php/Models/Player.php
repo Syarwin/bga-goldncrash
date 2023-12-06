@@ -40,6 +40,14 @@ class Player extends \GNC\Helpers\DB_Model
     return $character === $this->getCharacter();
   }
 
+  public function getOpponent()
+  {
+    $players = Players::getAll();
+    foreach ($players as $pId => $player) {
+      if ($pId != $this->id) return $player;
+    }
+  }
+
   public function getCardsInHand($isCurrent = true)
   {
     return Cards::getInLocationPId(HAND, $this->id);
@@ -65,7 +73,13 @@ class Player extends \GNC\Helpers\DB_Model
   public function getColumn($n)
   {
     $location = 'column_' . $n . '_' . $this->getCharacter();
-    return Cards::getInLocation($location, $n);
+    return Cards::getInLocation($location);
+  }
+
+  public function getlastCardOfColumn($columnId)
+  {
+    $location = 'column_' . $columnId . '_' . $this->getCharacter();
+    return Cards::getTopOf($location);
   }
 
   public function getCardsOnTable()
@@ -80,7 +94,7 @@ class Player extends \GNC\Helpers\DB_Model
 
   public function getDiscardName()
   {
-    return 'discard' . $this->getCharacter();
+    return 'discard_' . $this->getCharacter();
   }
 
   public function getTreasureName()

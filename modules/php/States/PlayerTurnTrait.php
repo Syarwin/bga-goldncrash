@@ -12,18 +12,43 @@ use GNC\Managers\Cards;
 use GNC\Managers\Players;
 use GNC\Models\Player;
 
-trait TurnTrait
+trait PlayerTurnTrait
 {
 	public function argPlayerTurn()
 	{
 		$activePlayer = Players::getActive();
+		$columns = Cards::getPlayableColorsInColumn($activePlayer);
+
+		$playablesCard = Cards::getInLocationPId(HAND, $activePlayer->getId());
+
+		$whereToPlay = [];
+
+		foreach ($playablesCard as $cardId => $card) {
+			$type = $card->getType();
+			$whereToPlay[$cardId] = array_filter([1, 2, 3], fn ($columnId) => $columns[$columnId][$type]);
+		}
 
 		return [
-			'player_name' => $activePlayer->getName()
+			'_private' => [
+				$activePlayer->getId() => [
+					'canDraw' => Cards::countInLocation($activePlayer->getDeckName()) > 0,
+					'columns' => $columns,
+					'playableCardIds' => $whereToPlay,
+					'discardableCardIds' => array_values(Cards::getDiscardableColumn($activePlayer))
+				]
+			]
 		];
 	}
 
-	public function actDrawPlay()
+	public function actDiscard($cardId)
+	{
+	}
+
+	public function actPlay($cardId, $columnId)
+	{
+	}
+
+	public function actDraw()
 	{
 		// get infos
 		$pId = Game::get()->getCurrentPlayerId();

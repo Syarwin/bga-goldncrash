@@ -46,7 +46,7 @@ use GNC\Core\CheatModule;
 class GoldnCrash extends Table
 {
   use GNC\DebugTrait;
-  use GNC\States\TurnTrait;
+  use GNC\States\PlayerTurnTrait;
 
   public static $instance = null;
   function __construct()
