@@ -36,7 +36,7 @@ class Cards extends \GNC\Helpers\Pieces
             $data[$pId] = [
                 'hand' => $isCurrent ? $player->getCardsInHand($isCurrent)->toArray() : [],
                 'nHand' => $player->getCardsInHand($isCurrent)->count(),
-                'discard' => static::getInLocation($discard),
+                'discard' => static::getInLocation($discard)->toArray(),
                 'lastDiscard' => static::getTopOf($discard),
                 'nTreasure' => static::countInLocation($treasure),
                 'lastTreasure' => static::getLastTreasure($character),
