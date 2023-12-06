@@ -34,13 +34,13 @@ trait PlayerTurnTrait
 					'canDraw' => Cards::countInLocation($activePlayer->getDeckName()) > 0,
 					'columns' => $columns,
 					'playableCardIds' => $whereToPlay,
-					'discardableCardIds' => array_values(Cards::getDiscardableColumn($activePlayer))
+					'discardableCardIds' => Cards::getDiscardableColumn($activePlayer)
 				]
 			]
 		];
 	}
 
-	public function actDiscard($cardId)
+	public function actDiscard($cardId, $columnId)
 	{
 	}
 
