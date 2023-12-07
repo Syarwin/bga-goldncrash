@@ -57,10 +57,10 @@ class Cards extends \GNC\Helpers\Pieces
         foreach ($columnIds as $columnId) {
             $result[$columnId] = [
                 RED => true,
-                BLUE => $player->getOpponent()->getColumn($columnId)->count() >= (static::getNOfColor($player, $columnId, BLUE) + 1),
-                PURPLE => static::countInLocation($player->getDiscardName()) >= (static::getNOfColor($player, $columnId, PURPLE) + 1),
-                GREEN => static::countInLocation($player->getDeckName()) >= (static::getNOfColor($player, $columnId, GREEN) + 1),
-                BROWN => static::isAdjacentAvailable($player, $columnId, (static::getNOfColor($player, $columnId, BROWN) + 1)),
+                BLUE => $player->getOpponent()->getColumn($columnId)->count() > 0,
+                PURPLE => static::countInLocation($player->getDiscardName()) > 0,
+                GREEN => static::countInLocation($player->getDeckName()) > 0,
+                BROWN => static::isAdjacentAvailable($player, $columnId),
                 YELLOW => true,
             ];
         }
