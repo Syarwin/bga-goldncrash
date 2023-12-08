@@ -39,21 +39,50 @@ class action_goldncrash extends APP_GameAction
     }
   }
 
-  // public function tick()
-  // {
-  //   self::setAjaxMode();
+  public function actPlay()
+  {
+    self::setAjaxMode();
 
-  //   // Retrieve arguments
-  //   // Note: these arguments correspond to what has been sent through the javascript "ajaxcall" method
-  //   $cell = self::getArg("cell", AT_alphanum, true);
+    // Retrieve arguments
+    // Note: these arguments correspond to what has been sent through the javascript "ajaxcall" method
+    $cardId = self::getArg("cardId", AT_posint, true);
+    $columnId = self::getArg("columnId", AT_posint, true);
 
-  //   // Then, call the appropriate method in your game logic, like "playCard" or "myAction"
-  //   $this->game->actTick($cell);
+    // Then, call the appropriate method in your game logic, like "playCard" or "myAction"
+    $this->game->actPlay($cardId, $columnId);
 
-  //   self::ajaxResponse();
-  // }
+    self::ajaxResponse();
+  }
 
-  
+  public function actDiscard()
+  {
+    self::setAjaxMode();
+
+    // Retrieve arguments
+    // Note: these arguments correspond to what has been sent through the javascript "ajaxcall" method
+    $cardId = self::getArg("cardId", AT_posint, true);
+    $columnId = self::getArg("columnId", AT_posint, true);
+
+    // Then, call the appropriate method in your game logic, like "playCard" or "myAction"
+    $this->game->actDiscard($cardId, $columnId);
+
+    self::ajaxResponse();
+  }
+
+  public function actDraw()
+  {
+    self::setAjaxMode();
+
+    // Retrieve arguments
+    // Note: these arguments correspond to what has been sent through the javascript "ajaxcall" method
+
+    // Then, call the appropriate method in your game logic, like "playCard" or "myAction"
+    $this->game->actDraw();
+
+    self::ajaxResponse();
+  }
+
+
   //   █████████  █████   █████ ██████████   █████████   ███████████
   //  ███░░░░░███░░███   ░░███ ░░███░░░░░█  ███░░░░░███ ░█░░░███░░░█
   // ███     ░░░  ░███    ░███  ░███  █ ░  ░███    ░███ ░   ░███  ░ 

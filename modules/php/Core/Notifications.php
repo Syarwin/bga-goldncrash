@@ -78,25 +78,6 @@ class Notifications
       $data['player_id2'] = $data['player2']->getId();
       unset($data['player2']);
     }
-
-    if (isset($data['card'])) {
-      $data['value'] = $data['card']->getValue();
-      $data['color'] = $data['card']->getColor();
-      $data['cardId'] = $data['card']->getId();
-      unset($data['card']);
-      if (isset($data['card2'])) {
-        $data['value2'] = $data['card2']->getValue();
-        $data['color2'] = $data['card2']->getColor();
-        $data['cardId2'] = $data['card2']->getId();
-        unset($data['card2']);
-        if (isset($data['card3'])) {
-          $data['value3'] = $data['card3']->getValue();
-          $data['color3'] = $data['card3']->getColor();
-          $data['cardId3'] = $data['card3']->getId();
-          unset($data['card3']);
-        }
-      }
-    }
   }
 
   //          █████                          █████     ███                     

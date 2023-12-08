@@ -43,7 +43,7 @@ class Cards extends \GNC\Helpers\Pieces
                 'nDeck' => static::countInLocation($deck),
                 'guests' => [$player->getGuest(0), $player->getGuest(1), $player->getGuest(2)],
                 'ballons' => [$player->getBalloons(0), $player->getBalloons(1), $player->getBalloons(2)],
-                'columns' => [$player->getColumn(1)->toArray(), $player->getColumn(2)->toArray(), $player->getColumn(3)->toArray()],
+                'columns' => [$player->getColumn(0)->toArray(), $player->getColumn(1)->toArray(), $player->getColumn(2)->toArray()],
             ];
         }
         return $data;
@@ -70,7 +70,7 @@ class Cards extends \GNC\Helpers\Pieces
     public static function getDiscardableColumn($player)
     {
         $result = [];
-        for ($i = 1; $i <= 3; $i++) {
+        for ($i = 0; $i < 3; $i++) {
             $card = $player->getLastCardOfColumn($i);
 
             //if there is no card, pass
@@ -87,7 +87,7 @@ class Cards extends \GNC\Helpers\Pieces
                 case BLUE:
                 case PURPLE:
                     //need to have at least 2 cards in all columns
-                    if ($player->getColumn(1)->count() + $player->getColumn(2)->count() + $player->getColumn(3)->count() >= 2) {
+                    if ($player->getColumn(0)->count() + $player->getColumn(1)->count() + $player->getColumn(2)->count() >= 2) {
                         $result[$i] = $card->getId();
                     }
                     break;
@@ -111,9 +111,9 @@ class Cards extends \GNC\Helpers\Pieces
     public static function isAdjacentAvailable($player, $columnId, $n = 1)
     {
         $adjacentColumns = [
-            1 => [2],
-            2 => [1, 3],
-            3 => [2]
+            0 => [1],
+            1 => [0, 2],
+            2 => [1]
         ];
 
         $nCards = 0;
@@ -126,12 +126,12 @@ class Cards extends \GNC\Helpers\Pieces
     public static function getLowestColumns($player)
     {
         $columnSizes = [];
-        for ($i = 1; $i <= 3; $i++) {
+        for ($i = 1; $i < 3; $i++) {
             $columnSizes[$i] = $player->getColumn($i)->count();
         }
         $max = max(array_values($columnSizes));
         $lowests = array_keys(array_filter($columnSizes, fn ($value) => $value != $max));
-        return $lowests ? $lowests : [1, 2, 3]; //if all columns are max, return all
+        return $lowests ? $lowests : [0, 1, 2]; //if all columns are max, return all
     }
 
     public static function getNOfColor($player, $columnId, $color)

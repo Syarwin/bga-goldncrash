@@ -213,8 +213,7 @@ define([
 
       let pos = this.getPos(this.player_id);
       let selectedColumn = null;
-      args.columns.forEach((col2) => {
-        let col = col2 - 1;
+      args.columns.forEach((col) => {
         this.onClick(`column-${pos}-${col}`, () => {
           if (selectedColumn != null) $(`column-${pos}-${selectedColumn}`).classList.remove('selected');
           selectedColumn = col;

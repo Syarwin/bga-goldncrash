@@ -25,7 +25,7 @@ trait PlayerTurnTrait
 
 		foreach ($playablesCard as $cardId => $card) {
 			$type = $card->getType();
-			$whereToPlay[$cardId] = array_filter([1, 2, 3], fn ($columnId) => $columns[$columnId][$type]);
+			$whereToPlay[$cardId] = array_filter([0, 1, 2], fn ($columnId) => $columns[$columnId][$type]);
 		}
 
 		return [
@@ -58,7 +58,7 @@ trait PlayerTurnTrait
 
 		$args = $this->getArgs();
 
-		if (!$args['canDraw']) {
+		if (!$args['_private'][$pId]['canDraw']) {
 			throw new \BgaVisibleSystemException("You can't draw a card, your deck is empty.");
 		}
 
