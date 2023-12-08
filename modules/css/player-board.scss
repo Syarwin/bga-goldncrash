@@ -33,6 +33,12 @@
                     margin: 0px 5px 0px 10px;
                     width: $cardW;
                     height: $cardH;
+                    position: relative;
+
+                    .goldncrash-card {
+                        position: absolute;
+                        top: 0;
+                    }
                 }
 
                 .banner-chest-holder {
@@ -97,6 +103,18 @@
                     min-height: $cardH;
                     border: 1px dashed black;
                     border-radius: calc(var(--cardScale) * 30px);
+
+                    &.selectable {
+                        border-color: red;
+                        cursor: pointer;
+                        &:hover {
+                            border-style: solid;
+                        }
+                    }
+                    &.selected {
+                        border: 1px solid green;
+                        outline: 2px solid green;
+                    }
                 }
 
                 .zeppelin-holder {

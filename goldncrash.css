@@ -352,7 +352,7 @@ html {
       .goldncrash-card .card-inner[data-deck="GUEST"][data-id="1"] {
         background-position: 50% 0%; }
       .goldncrash-card .card-inner[data-deck="GUEST"][data-id="2"] {
-        background-position: 50% 0%; }
+        background-position: 100% 0%; }
       .goldncrash-card .card-inner[data-deck="GUEST"][data-id="3"] {
         background-position: 0% 50%; }
       .goldncrash-card .card-inner[data-deck="GUEST"][data-id="4"] {
@@ -397,7 +397,11 @@ html {
         #goldncrash-main-container .goldncrash-player-board .side-zone .side-zone-holder .discard-holder {
           margin: 0px 5px 0px 10px;
           width: calc(var(--cardScale) * 292px);
-          height: calc(var(--cardScale) * 415px); }
+          height: calc(var(--cardScale) * 415px);
+          position: relative; }
+          #goldncrash-main-container .goldncrash-player-board .side-zone .side-zone-holder .discard-holder .goldncrash-card {
+            position: absolute;
+            top: 0; }
         #goldncrash-main-container .goldncrash-player-board .side-zone .side-zone-holder .banner-chest-holder {
           display: flex;
           flex-flow: column;
@@ -447,6 +451,14 @@ html {
           min-height: calc(var(--cardScale) * 415px);
           border: 1px dashed black;
           border-radius: calc(var(--cardScale) * 30px); }
+          #goldncrash-main-container .goldncrash-player-board .columns-zone .column-holder .column-cards-holder.selectable {
+            border-color: red;
+            cursor: pointer; }
+            #goldncrash-main-container .goldncrash-player-board .columns-zone .column-holder .column-cards-holder.selectable:hover {
+              border-style: solid; }
+          #goldncrash-main-container .goldncrash-player-board .columns-zone .column-holder .column-cards-holder.selected {
+            border: 1px solid green;
+            outline: 2px solid green; }
         #goldncrash-main-container .goldncrash-player-board .columns-zone .column-holder .zeppelin-holder {
           width: calc(var(--cardScale) * 415px);
           height: calc(var(--cardScale) * 292px);
