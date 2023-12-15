@@ -23,6 +23,17 @@ class Cards extends \GNC\Helpers\Pieces
         return new \GNC\Models\Card($row, $data);
     }
 
+    public static function draw($player, $n = 1, $fromDeck = true)
+    {
+        $deck = ($fromDeck) ? $player->getDeckName() : $player->getDiscardName();
+
+        $n = min($n, static::countInLocation($deck));
+
+        $cards = static::pickForLocationPId($n, $deck, 'hand', $player->getId());
+
+        Notifications::draw($player, $cards, $fromDeck);
+    }
+
     public static function getUiData($currentPlayerId)
     {
         $data = [];
@@ -39,10 +50,10 @@ class Cards extends \GNC\Helpers\Pieces
                 'discard' => static::getInLocation($discard)->toArray(),
                 'lastDiscard' => static::getTopOf($discard),
                 'nTreasure' => static::countInLocation($treasure),
-                'lastTreasure' => static::getLastTreasure($character),
+                'lastTreasure' => static::bindCard(static::getLastTreasure($character)),
                 'nDeck' => static::countInLocation($deck),
                 'guests' => [$player->getGuest(0), $player->getGuest(1), $player->getGuest(2)],
-                'ballons' => [$player->getBalloons(0), $player->getBalloons(1), $player->getBalloons(2)],
+                'ballons' => [static::bindCard($player->getBalloons(0)), static::bindCard($player->getBalloons(1)), static::bindCard($player->getBalloons(2))],
                 'columns' => [$player->getColumn(0)->toArray(), $player->getColumn(1)->toArray(), $player->getColumn(2)->toArray()],
             ];
         }
@@ -80,7 +91,7 @@ class Cards extends \GNC\Helpers\Pieces
             $type = $card->getType();
             switch ($type) {
                 case RED:
-                    if (static::getLastTreasure($player->getCharacter())->getDeck() != GUEST) {
+                    if (!is_null(static::getLastTreasure($player->getCharacter())) && static::getLastTreasure($player->getCharacter())->getDeck() != GUEST) {
                         $result[$i] = $card->getId();
                     }
                     break;
@@ -126,7 +137,7 @@ class Cards extends \GNC\Helpers\Pieces
     public static function getLowestColumns($player)
     {
         $columnSizes = [];
-        for ($i = 1; $i < 3; $i++) {
+        for ($i = 0; $i < 3; $i++) {
             $columnSizes[$i] = $player->getColumn($i)->count();
         }
         $max = max(array_values($columnSizes));
@@ -134,9 +145,23 @@ class Cards extends \GNC\Helpers\Pieces
         return $lowests ? $lowests : [0, 1, 2]; //if all columns are max, return all
     }
 
-    public static function getNOfColor($player, $columnId, $color)
+    public static function getNOfSpecificColor($player, $columnId, $color)
     {
-        return $player->getColumn($columnId)->filter(fn ($card) => $card->getColor() == $color)->count();
+        return $player->getColumn($columnId)->filter(fn ($card) => $card->getType() == $color)->count();
+    }
+
+    public static function getNColors($player, $columnId)
+    {
+        return $player->getColumn($columnId)->countDifferent(fn ($card) => $card->getType());
+    }
+
+    public static function getTotalValue($cards)
+    {
+        $result = 0;
+        foreach ($cards as $cardId => $card) {
+            $result += $card->getValue();
+        }
+        return $result;
     }
 
     public static function bindCard($card, $forced = false)
@@ -147,13 +172,14 @@ class Cards extends \GNC\Helpers\Pieces
 
         if ($card->getFlipped() == 1 || $forced) {
             $card->id = 0;
+            $card->value = "back";
         }
         return $card;
     }
 
-    public static function getLastTreasure($character)
+    protected static function getLastTreasure($character)
     {
-        return static::bindCard(static::getTopOf('treasure_' . $character), true);
+        return static::getTopOf('treasure_' . $character);
     }
 
     /* Creation of the Cards */

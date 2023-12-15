@@ -71,6 +71,7 @@ $machinestates = [
         "args" => "argPlayerTurn",
         "possibleactions" => ['actPlay', 'actDraw', 'actDiscard'],
         "transitions" => [
+            'secondTurn' => ST_PLAYER_TURN,
             'secure' => ST_SECURE,
             'move' => ST_MOVE,
             'callBack' => ST_CALL_BACK,
@@ -80,14 +81,15 @@ $machinestates = [
     ],
 
     ST_CONFIRM => [
-        "name" => "playerTurn",
+        "name" => "confirm",
         "description" => clienttranslate('${actplayer} must confirm his turn'),
         "descriptionmyturn" => clienttranslate('${you} must confirm your turn'),
         "type" => ACTIVE_PLAYER,
+        "args" => 'argConfirm',
+        "action" => 'stConfirm',
         "possibleactions" => ['actConfirm', 'actUndo'],
         "transitions" => [
             UNDO => ST_PLAYER_TURN,
-            AGAIN => ST_PLAYER_TURN,
             END_TURN => ST_NEXT_PLAYER,
         ]
     ],
@@ -96,9 +98,10 @@ $machinestates = [
         "name" => "nextPlayer",
         "description" => clienttranslate('Next player'),
         "type" => GAME,
+        "action" => 'stNextPlayer',
         "transitions" => [
             END_GAME => ST_PRE_END_OF_GAME,
-            END_TURN => ST_NEXT_PLAYER,
+            END_TURN => ST_PLAYER_TURN,
         ]
     ],
 

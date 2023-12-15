@@ -9,18 +9,78 @@ use GNC\Core\Globals;
 
 class Notifications
 {
+  /**
+   * To flip matching zeppelin card
+   */
+  public static function bombPass($player, $columnId, $n, $balloon)
+  {
+    $data = [
+      'player' => $player,
+      'columnId' => $columnId,
+      'force' => $n,
+      'card' => $balloon
+    ];
+    $msg = clienttranslate('With a bomb level ${force}, ${player_name} destroys Zeppelin in column ${columnId}');
+    static::notifyAll('bombPass', $msg, $data);
+  }
 
-  public static function draw($player, $card)
+  /**
+   * To inform players that the Bomb attack failed
+   * (but give information to owner of the Zeppelin value)
+   */
+  public static function bombFail($player, $columnId, $n, $balloon, $defensivePlayer)
+  {
+    $data = [
+      'player' => $player,
+      'columnId' => $columnId,
+      'force' => $n
+    ];
+    $privateData = [
+      'card' => $balloon,
+      'columnId' => $columnId,
+      'value' => $balloon->getValue()
+    ];
+    static::notify($defensivePlayer, 'bombcheck', clienttranslate('(Your Zeppelin in column ${columnId) has a strengh of ${value})'), $privateData);
+    $msg = clienttranslate('With a bomb level ${force}, ${player_name} failed to destroy Zeppelin in column ${columnId}');
+    static::notifyAll('bombPass', $msg, $data);
+  }
+
+  /**
+   * pick a card from discard or from deck
+   */
+  public static function draw($player, $cards, $fromDeck)
+  {
+    $data = [
+      'player' => $player,
+      'cards' => $cards,
+      'n' => $cards->count(),
+      'fromDeck' => $fromDeck
+    ];
+
+    $msg = ($fromDeck) ? clienttranslate('${player_name} draw ${n} card(s) from his deck')
+      : clienttranslate('${player_name} draw ${n} card(s) from his discard pile');
+
+    static::notify($player, 'draw', '', $data);
+    unset($data['cards']);
+    static::notifyAll('draw', $msg, $data);
+  }
+
+
+  /**
+   * flip a card and put it on Treasure
+   */
+  public static function secure($card, $player)
   {
     $data = [
       'player' => $player,
       'card' => $card
     ];
 
-    $msg = clienttranslate('${player_name} draw a card');
+    $msg = ($card->getType() == GUEST)
+      ? clienttranslate('${player_name} definitely secure a Guest and all cards under it')
+      : clienttranslate('${player_name} secure a new card');
 
-    static::notify($player, 'draw', '', $data);
-    static::notifyAll('draw', $msg, ['player' => $player]);
+    static::notifyAll('secure', $msg, $data);
   }
 
   /*************************

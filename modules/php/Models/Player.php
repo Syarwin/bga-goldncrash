@@ -2,6 +2,8 @@
 
 namespace GNC\Models;
 
+use GNC\Core\Game;
+use GNC\Core\Notifications;
 use GNC\Core\Stats;
 use GNC\Core\Preferences;
 use GNC\Managers\Players;
@@ -27,6 +29,55 @@ class Player extends \GNC\Helpers\DB_Model
     'scoreAux' => ['player_score_aux', 'int'],
     'character' => 'character',
   ];
+
+  public function secure($card)
+  {
+    $card->setFlipped(FLIPPED);
+    Cards::insertOnTop($card->getId(), $this->getTreasureName());
+
+    Notifications::secure($card, $this);
+  }
+
+  /**
+   * TODO Check if his own balloon explodes
+   */
+  public function checkBomb($columnId, $n)
+  {
+    $balloon = $this->getBalloons($columnId);
+    $balloonValue = $balloon->getValue();
+    if ($balloonValue <= $n) {
+      $balloon->setFlipped(NOT_FLIPPED);
+      Notifications::bombPass($this->getOpponent(), $columnId, $n, $balloon);
+    } else {
+      Notifications::bombFail($this->getOpponent(), $columnId, $n, $balloon, $this);
+    }
+    //TODO Notif
+  }
+
+  public function discardFromColumn($columnId, $n = 1, $withEffect = false)
+  {
+    $nextState = 0;
+    for ($i = 0; $i < $n; $i++) {
+      $card = Cards::getTopOf($this->getColumnName($columnId));
+      Cards::insertOnTop($card->getId(), $this->getDiscardName());
+      if ($withEffect) {
+        $method = 'discardEffect' . ucfirst($card->getType());
+        $nextState = Game::get()->$method($card, $columnId, $this);
+      }
+    }
+    //TODO Notif
+    return $nextState;
+  }
+
+  public function clearColumn($columnId)
+  {
+    while (true) {
+      $card = Cards::getBottomOf($this->getColumnName($columnId));
+      Cards::insertOnTop($card->getId(), $this->getDiscardName());
+    }
+
+    //TODO Notif
+  }
 
   public function getUiData($currentPlayerId = null)
   {
@@ -67,12 +118,12 @@ class Player extends \GNC\Helpers\DB_Model
   public function getBalloons($n = null)
   {
     $location = $this->is(CHAMOURAI) ? BALLOONS_CHAMOURAI : BALLOONS_POULPIRATE;
-    return Cards::bindCard(Cards::getInLocation($location, $n)->first());
+    return Cards::getInLocation($location, $n)->first();
   }
 
   public function getColumn($n)
   {
-    $location = 'column_' . $n . '_' . $this->getCharacter();
+    $location = $this->getColumnName($n);
     return Cards::getInLocation($location);
   }
 
@@ -100,6 +151,11 @@ class Player extends \GNC\Helpers\DB_Model
   public function getTreasureName()
   {
     return 'treasure_' . $this->getCharacter();
+  }
+
+  public function getColumnName($n)
+  {
+    return 'column_' . $n . '_' . $this->getCharacter();
   }
 
 

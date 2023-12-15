@@ -359,6 +359,22 @@ class Pieces extends DB_Manager
     }
 
     /**
+     * Return "$nbr" piece on top of this location, top defined as item with higher state value
+     */
+    public static function getBottomOf(
+        $location,
+        $n = 1,
+        $returnValueIfOnlyOneRow = true
+    ) {
+        self::checkLocation($location);
+        self::checkPosInt($n);
+        return self::getSelectWhere(null, $location)
+            ->orderBy(static::$prefix . 'state', 'ASC')
+            ->limit($n)
+            ->get($returnValueIfOnlyOneRow);
+    }
+
+    /**
      * Return all pieces in specific location
      * note: if "order by" is used, result object is NOT indexed by ids
      */
@@ -580,6 +596,7 @@ class Pieces extends DB_Manager
         foreach ($pieces as $key => $piece) {
             $piece->setPlayerId($pId);
         }
+        return $pieces;
     }
 
     public static function pickOneForLocationPId(

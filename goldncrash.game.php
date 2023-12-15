@@ -47,6 +47,10 @@ class GoldnCrash extends Table
 {
   use GNC\DebugTrait;
   use GNC\States\PlayerTurnTrait;
+  use GNC\States\GameTrait;
+  use GNC\States\ConfirmTrait;
+  use GNC\States\PlayCardTrait;
+
 
   public static $instance = null;
   function __construct()
@@ -164,7 +168,6 @@ class GoldnCrash extends Table
   //     //     'SELECT ma_player_id player_id, ma_is_multiactive player_is_multiactive FROM playermultiactive ORDER BY player_id FOR UPDATE'
   //     // );
 
-  //     // TODO should the stats table be queried as well?
   // }
 
   /** This is special function called by framework BEFORE any of your action functions */

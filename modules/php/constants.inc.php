@@ -101,6 +101,9 @@ const OPTION_DEBUG_ON = 1;
 *                                                               
 */
 
+const FLIPPED = 1;
+const NOT_FLIPPED = 0;
+const VISIBLE = 0;
 
 const GAME = "game";
 const MULTI = "multipleactiveplayer";

@@ -34,6 +34,7 @@ class Globals extends \GNC\Helpers\DB_Manager
     static::setFirstPlayer($activePlayerId);
     static::setLastTurn(false);
     // static::setCheatMode($options[OPTION_DEBUG] == 1);
+    static::newTurn();
   }
 
   public static function newTurn()

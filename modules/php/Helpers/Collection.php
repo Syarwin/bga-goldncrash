@@ -57,6 +57,11 @@ class Collection extends \ArrayObject
         return new Collection(array_filter($this->toAssoc(), $func));
     }
 
+    public function countDifferent($func)
+    {
+        return count(array_count_values($this->map($func)->toArray()));
+    }
+
     public function limit($n)
     {
         return new Collection(array_slice($this->toAssoc(), 0, $n, true));
