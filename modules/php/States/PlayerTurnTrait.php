@@ -62,8 +62,11 @@ trait PlayerTurnTrait
 		$columnName = $player->getColumnName($columnId);
 		Cards::insertOnTop($cardId, $columnName);
 
-		$cardType = Cards::get($cardId)->getType();
+		$card = Cards::get($cardId);
+		$cardType = $card->getType();
 		$n = Cards::getNOfSpecificColor($player, $columnId, $cardType);
+
+		Notifications::play($card, $player, $columnId);
 
 		//activate effect
 		$method = 'playEffect' . ucfirst($cardType);
@@ -77,6 +80,7 @@ trait PlayerTurnTrait
 		}
 
 		Globals::setActiveColumn($columnId);
+
 
 		$this->finishMove($nextState);
 	}

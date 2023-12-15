@@ -65,6 +65,22 @@ class Notifications
     static::notifyAll('draw', $msg, $data);
   }
 
+  /**
+   * Move card from hand to a column
+   */
+  public static function play($card, $player, $columnId)
+  {
+    $data = [
+      'player' => $player,
+      'card' => $card,
+      'columnId' => $columnId
+    ];
+
+    $msg = clienttranslate('${player_name} play a new card on column ${columnId}');
+
+    static::notifyAll('playCard', $msg, $data);
+  }
+
 
   /**
    * flip a card and put it on Treasure
