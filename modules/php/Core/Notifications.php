@@ -18,7 +18,7 @@ class Notifications
       'player' => $player,
       'columnId' => $columnId,
       'force' => $n,
-      'card' => $balloon
+      'card' => $balloon,
     ];
     $msg = clienttranslate('With a bomb level ${force}, ${player_name} destroys Zeppelin in column ${columnId}');
     static::notifyAll('bombPass', $msg, $data);
@@ -33,14 +33,19 @@ class Notifications
     $data = [
       'player' => $player,
       'columnId' => $columnId,
-      'force' => $n
+      'force' => $n,
     ];
     $privateData = [
       'card' => $balloon,
       'columnId' => $columnId,
-      'value' => $balloon->getValue()
+      'value' => $balloon->getValue(),
     ];
-    static::notify($defensivePlayer, 'bombcheck', clienttranslate('(Your Zeppelin in column ${columnId) has a strengh of ${value})'), $privateData);
+    static::notify(
+      $defensivePlayer,
+      'bombcheck',
+      clienttranslate('(Your Zeppelin in column ${columnId) has a strengh of ${value})'),
+      $privateData
+    );
     $msg = clienttranslate('With a bomb level ${force}, ${player_name} failed to destroy Zeppelin in column ${columnId}');
     static::notifyAll('bombPass', $msg, $data);
   }
@@ -52,17 +57,25 @@ class Notifications
   {
     $data = [
       'player' => $player,
-      'cards' => $cards,
+      'cards' => $cards->toArray(),
       'n' => $cards->count(),
-      'fromDeck' => $fromDeck
+      'fromDeck' => $fromDeck,
     ];
 
-    $msg = ($fromDeck) ? clienttranslate('${player_name} draw ${n} card(s) from his deck')
+    $msg = $fromDeck
+      ? clienttranslate('${player_name} draw ${n} card(s) from his deck')
       : clienttranslate('${player_name} draw ${n} card(s) from his discard pile');
 
-    static::notify($player, 'draw', '', $data);
+    static::notify(
+      $player,
+      'pDrawCards',
+      $fromDeck
+        ? clienttranslate('You draw ${n} card(s) from your deck')
+        : clienttranslate('You draw ${n} cards from the discard pile'),
+      $data
+    );
     unset($data['cards']);
-    static::notifyAll('draw', $msg, $data);
+    static::notifyAll('drawCards', $msg, $data);
   }
 
   /**
@@ -73,14 +86,13 @@ class Notifications
     $data = [
       'player' => $player,
       'card' => $card,
-      'columnId' => $columnId
+      'columnId' => $columnId,
     ];
 
     $msg = clienttranslate('${player_name} play a new card on column ${columnId}');
 
     static::notifyAll('playCard', $msg, $data);
   }
-
 
   /**
    * flip a card and put it on Treasure
@@ -89,12 +101,13 @@ class Notifications
   {
     $data = [
       'player' => $player,
-      'card' => $card
+      'card' => $card,
     ];
 
-    $msg = ($card->getType() == GUEST)
-      ? clienttranslate('${player_name} definitely secure a Guest and all cards under it')
-      : clienttranslate('${player_name} secure a new card');
+    $msg =
+      $card->getType() == GUEST
+        ? clienttranslate('${player_name} definitely secure a Guest and all cards under it')
+        : clienttranslate('${player_name} secure a new card');
 
     static::notifyAll('secure', $msg, $data);
   }
@@ -156,8 +169,8 @@ class Notifications
     }
   }
 
-  //          █████                          █████     ███                     
-  //         ░░███                          ░░███     ░░░                      
+  //          █████                          █████     ███
+  //         ░░███                          ░░███     ░░░
   //  ██████  ░███████    ██████   ██████   ███████   ████  ████████    ███████
   // ███░░███ ░███░░███  ███░░███ ░░░░░███ ░░░███░   ░░███ ░░███░░███  ███░░███
   //░███ ░░░  ░███ ░███ ░███████   ███████   ░███     ░███  ░███ ░███ ░███ ░███
@@ -165,12 +178,12 @@ class Notifications
   //░░██████  ████ █████░░██████ ░░████████  ░░█████  █████ ████ █████░░███████
   // ░░░░░░  ░░░░ ░░░░░  ░░░░░░   ░░░░░░░░    ░░░░░  ░░░░░ ░░░░ ░░░░░  ░░░░░███
   //                                                                   ███ ░███
-  //                                                                  ░░██████ 
-  //                                                                   ░░░░░░  
+  //                                                                  ░░██████
+  //                                                                   ░░░░░░
 
   public static function cheat()
   {
-    static::notifyAll('refresh', "", []);
+    static::notifyAll('refresh', '', []);
   }
 
   public static function invitePlayersToAlpha($name, $message, $data)

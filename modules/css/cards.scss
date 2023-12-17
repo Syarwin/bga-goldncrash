@@ -19,7 +19,8 @@
     border-radius: calc(var(--cardScale) * 30px);
   }
 
-  &.horizontal {
+  &.horizontal,
+  .chest-holder & {
     width: $cardH;
     height: $cardW;
 

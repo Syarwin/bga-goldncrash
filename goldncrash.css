@@ -297,10 +297,10 @@ html {
     outline: 4px solid #1caf1c; }
   .goldncrash-card .card-inner {
     border-radius: calc(var(--cardScale) * 30px); }
-  .goldncrash-card.horizontal {
+  .goldncrash-card.horizontal, .chest-holder .goldncrash-card {
     width: calc(var(--cardScale) * 415px);
     height: calc(var(--cardScale) * 292px); }
-    .goldncrash-card.horizontal .card-inner {
+    .goldncrash-card.horizontal .card-inner, .chest-holder .goldncrash-card .card-inner {
       transform-origin: 50.5% 35%;
       transform: rotate(-90deg); }
   .goldncrash-card .card-inner {
@@ -425,7 +425,6 @@ html {
               box-shadow: 2px 2px 6px -1px black; }
           #goldncrash-main-container .goldncrash-player-board .side-zone .side-zone-holder .banner-chest-holder .chest-holder {
             margin: 2px 0px;
-            background: yellow;
             width: calc(var(--cardScale) * 415px);
             height: calc(var(--cardScale) * 292px); }
         #goldncrash-main-container .goldncrash-player-board .side-zone .side-zone-holder .deck-holder {
@@ -437,7 +436,21 @@ html {
           border-radius: calc(var(--cardScale) * 30px);
           box-sizing: border-box;
           border: 1px solid black;
-          box-shadow: 2px 2px 6px -1px black; }
+          box-shadow: 2px 2px 6px -1px black;
+          position: relative; }
+          #goldncrash-main-container .goldncrash-player-board .side-zone .side-zone-holder .deck-holder .deck-counter {
+            position: absolute;
+            top: calc(50% - 20px);
+            left: calc(50% - 20px);
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: white;
+            border: 1px solid black;
+            box-shadow: 0px 0px 3px black;
+            display: flex;
+            justify-content: center;
+            align-items: center; }
     #goldncrash-main-container .goldncrash-player-board .columns-zone {
       display: flex; }
       #goldncrash-main-container .goldncrash-player-board .columns-zone .column-holder {
@@ -722,6 +735,8 @@ html {
 
 #maintitlebar_content .action-button ~ .action-button {
   margin-left: 15px; }
+#maintitlebar_content .goldncrash-card {
+  position: absolute; }
 
 #ebd-body.help-mode .tooltipable {
   cursor: help; }

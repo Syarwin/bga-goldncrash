@@ -261,14 +261,15 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
 
         dojo.subscribe(notif[0], this, wrapper);
 
+        this.notifqueue.setSynchronous(notif[0]);
         if (notif[2] != undefined) {
           this.notifqueue.setIgnoreNotificationCheck(notif[0], notif[2]);
-          this.notifqueue.setSynchronous(notif[0], notif[1]); // Ignorable notif must have a default timing
         } else {
-          this.notifqueue.setSynchronous(notif[0]);
+          this.notifqueue.setIgnoreNotificationCheck(
+            notif[0],
+            (notif) => notif.args.ignore && notif.args.ignore == this.player_id
+          );
         }
-
-        this.notifqueue.setIgnoreNotificationCheck(notif[0], (notif) => notif.args.ignore && notif.args.ignore == this.player_id);
       });
 
       // Load production bug report handler

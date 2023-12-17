@@ -15,36 +15,37 @@
  *
  */
 
-var isDebug =
-  window.location.host == "studio.boardgamearena.com" ||
-  window.location.hash.indexOf("debug") > -1;
+var isDebug = window.location.host == 'studio.boardgamearena.com' || window.location.hash.indexOf('debug') > -1;
 var debug = isDebug ? console.info.bind(window.console) : function () {};
 
 define([
-  "dojo",
-  "dojo/_base/declare",
-  "ebg/core/gamegui",
-  "ebg/counter",
-  g_gamethemeurl + "modules/js/Core/game.js",
-  g_gamethemeurl + "modules/js/Core/modal.js",
+  'dojo',
+  'dojo/_base/declare',
+  'ebg/core/gamegui',
+  'ebg/counter',
+  g_gamethemeurl + 'modules/js/Core/game.js',
+  g_gamethemeurl + 'modules/js/Core/modal.js',
 ], function (dojo, declare) {
-  const CHAMOURAI = "CHAMOURAI";
-  const POULPIRATE = "POULPIRATE";
-  const GUEST = "GUEST";
-  const BALLOON = "BALLOON";
+  const CHAMOURAI = 'CHAMOURAI';
+  const POULPIRATE = 'POULPIRATE';
+  const GUEST = 'GUEST';
+  const BALLOON = 'BALLOON';
 
-  const BROWN = "BROWN";
-  const PURPLE = "PURPLE";
-  const GREEN = "GREEN";
-  const YELLOW = "YELLOW";
-  const BLUE = "BLUE";
-  const RED = "RED";
+  const BROWN = 'BROWN';
+  const PURPLE = 'PURPLE';
+  const GREEN = 'GREEN';
+  const YELLOW = 'YELLOW';
+  const BLUE = 'BLUE';
+  const RED = 'RED';
 
-  return declare("bgagame.goldncrash", [customgame.game], {
+  return declare('bgagame.goldncrash', [customgame.game], {
     constructor() {
-      this._activeStates = ["playerTurn"];
+      this._activeStates = ['playerTurn'];
       this._notifications = [
-        //  ['chooseSetup', 200],
+        ['playCard', 1200],
+        ['secure', 1200],
+        ['drawCards', null, (notif) => notif.args.player_id == this.player_id],
+        ['pDrawCards', null],
         //  ['confirmSetupObjectives', 1200],
         //  ['clearTurn', 200],
         //  ['refreshUI', 200],
@@ -53,17 +54,17 @@ define([
       this._fakeCardCounter = -1;
 
       // Fix mobile viewport (remove CSS zoom)
-      this.default_viewport = "width=740";
+      this.default_viewport = 'width=740';
       this.cardStatuses = {};
     },
     notif_midMessage(n) {},
 
     getSettingsSections() {
       return {
-        layout: _("Layout"),
-        playerBoard: _("Player Board/Panel"),
-        gameFlow: _("Game Flow"),
-        other: _("Other"),
+        layout: _('Layout'),
+        playerBoard: _('Player Board/Panel'),
+        gameFlow: _('Game Flow'),
+        other: _('Other'),
       };
     },
 
@@ -80,9 +81,9 @@ define([
      *	- mixed gamedatas : contains all datas retrieved by the getAllDatas PHP method.
      */
     setup(gamedatas) {
-      debug("SETUP", gamedatas);
+      debug('SETUP', gamedatas);
       // Create a new div for "subtitle"
-      dojo.place("<div id='pagesubtitle'></div>", "maintitlebar_content");
+      dojo.place("<div id='pagesubtitle'></div>", 'maintitlebar_content');
 
       this.setupInfoPanel();
       this.setupPlayers();
@@ -97,34 +98,40 @@ define([
         0
       );
       let nPlayers = Object.keys(this.gamedatas.players).length;
-      this.forEachPlayer(
-        (player) =>
-          (player.order = (player.no + nPlayers - currentNo) % nPlayers)
-      );
-      this.orderedPlayers = Object.values(this.gamedatas.players).sort(
-        (a, b) => a.order - b.order
-      );
+      this.forEachPlayer((player) => (player.order = (player.no + nPlayers - currentNo) % nPlayers));
+      this.orderedPlayers = Object.values(this.gamedatas.players).sort((a, b) => a.order - b.order);
       this.bottomPId = this.orderedPlayers[0].id;
       this.topPId = this.orderedPlayers[1].id;
 
       // Add player board and player panel
+      this._counters = {};
       this.orderedPlayers.forEach((player, i) => {
-        $(`${this.getPos(player.id)}-player`).dataset.character =
-          player.character;
+        let pos = this.getPos(player.id);
+        $(`${pos}-player`).dataset.character = player.character;
         // Panels
-        // this.place('tplPlayerPanel', player, `overall_player_board_${player.id}`);
+        this.place('tplPlayerPanel', player, `overall_player_board_${player.id}`);
+
+        this._counters[player.id] = {};
+        this._counters[player.id]['deckCount'] = this.createCounter(`deck-counter-${pos}`);
+        this._counters[player.id]['handCount'] = this.createCounter(`counter-${player.id}-hand`);
       });
     },
 
+    tplPlayerPanel(player) {
+      return `<div class='player-info'>
+        <div class='hand-counter-wrapper'>
+          <span id='counter-${player.id}-hand'>0</span>
+          CARDS
+        </div>
+      </div>`;
+    },
+
     getPos(pId) {
-      return this.bottomPId == pId ? "bottom" : "top";
+      return this.bottomPId == pId ? 'bottom' : 'top';
     },
 
     getCPos(character) {
-      return $(`bottom-player`).dataset.character.toUpperCase() ==
-        character.toUpperCase()
-        ? "bottom"
-        : "top";
+      return $(`bottom-player`).dataset.character.toUpperCase() == character.toUpperCase() ? 'bottom' : 'top';
     },
 
     onLoadingComplete() {
@@ -140,41 +147,34 @@ define([
       if (!$(`log_${notif.logId}`)) return;
       let stepId = notif.msg.args.stepId;
       $(`log_${notif.logId}`).dataset.step = stepId;
-      if ($(`dockedlog_${notif.mobileLogId}`))
-        $(`dockedlog_${notif.mobileLogId}`).dataset.step = stepId;
+      if ($(`dockedlog_${notif.mobileLogId}`)) $(`dockedlog_${notif.mobileLogId}`).dataset.step = stepId;
 
       if (this.gamedatas && this.gamedatas.gamestate) {
         let state = this.gamedatas.gamestate;
         if (state.private_state) state = state.private_state;
 
-        if (
-          state.args &&
-          state.args.previousSteps &&
-          state.args.previousSteps.includes(parseInt(stepId))
-        ) {
+        if (state.args && state.args.previousSteps && state.args.previousSteps.includes(parseInt(stepId))) {
           this.onClick($(`log_${notif.logId}`), () => this.undoToStep(stepId));
 
           if ($(`dockedlog_${notif.mobileLogId}`))
-            this.onClick($(`dockedlog_${notif.mobileLogId}`), () =>
-              this.undoToStep(stepId)
-            );
+            this.onClick($(`dockedlog_${notif.mobileLogId}`), () => this.undoToStep(stepId));
         }
       }
     },
 
     undoToStep(stepId) {
       this.stopActionTimer();
-      this.checkAction("actRestart");
-      this.takeAction("actUndoToStep", { stepId }, false);
+      this.checkAction('actRestart');
+      this.takeAction('actUndoToStep', { stepId }, false);
     },
 
     notif_clearTurn(n) {
-      debug("Notif: restarting turn", n);
+      debug('Notif: restarting turn', n);
       this.cancelLogs(n.args.notifIds);
     },
 
     notif_refreshUI(n) {
-      debug("Notif: refreshing UI", n);
+      debug('Notif: refreshing UI', n);
       this.clearPossible();
       //  ['cards', 'meeples', 'players', 'tiles'].forEach((value) => {
       //    this.gamedatas[value] = n.args.datas[value];
@@ -190,29 +190,22 @@ define([
     testNotif() {},
 
     clearPossible() {
-      dojo.empty("pagesubtitle");
+      dojo.empty('pagesubtitle');
       this.inherited(arguments);
     },
 
     onEnteringState(stateName, args) {
-      debug("Entering state: " + stateName, args);
+      debug('Entering state: ' + stateName, args);
       if (this.isFastMode() && ![].includes(stateName)) return;
 
       if (args.args && args.args.descSuffix) {
         this.changePageTitle(args.args.descSuffix);
       }
 
-      if (
-        this._activeStates.includes(stateName) &&
-        !this.isCurrentPlayerActive()
-      )
-        return;
+      if (this._activeStates.includes(stateName) && !this.isCurrentPlayerActive()) return;
 
       // Call appropriate method
-      var methodName =
-        "onEnteringState" +
-        stateName.charAt(0).toUpperCase() +
-        stateName.slice(1);
+      var methodName = 'onEnteringState' + stateName.charAt(0).toUpperCase() + stateName.slice(1);
       if (this[methodName] !== undefined) this[methodName](args.args);
     },
 
@@ -220,38 +213,31 @@ define([
       let args = publicArgs._private;
 
       if (args.canDraw) {
-        this.addPrimaryActionButton("btnDraw", _("Draw"), () =>
-          this.takeAction("actDraw", {})
-        );
+        this.addPrimaryActionButton('btnDraw', _('Draw'), () => this.takeAction('actDraw', {}));
       }
 
       Object.keys(args.playableCardIds).forEach((cardId) => {
         let columns = args.playableCardIds[cardId];
         if (columns.length)
           this.onClick(`card-${cardId}`, () =>
-            this.clientState(
-              "playerTurnChooseColumn",
-              _("Where do you want to play that card?"),
-              { cardId, columns }
-            )
+            this.clientState('playerTurnChooseColumn', _('Where do you want to play that card?'), { cardId, columns })
           );
       });
     },
 
     onEnteringStatePlayerTurnChooseColumn(args) {
       this.addCancelStateBtn();
-      $(`card-${args.cardId}`).classList.add("selected");
+      $(`card-${args.cardId}`).classList.add('selected');
 
       let pos = this.getPos(this.player_id);
       let selectedColumn = null;
       args.columns.forEach((col) => {
         this.onClick(`column-${pos}-${col}`, () => {
-          if (selectedColumn != null)
-            $(`column-${pos}-${selectedColumn}`).classList.remove("selected");
+          if (selectedColumn != null) $(`column-${pos}-${selectedColumn}`).classList.remove('selected');
           selectedColumn = col;
-          $(`column-${pos}-${selectedColumn}`).classList.add("selected");
-          this.addPrimaryActionButton("btnConfirm", _("Confirm"), () =>
-            this.takeAction("actPlay", {
+          $(`column-${pos}-${selectedColumn}`).classList.add('selected');
+          this.addPrimaryActionButton('btnConfirm', _('Confirm'), () =>
+            this.takeAction('actPlay', {
               cardId: args.cardId,
               columnId: selectedColumn,
             })
@@ -274,12 +260,15 @@ define([
         let cards = this.gamedatas.cards[player.id];
         cards.hand.forEach((card) => this.addCard(card));
         cards.ballons.forEach((card) => this.addCard(card));
-        cards.guests.forEach((card) => this.addCard(card));
+        cards.guests.forEach((card) => {
+          if (card) this.addCard(card);
+        });
         cards.discard.forEach((card) => this.addCard(card));
-        cards.columns.forEach((column) =>
-          column.forEach((card) => this.addCard(card))
-        );
+        cards.columns.forEach((column) => column.forEach((card) => this.addCard(card)));
         if (cards.lastTreasure) this.addCard(cards.lastTreasure);
+
+        this._counters[player.id]['deckCount'].toValue(cards.nDeck);
+        this._counters[player.id]['handCount'].toValue(cards.nHand);
       });
     },
 
@@ -290,19 +279,12 @@ define([
         card = Object.assign(card, this.getCardData(card));
       }
 
-      if ($("card-" + card.uid)) return;
+      if ($('card-' + card.uid)) return;
 
-      let o = this.place(
-        "tplCard",
-        card,
-        location == null ? this.getCardContainer(card) : location
-      );
+      let o = this.place('tplCard', card, location == null ? this.getCardContainer(card) : location);
       let tooltipDesc = this.getCardTooltip(card);
       if (tooltipDesc != null) {
-        this.addCustomTooltip(
-          o.id,
-          tooltipDesc.map((t) => this.formatString(t)).join("<br/>")
-        );
+        this.addCustomTooltip(o.id, tooltipDesc.map((t) => this.formatString(t)).join('<br/>'));
       }
 
       return o;
@@ -316,46 +298,48 @@ define([
       let uid = card.uid || card.id;
       let horizontal = [BALLOON].includes(card.type);
 
-      return `<div id="card-${uid}" class="goldncrash-card ${
-        card.id < 0 ? "fake" : ""
-      } ${horizontal ? "horizontal" : ""}">
+      return `<div id="card-${uid}" class="goldncrash-card ${card.id < 0 ? 'fake' : ''} ${horizontal ? 'horizontal' : ''}">
         <div class='card-inner' data-id="${card.id}" 
-            data-type="${card.type}" data-deck="${card.deck}" data-value="${
-        card.value
-      }"></div>
+            data-type="${card.type}" data-deck="${card.deck}" data-value="${card.value}"></div>
       </div>`;
     },
 
     getCardContainer(card) {
-      let t = card.location.split("_");
-      if (card.location == "hand") {
+      let t = card.location.split('_');
+      if (card.location == 'hand') {
         return $(`hand-${this.getPos(card.playerId)}`);
       }
-      if (t[0] == "guest") {
+      if (t[0] == 'guest') {
         return $(`guest-${this.getCPos(t[1])}-${card.state}`);
       }
-      if (t[0] == "balloon") {
+      if (t[0] == 'balloon') {
         return $(`zeppelin-${this.getCPos(t[1])}-${card.state}`);
       }
-      if (t[0] == "discard") {
+      if (t[0] == 'discard') {
         return $(`discard-${this.getCPos(t[1])}`);
       }
+      if (t[0] == 'treasure') {
+        return $(`chest-${this.getCPos(t[1])}`);
+      }
+      if (t[0] == 'column') {
+        return $(`column-${this.getCPos(t[2])}-${t[1]}`);
+      }
 
-      console.error("Trying to get container of a card", card);
-      return "game_play_area";
+      console.error('Trying to get container of a card', card);
+      return 'game_play_area';
     },
 
     getCardData(card) {
       let cardId = card.id;
-      if (card.flipped) {
-        let t = card.location.split("_");
+      if (card.flipped && card.id == 0) {
+        let t = card.location.split('_');
         let deck = t[1].toUpperCase();
         return {
           id: 0,
           uid: `balloon-${deck}-${card.state}`,
           type: BALLOON,
           deck,
-          value: "back",
+          value: 'back',
         };
       }
 
@@ -448,7 +432,7 @@ define([
         86: [86, CHAMOURAI, BALLOON, 3],
       };
       if (CARD_DATAS[cardId] == undefined) {
-        console.error("Unknown card:", cardId, card);
+        console.error('Unknown card:', cardId, card);
       }
       return {
         id: cardId,
@@ -457,6 +441,110 @@ define([
         value: CARD_DATAS[cardId][3],
       };
     },
+
+    notif_playCard(n) {
+      debug('Notif: play a card', n);
+
+      let card = n.args.card;
+      if (!$(`card-${card.id}`)) {
+        this.addCard(card, this.getVisibleTitleContainer());
+      }
+
+      let pos = this.getPos(n.args.player_id);
+      let counter = 'handCount';
+      this._counters[n.args.player_id][counter].incValue(-1);
+      this.slide(`card-${card.id}`, $(`column-${pos}-${n.args.columnId}`));
+    },
+
+    notif_secure(n) {
+      debug('Notif: secure a card', n);
+
+      let card = n.args.card;
+      let pos = this.getPos(n.args.player_id);
+      this.slide(`card-${card.id}`, $(`chest-${pos}`));
+    },
+
+    notif_drawCards(n) {
+      debug('Notif: drawing cards', n);
+
+      let counter = 'handCount';
+      let nCards = n.args.n;
+      if (n.args.fromDeck) this._counters[n.args.player_id]['deckCount'].incValue(-nCards);
+      if (this.isFastMode()) {
+        this._counters[this.player_id][counter].incValue(nCards);
+        return;
+      }
+
+      Promise.all(
+        Array.from(Array(nCards), (x, i) => i).map((i) => {
+          return this.wait(100 * i).then(() => {
+            let o = this.addCard({ uid: -1 }, $(`deck-${this.getPos(n.args.player_id)}`));
+            return this.slide(o, `player_board_${n.args.player_id}`, {
+              duration: 1000,
+              destroy: true,
+              phantom: false,
+            });
+          });
+        })
+      ).then(() => {
+        this._counters[n.args.player_id][counter].incValue(nCards);
+        this.notifqueue.setSynchronousDuration(100);
+      });
+    },
+
+    notif_pDrawCards(n) {
+      debug('Notif: private drawing cards', n);
+
+      if (n.args.fromDeck) this._counters[this.player_id]['deckCount'].incValue(-n.args.cards.length);
+
+      let counter = 'handCount';
+      if (this.isFastMode()) {
+        n.args.cards.forEach((card) => {
+          this.addCard(card);
+        });
+        this._counters[this.player_id][counter].incValue(n.args.cards.length);
+        // if (n.args.pilfering) this._counters[n.args.pilfering][counter].incValue(-n.args.cards.length);
+        return;
+      }
+
+      Promise.all(
+        n.args.cards.map((card, i) => {
+          return this.wait(100 * i).then(() => {
+            this.addCard(card);
+            let container = this.getCardContainer(card);
+            // let source = n.args.pilfering ? $(`counter-${n.args.pilfering}-${counter}`) :  $(`deck-${this.getPos(this.player_id)}`);
+            let source = $(`deck-${this.getPos(this.player_id)}`);
+
+            return this.slide(`card-${card.id}`, container, {
+              from: source,
+              duration: 1000,
+            });
+          });
+        })
+      ).then(() => {
+        this._counters[this.player_id][counter].incValue(n.args.cards.length);
+        // if (n.args.pilfering) this._counters[n.args.pilfering][counter].incValue(-n.args.cards.length);
+
+        this.notifqueue.setSynchronousDuration(100);
+      });
+    },
+
+    // public static function draw($player, $cards, $fromDeck)
+    // {
+    //   $data = [
+    //     'player' => $player,
+    //     'cards' => $cards,
+    //     'n' => $cards->count(),
+    //     'fromDeck' => $fromDeck
+    //   ];
+
+    //   $msg = ($fromDeck) ? clienttranslate('${player_name} draw ${n} card(s) from his deck')
+    //     : clienttranslate('${player_name} draw ${n} card(s) from his discard pile');
+
+    //   static::notify($player, 'draw', '', $data);
+    //   unset($data['cards']);
+    //   static::notifyAll('draw', $msg, $data);
+
     ////////////////////////////////////////////////////////////
     // _____                          _   _   _
     // |  ___|__  _ __ _ __ ___   __ _| |_| |_(_)_ __   __ _
@@ -473,13 +561,9 @@ define([
       let type = lowerCase ? name.toLowerCase() : name;
       const NO_TEXT_ICONS = [];
       let noText = NO_TEXT_ICONS.includes(name);
-      let text = n == null ? "" : `<span>${n}</span>`;
-      return `${
-        noText ? text : ""
-      }<div class="icon-container icon-container-${type}">
-             <div class="goldncrash-icon icon-${type}">${
-        noText ? "" : text
-      }</div>
+      let text = n == null ? '' : `<span>${n}</span>`;
+      return `${noText ? text : ''}<div class="icon-container icon-container-${type}">
+             <div class="goldncrash-icon icon-${type}">${noText ? '' : text}</div>
            </div>`;
     },
 
@@ -487,14 +571,11 @@ define([
       const ICONS = [];
 
       ICONS.forEach((name) => {
-        const regex = new RegExp("<" + name + ":([^>]+)>", "g");
-        str = str.replaceAll(regex, this.formatIcon(name, "<span>$1</span>"));
-        str = str.replaceAll(
-          new RegExp("<" + name + ">", "g"),
-          this.formatIcon(name)
-        );
+        const regex = new RegExp('<' + name + ':([^>]+)>', 'g');
+        str = str.replaceAll(regex, this.formatIcon(name, '<span>$1</span>'));
+        str = str.replaceAll(new RegExp('<' + name + '>', 'g'), this.formatIcon(name));
       });
-      str = str.replace(/\*\*([^\*]+)\*\*/g, "<b>$1</b>");
+      str = str.replace(/\*\*([^\*]+)\*\*/g, '<b>$1</b>');
 
       return str;
     },
@@ -511,7 +592,7 @@ define([
           log = this.formatString(_(log));
         }
       } catch (e) {
-        console.error(log, args, "Exception thrown", e.stack);
+        console.error(log, args, 'Exception thrown', e.stack);
       }
 
       return this.inherited(arguments);
@@ -526,17 +607,17 @@ define([
     //////////////////////////////////////////////////////
 
     setupInfoPanel() {
-      dojo.place(this.tplInfoPanel(), "player_boards", "first");
-      let chk = $("help-mode-chk");
-      dojo.connect(chk, "onchange", () => this.toggleHelpMode(chk.checked));
-      this.addTooltip("help-mode-switch", "", _("Toggle help/safe mode."));
+      dojo.place(this.tplInfoPanel(), 'player_boards', 'first');
+      let chk = $('help-mode-chk');
+      dojo.connect(chk, 'onchange', () => this.toggleHelpMode(chk.checked));
+      this.addTooltip('help-mode-switch', '', _('Toggle help/safe mode.'));
 
-      this._settingsModal = new customgame.modal("showSettings", {
-        class: "goldncrash_popin",
-        closeIcon: "fa-times",
-        title: _("Settings"),
-        closeAction: "hide",
-        verticalAlign: "flex-start",
+      this._settingsModal = new customgame.modal('showSettings', {
+        class: 'goldncrash_popin',
+        closeIcon: 'fa-times',
+        title: _('Settings'),
+        closeAction: 'hide',
+        verticalAlign: 'flex-start',
         contentsTpl: `<div id='goldncrash-settings'>
               <div id='goldncrash-settings-header'></div>
               <div id="settings-controls-container"></div>
@@ -581,7 +662,7 @@ define([
 
     updatePlayerOrdering() {
       this.inherited(arguments);
-      dojo.place("player_board_config", "player_boards", "first");
+      dojo.place('player_board_config', 'player_boards', 'first');
     },
 
     updateLayout() {
@@ -589,12 +670,11 @@ define([
       return; // TODO
       const ROOT = document.documentElement;
 
-      const WIDTH =
-        $("goldncrash-main-container").getBoundingClientRect()["width"] - 5;
+      const WIDTH = $('goldncrash-main-container').getBoundingClientRect()['width'] - 5;
       const BOARD_WIDTH = 1510;
       const BOARD_SIZE = (WIDTH * this.settings.boardSizes) / 100;
       let boardScale = BOARD_SIZE / BOARD_WIDTH;
-      ROOT.style.setProperty("--goldncrashBoardScale", boardScale);
+      ROOT.style.setProperty('--goldncrashBoardScale', boardScale);
     },
   });
 });
