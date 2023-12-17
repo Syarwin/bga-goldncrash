@@ -478,7 +478,10 @@ define([
       Promise.all(
         Array.from(Array(nCards), (x, i) => i).map((i) => {
           return this.wait(100 * i).then(() => {
-            let o = this.addCard({ uid: -1 }, $(`deck-${this.getPos(n.args.player_id)}`));
+            let source = n.args.fromDeck
+              ? $(`deck-${this.getPos(n.args.player_id)}`)
+              : $(`discard-${this.getPos(n.args.player_id)}`);
+            let o = this.addCard({ uid: -1 }, source);
             return this.slide(o, `player_board_${n.args.player_id}`, {
               duration: 1000,
               destroy: true,
@@ -513,7 +516,7 @@ define([
             this.addCard(card);
             let container = this.getCardContainer(card);
             // let source = n.args.pilfering ? $(`counter-${n.args.pilfering}-${counter}`) :  $(`deck-${this.getPos(this.player_id)}`);
-            let source = $(`deck-${this.getPos(this.player_id)}`);
+            let source = n.args.fromDeck ? $(`deck-${this.getPos(this.player_id)}`) : $(`discard-${this.getPos(this.player_id)}`);
 
             return this.slide(`card-${card.id}`, container, {
               from: source,
