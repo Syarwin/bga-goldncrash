@@ -20,7 +20,7 @@ class Notifications
       'force' => $n,
       'card' => $balloon,
     ];
-    $msg = clienttranslate('With a bomb level ${force}, ${player_name} destroys Zeppelin in column ${columnId}');
+    $msg = clienttranslate('With a bomb level ${force}, ${player_name} destroys Zeppelin in column ${displayableColumnId}');
     static::notifyAll('bombPass', $msg, $data);
   }
 
@@ -43,11 +43,56 @@ class Notifications
     static::notify(
       $defensivePlayer,
       'bombcheck',
-      clienttranslate('(Your Zeppelin in column ${columnId) has a strengh of ${value})'),
+      clienttranslate('(Your Zeppelin in column ${displayableColumnId) has a strengh of ${value})'),
       $privateData
     );
-    $msg = clienttranslate('With a bomb level ${force}, ${player_name} failed to destroy Zeppelin in column ${columnId}');
+    $msg = clienttranslate('With a bomb level ${force}, ${player_name} failed to destroy Zeppelin in column ${displayableColumnId}');
     static::notifyAll('bombPass', $msg, $data);
+  }
+
+  /**
+   * clear a full column (triggered when a third card of same color is played in a column)
+   * cards are placed in the discard in the same order they were in the column
+   */
+  public static function clearColumn($columnId, $player)
+  {
+    $data = [
+      'player' => $player,
+      'columnId' => $columnId,
+    ];
+
+    $msg = clienttranslate('${player_name} empty his his column ${displayableColumnId}');
+
+    static::notifyAll('clearColumn', $msg, $data);
+  }
+
+  public static function crackSafe($card, $player)
+  {
+    $data = [
+      'player' => $player,
+      'card' => $card,
+    ];
+
+    $msg = clienttranslate('${player_name} discards his last treasure');
+
+    static::notifyAll('crackSafe', $msg, $data);
+  }
+
+  /**
+   * move a card from top of a column to discard
+   */
+  public static function discard($cards, $columnId, $player)
+  {
+    $data = [
+      'player' => $player,
+      'card' => $cards,
+      'columnId' => $columnId,
+      'n' => count($cards)
+    ];
+
+    $msg = clienttranslate('${player_name} discard ${n} card(s) from his column ${displayableColumnId}');
+
+    static::notifyAll('discard', $msg, $data);
   }
 
   /**
@@ -89,7 +134,7 @@ class Notifications
       'columnId' => $columnId,
     ];
 
-    $msg = clienttranslate('${player_name} play a new card on column ${columnId}');
+    $msg = clienttranslate('${player_name} play a new card on column ${displayableColumnId}');
 
     static::notifyAll('playCard', $msg, $data);
   }
@@ -106,8 +151,8 @@ class Notifications
 
     $msg =
       $card->getType() == GUEST
-        ? clienttranslate('${player_name} definitely secure a Guest and all cards under it')
-        : clienttranslate('${player_name} secure a new card');
+      ? clienttranslate('${player_name} definitely secure a Guest and all cards under it')
+      : clienttranslate('${player_name} secure a new card');
 
     static::notifyAll('secure', $msg, $data);
   }
@@ -167,6 +212,10 @@ class Notifications
       $data['player_id2'] = $data['player2']->getId();
       unset($data['player2']);
     }
+
+    if (isset($data['columnId'])) {
+      $data['displayableColumnId'] = $data['columnId'] + 1;
+    }
   }
 
   //          █████                          █████     ███
@@ -184,10 +233,5 @@ class Notifications
   public static function cheat()
   {
     static::notifyAll('refresh', '', []);
-  }
-
-  public static function invitePlayersToAlpha($name, $message, $data)
-  {
-    static::notify(Players::getCurrent(), $name, $message, $data);
   }
 }

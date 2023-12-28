@@ -25,7 +25,7 @@ trait PlayerTurnTrait
 
 		foreach ($playablesCard as $cardId => $card) {
 			$type = $card->getType();
-			$whereToPlay[$cardId] = array_filter(array_keys($columns), fn ($columnId) => $columns[$columnId][$type]);
+			$whereToPlay[$cardId] = array_values(array_filter(array_keys($columns), fn ($columnId) => $columns[$columnId][$type]));
 		}
 
 		return [
@@ -34,14 +34,41 @@ trait PlayerTurnTrait
 					'canDraw' => Cards::countInLocation($activePlayer->getDeckName()) > 0,
 					'columns' => $columns,
 					'playableCardIds' => $whereToPlay,
-					'discardableCardIds' => Cards::getDiscardableColumn($activePlayer)
+					'discardableCardIds' => Cards::getDiscardableCards($activePlayer)
 				]
 			]
 		];
 	}
 
-	public function actDiscard($cardId, $columnId)
+	public function actDiscard($cardId)
 	{
+		// get infos
+		$player = Players::getActive();
+		self::checkAction('actDiscard');
+
+		$args = $this->getArgs();
+
+		if (!array_key_exists($cardId, $args['_private'][$player->getId()]['discardableCardIds'])) {
+			throw new \BgaVisibleSystemException("You can't discard this card, $cardId.");
+		}
+
+		$card = Cards::get($cardId);
+		$columnId = $card->getColumnId();
+
+		$nextState = $player->discardFromColumn($columnId);
+
+		// $this->checkGetGuest($player, $columnId);
+
+		// //check if the column must be discarded entirely
+		// if ($n >= 3) {
+		// 	$player->clearColumn($columnId);
+		// }
+
+		Globals::setActiveColumn($columnId);
+		Globals::setLastAction('discard');
+
+
+		$this->finishMove($nextState);
 	}
 
 	public function actPlay($cardId, $columnId)
@@ -80,6 +107,7 @@ trait PlayerTurnTrait
 		}
 
 		Globals::setActiveColumn($columnId);
+		Globals::setLastAction('play');
 
 
 		$this->finishMove($nextState);
@@ -94,7 +122,7 @@ trait PlayerTurnTrait
 				if (Cards::getTotalValue($player->getColumn($columnId)) < 9) return;
 				break;
 			case 2:
-				if (Globals::getActiveColumn() != $columnId) return;
+				if (Globals::getActiveColumn() != $columnId || Globals::getLastAction() === "discard") return;
 				break;
 			case 3:
 				if (Cards::getNOfSpecificColor($player, $columnId, GREEN) < 3) return;

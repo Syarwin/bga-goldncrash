@@ -35,6 +35,11 @@ class Card extends \GNC\Helpers\DB_Model
         }
     }
 
+    public function getColumnId()
+    {
+        return explode('_', $this->getLocation())[1];
+    }
+
     public function isSupported($players, $options)
     {
         return true; // Useful for expansion/ban list/ etc...

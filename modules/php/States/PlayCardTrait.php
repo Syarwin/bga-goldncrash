@@ -26,16 +26,17 @@ trait PlayCardTrait
 
 	public function playEffectBlue($n, $player, $columnId)
 	{
-		$player->getOpponent()->discardFromColumn($columnId, $n);
+		$player->getOpponent()->discardFromColumn($columnId, $n, false);
 	}
 
 	public function playEffectRed($n, $player, $columnId)
 	{
-		$player->getOpponent()->checkBomb($columnId, $n);
+		return $player->getOpponent()->checkBomb($columnId, $n);
 	}
 
 	public function playEffectBrown($n, $player, $columnId)
 	{
+		Globals::setRemainingActions($n);
 		return ST_SECURE;
 	}
 

@@ -39,7 +39,7 @@ class Player extends \GNC\Helpers\DB_Model
   }
 
   /**
-   * TODO Check if his own balloon explodes
+   * Check if his own balloon explodes
    */
   public function checkBomb($columnId, $n)
   {
@@ -48,24 +48,36 @@ class Player extends \GNC\Helpers\DB_Model
     if ($balloonValue <= $n) {
       $balloon->setFlipped(NOT_FLIPPED);
       Notifications::bombPass($this->getOpponent(), $columnId, $n, $balloon);
+      return $this->checkEndGame();
     } else {
       Notifications::bombFail($this->getOpponent(), $columnId, $n, $balloon, $this);
     }
-    //TODO Notif
   }
 
-  public function discardFromColumn($columnId, $n = 1, $withEffect = false)
+  public function checkEndGame()
+  {
+    $balloons = $this->getBalloons();
+    foreach ($balloons as $cardId => $balloon) {
+      if ($balloon->getFlipped() == FLIPPED) return;
+    }
+    return ST_PRE_END_OF_GAME;
+  }
+
+  public function discardFromColumn($columnId, $n = 1, $withEffect = true)
   {
     $nextState = 0;
+    $cards = [];
     for ($i = 0; $i < $n; $i++) {
       $card = Cards::getTopOf($this->getColumnName($columnId));
+      $cards[] = $card;
       Cards::insertOnTop($card->getId(), $this->getDiscardName());
       if ($withEffect) {
         $method = 'discardEffect' . ucfirst($card->getType());
-        $nextState = Game::get()->$method($card, $columnId, $this);
+        $nextState = Game::get()->$method($columnId, $this);
       }
     }
-    //TODO Notif
+    Notifications::discard($cards, $columnId, $this);
+
     return $nextState;
   }
 
@@ -75,8 +87,7 @@ class Player extends \GNC\Helpers\DB_Model
       $card = Cards::getBottomOf($this->getColumnName($columnId));
       Cards::insertOnTop($card->getId(), $this->getDiscardName());
     }
-
-    //TODO Notif
+    Notifications::clearColumn($columnId, $this);
   }
 
   public function getUiData($currentPlayerId = null)
@@ -118,12 +129,13 @@ class Player extends \GNC\Helpers\DB_Model
   public function getBalloons($n = null)
   {
     $location = $this->is(CHAMOURAI) ? BALLOONS_CHAMOURAI : BALLOONS_POULPIRATE;
-    return Cards::getInLocation($location, $n)->first();
+    return !is_null($n) ? Cards::getInLocation($location, $n)->first() : Cards::getInLocation($location);
   }
 
   public function getColumn($n)
   {
     $location = $this->getColumnName($n);
+    // die($location);
     return Cards::getInLocation($location);
   }
 

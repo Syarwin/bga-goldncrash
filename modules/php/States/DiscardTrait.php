@@ -14,27 +14,39 @@ use GNC\Models\Player;
 
 trait PlayCardTrait
 {
-	public function discardEffectGreen($card, $columnId, $player)
+	public function discardEffectGreen($columnId, $player)
 	{
+		return ST_OBSERVE;
 	}
 
-	public function discardEffectPurple($card, $columnId, $player)
+	public function discardEffectPurple($columnId, $player)
 	{
+		return ST_CALL_BACK;
 	}
 
-	public function discardEffectBlue($card, $columnId, $player)
+	public function discardEffectBlue($columnId, $player)
 	{
+		return ST_MOVE;
 	}
 
-	public function discardEffectRed($card, $columnId, $player)
+	public function discardEffectRed($columnId, $player)
 	{
+		$opp = $player->getOpponent();
+		$card = Cards::getTopOf($opp->getTreasureName());
+
+		if ($card->getDeck() != GUEST) {
+			Cards::move($card->getId(), $opp->getDiscardName());
+			Notifications::crackSafe($card, $opp);
+		}
 	}
 
-	public function discardEffectBrown($card, $columnId, $player)
+	public function discardEffectBrown($columnId, $player)
 	{
+		$card = Cards::getTopOf($player->getOpponent()->getDiscardName());
+		$player->secure($card);
 	}
 
-	public function discardEffectYellow($card, $columnId, $player)
+	public function discardEffectYellow($columnId, $player)
 	{
 		return;
 	}
