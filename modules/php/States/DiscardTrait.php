@@ -12,7 +12,7 @@ use GNC\Managers\Cards;
 use GNC\Managers\Players;
 use GNC\Models\Player;
 
-trait PlayCardTrait
+trait DiscardTrait
 {
 	public function discardEffectGreen($columnId, $player)
 	{

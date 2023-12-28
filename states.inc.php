@@ -132,7 +132,7 @@ $machinestates = [
     ],
 
     ST_CALL_BACK => [
-        "name" => "secure",
+        "name" => "callBack",
         "description" => clienttranslate('${actplayer} must call back a card from one of his columns'),
         "descriptionmyturn" => clienttranslate('${you} must call back a card from one of your columns'),
         "type" => ACTIVE_PLAYER,

@@ -50,6 +50,9 @@ class GoldnCrash extends Table
   use GNC\States\GameTrait;
   use GNC\States\ConfirmTrait;
   use GNC\States\PlayCardTrait;
+  use GNC\States\DiscardTrait;
+  use GNC\States\SecureTrait;
+
 
 
   public static $instance = null;

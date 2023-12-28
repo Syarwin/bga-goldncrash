@@ -51,6 +51,22 @@ class Notifications
   }
 
   /**
+   * take in hand the last card of one column
+   */
+  public static function callBack($card, $columnId, $player)
+  {
+    $data = [
+      'player' => $player,
+      'card' => $card,
+      'columnId' => $columnId,
+    ];
+
+    $msg = clienttranslate('${player_name} calls back the last card from his column ${displayableColumnId}');
+
+    static::notifyAll('callBack', $msg, $data);
+  }
+
+  /**
    * clear a full column (triggered when a third card of same color is played in a column)
    * cards are placed in the discard in the same order they were in the column
    */
@@ -61,7 +77,7 @@ class Notifications
       'columnId' => $columnId,
     ];
 
-    $msg = clienttranslate('${player_name} empty his his column ${displayableColumnId}');
+    $msg = clienttranslate('${player_name} empty his column ${displayableColumnId}');
 
     static::notifyAll('clearColumn', $msg, $data);
   }
@@ -121,6 +137,20 @@ class Notifications
     );
     unset($data['cards']);
     static::notifyAll('drawCards', $msg, $data);
+  }
+
+  public static function move($card, $fromColumnId, $toColumnId, $player)
+  {
+    $data = [
+      'player' => $player,
+      'card' => $card,
+      'columnId' => $fromColumnId,
+      'columnId2' => $toColumnId
+    ];
+
+    $msg = clienttranslate('${player_name} move a card from column ${displayableColumnId} to column ${displayableColumnId2}');
+
+    static::notifyAll('move', $msg, $data);
   }
 
   /**
@@ -215,6 +245,9 @@ class Notifications
 
     if (isset($data['columnId'])) {
       $data['displayableColumnId'] = $data['columnId'] + 1;
+      if (isset($data['columnId2'])) {
+        $data['displayableColumnId2'] = $data['columnId2'] + 1;
+      }
     }
   }
 

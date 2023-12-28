@@ -38,6 +38,21 @@ class Player extends \GNC\Helpers\DB_Model
     Notifications::secure($card, $this);
   }
 
+  public function callBack($card)
+  {
+    $columnId = $card->getColumnId();
+    $card->setLocation(HAND);
+
+    Notifications::callBack($card, $columnId, $this);
+  }
+
+  public function move($card, $toColumnId)
+  {
+    $fromColumnId = $card->getColumnId();
+    $card->setLocation($this->getColumnName($toColumnId));
+    Notifications::move($card, $fromColumnId, $toColumnId, $this);
+  }
+
   /**
    * Check if his own balloon explodes
    */

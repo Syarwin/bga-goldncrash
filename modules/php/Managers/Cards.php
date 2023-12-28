@@ -132,14 +132,10 @@ class Cards extends \GNC\Helpers\Pieces
   //check if there are n available cards in adjacents
   public static function isAdjacentAvailable($player, $columnId, $n = 1)
   {
-    $adjacentColumns = [
-      0 => [1],
-      1 => [0, 2],
-      2 => [1],
-    ];
+
 
     $nCards = 0;
-    foreach ($adjacentColumns[$columnId] as $column) {
+    foreach (ADJACENT_COLUMNS[$columnId] as $column) {
       $nCards += $player->getColumn($column)->count();
     }
     return $nCards >= $n;

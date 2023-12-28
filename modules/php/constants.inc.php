@@ -37,6 +37,11 @@ const GUESTS_CHAMOURAI = 'guest_' . CHAMOURAI; //state 0, 1, 2 for column
 const BALLOONS_POULPIRATE = 'balloon_' . POULPIRATE; //state 0, 1, 2 for column
 const BALLOONS_CHAMOURAI = 'balloon_' . CHAMOURAI; //state 0, 1, 2 for column
 
+const ADJACENT_COLUMNS = [
+	0 => [1],
+	1 => [0, 2],
+	2 => [1],
+];
 
 /*
  * State constants

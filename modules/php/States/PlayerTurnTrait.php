@@ -113,7 +113,7 @@ trait PlayerTurnTrait
 		$this->finishMove($nextState);
 	}
 
-	public function checkGetGuest($player, $columnId)
+	public function checkGetGuest($player, $columnId, $isPlayCardAction = true)
 	{
 		$guest = $player->getGuest($columnId);
 
@@ -122,7 +122,7 @@ trait PlayerTurnTrait
 				if (Cards::getTotalValue($player->getColumn($columnId)) < 9) return;
 				break;
 			case 2:
-				if (Globals::getActiveColumn() != $columnId || Globals::getLastAction() === "discard") return;
+				if (!$isPlayCardAction || Globals::getActiveColumn() != $columnId || Globals::getLastAction() === "discard") return;
 				break;
 			case 3:
 				if (Cards::getNOfSpecificColor($player, $columnId, GREEN) < 3) return;
