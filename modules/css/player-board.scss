@@ -105,6 +105,7 @@
 
         .columns-zone {
             display: flex;
+            align-items: end;
 
             .column-holder {
                 width: $cardH;
@@ -129,6 +130,10 @@
                     &.selected {
                         border: 1px solid green;
                         outline: 2px solid green;
+                    }
+
+                    .goldncrash-card ~ .goldncrash-card {
+                        margin-top: calc(var(--cardScale) * 0.78 * (-415px));
                     }
                 }
 
@@ -170,6 +175,8 @@
             }
 
             .columns-zone {
+                align-items: start;
+
                 .column-holder {
                     .column-cards-holder {
                         order: 3;

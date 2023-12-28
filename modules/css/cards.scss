@@ -111,6 +111,15 @@
       &[data-value="back"] {
         background-position: 100% 66.66%;
       }
+      &[data-value="1"] {
+        background-position: 40% 100%;
+      }
+      &[data-value="2"] {
+        background-position: 20% 100%;
+      }
+      &[data-value="3"] {
+        background-position: 0% 100%;
+      }
     }
 
     &[data-deck="GUEST"] {

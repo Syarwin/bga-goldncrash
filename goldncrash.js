@@ -225,7 +225,7 @@ define([
       });
 
       let selectedCard = null;
-      args.discardableCardIds.forEach((cardId) => {
+      Object.values(args.discardableCardIds).forEach((cardId) => {
         this.onClick(`card-${cardId}`, () => {
           if (selectedCard !== null) $(`card-${selectedCard}`).classList.remove('selected');
           selectedCard = cardId;
@@ -253,6 +253,20 @@ define([
               cardId: args.cardId,
               columnId: selectedColumn,
             })
+          );
+        });
+      });
+    },
+
+    onEnteringStateSecure(args) {
+      let selectedCard = null;
+      args.cardIds.forEach((cardId) => {
+        this.onClick(`card-${cardId}`, () => {
+          if (selectedCard !== null) $(`card-${selectedCard}`).classList.remove('selected');
+          selectedCard = cardId;
+          $(`card-${selectedCard}`).classList.add('selected');
+          this.addPrimaryActionButton('btnConfirm', _('Confirm secure'), () =>
+            this.takeAction('actSecure', { cardId: selectedCard })
           );
         });
       });

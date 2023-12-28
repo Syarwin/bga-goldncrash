@@ -14,49 +14,53 @@ use GNC\Models\Player;
 
 trait SecureTrait
 {
-	public function argSecure()
-	{
-		$activePlayer = Players::getActive();
-		$activeColumn = Globals::getActiveColumn();
+  public function stSecure()
+  {
+  }
 
-		$columnIds = array_filter([1, 2, 3], fn ($cId) => $cId != $activeColumn);
+  public function argSecure()
+  {
+    $activePlayer = Players::getActive();
+    $activeColumn = Globals::getActiveColumn();
 
-		$cardIds = [];
+    $columnIds = array_filter([1, 2, 3], fn($cId) => $cId != $activeColumn);
 
-		foreach ($columnIds as $columnId) {
-			$card = $activePlayer->getlastCardOfColumn($columnId);
-			if ($card) {
-				$cardIds[] = $card->getId();
-			}
-		}
+    $cardIds = [];
 
-		return [
-			'cardIds' => $cardIds,
-			'remainingActions' => Globals::getRemainingActions()
-		];
-	}
+    foreach ($columnIds as $columnId) {
+      $card = $activePlayer->getlastCardOfColumn($columnId);
+      if ($card) {
+        $cardIds[] = $card->getId();
+      }
+    }
 
-	public function actSecure($cardId)
-	{
-		// get infos
-		$player = Players::getActive();
-		self::checkAction('actSecure');
+    return [
+      'cardIds' => $cardIds,
+      'remainingActions' => Globals::getRemainingActions(),
+    ];
+  }
 
-		$args = $this->getArgs();
+  public function actSecure($cardId)
+  {
+    // get infos
+    $player = Players::getActive();
+    self::checkAction('actSecure');
 
-		if (!in_array($cardId, $args['cardIds'])) {
-			throw new \BgaVisibleSystemException("You can't secure this card, $cardId.");
-		}
+    $args = $this->getArgs();
 
-		$player->secure(Cards::get($cardId));
+    if (!in_array($cardId, $args['cardIds'])) {
+      throw new \BgaVisibleSystemException("You can't secure this card, $cardId.");
+    }
 
-		$remainingActions = Globals::getRemainingActions() - 1;
+    $player->secure(Cards::get($cardId));
 
-		if ($remainingActions > 0) {
-			Globals::setRemainingActions($remainingActions);
-			Game::transition(AGAIN);
-		} else {
-			Game::transition(END_TURN);
-		}
-	}
+    $remainingActions = Globals::getRemainingActions() - 1;
+
+    if ($remainingActions > 0) {
+      Globals::setRemainingActions($remainingActions);
+      Game::transition(AGAIN);
+    } else {
+      Game::transition(END_TURN);
+    }
+  }
 }

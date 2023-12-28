@@ -3,12 +3,12 @@
 /**
  *------
  * BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
- * GoldnCrash implementation : ©  Timothée Pecatte <tim.pecatte@gmail.com>, Emmanuel Albisser <emmanuel.albisser@gmail.com> 
+ * GoldnCrash implementation : ©  Timothée Pecatte <tim.pecatte@gmail.com>, Emmanuel Albisser <emmanuel.albisser@gmail.com>
  *
  * This code has been produced on the BGA studio platform for use on http://boardgamearena.com.
  * See http://en.boardgamearena.com/#!doc/Studio for more information.
  * -----
- * 
+ *
  * states.inc.php
  *
  * GoldnCrash game states description
@@ -51,126 +51,128 @@
 require_once 'modules/php/constants.inc.php';
 
 $machinestates = [
-
-    // The initial state. Please do not modify.
-    ST_GAME_SETUP => [
-        "name" => "gameSetup",
-        "description" => "",
-        "type" => "manager",
-        "action" => "stGameSetup",
-        "transitions" => [
-            "" => ST_PLAYER_TURN,
-        ]
+  // The initial state. Please do not modify.
+  ST_GAME_SETUP => [
+    'name' => 'gameSetup',
+    'description' => '',
+    'type' => 'manager',
+    'action' => 'stGameSetup',
+    'transitions' => [
+      '' => ST_PLAYER_TURN,
     ],
+  ],
 
-    ST_PLAYER_TURN => [
-        "name" => "playerTurn",
-        "description" => clienttranslate('${actplayer} must draw, play or discard a card'),
-        "descriptionmyturn" => clienttranslate('${you} must draw, play or discard a card'),
-        "type" => ACTIVE_PLAYER,
-        "args" => "argPlayerTurn",
-        "possibleactions" => ['actPlay', 'actDraw', 'actDiscard'],
-        "transitions" => [
-            'secondTurn' => ST_PLAYER_TURN,
-            'secure' => ST_SECURE,
-            'move' => ST_MOVE,
-            'callBack' => ST_CALL_BACK,
-            'observer' => ST_OBSERVE,
-            END_TURN => ST_CONFIRM
-        ]
+  ST_PLAYER_TURN => [
+    'name' => 'playerTurn',
+    'description' => clienttranslate('${actplayer} must draw, play or discard a card'),
+    'descriptionmyturn' => clienttranslate('${you} must draw, play or discard a card'),
+    'type' => ACTIVE_PLAYER,
+    'args' => 'argPlayerTurn',
+    'possibleactions' => ['actPlay', 'actDraw', 'actDiscard'],
+    'transitions' => [
+      'secondTurn' => ST_PLAYER_TURN,
+      'secure' => ST_SECURE,
+      'move' => ST_MOVE,
+      'callBack' => ST_CALL_BACK,
+      'observer' => ST_OBSERVE,
+      END_TURN => ST_CONFIRM,
     ],
+  ],
 
-    ST_CONFIRM => [
-        "name" => "confirm",
-        "description" => clienttranslate('${actplayer} must confirm his turn'),
-        "descriptionmyturn" => clienttranslate('${you} must confirm your turn'),
-        "type" => ACTIVE_PLAYER,
-        "args" => 'argConfirm',
-        "action" => 'stConfirm',
-        "possibleactions" => ['actConfirm', 'actUndo'],
-        "transitions" => [
-            UNDO => ST_PLAYER_TURN,
-            END_TURN => ST_NEXT_PLAYER,
-        ]
+  ST_CONFIRM => [
+    'name' => 'confirm',
+    'description' => clienttranslate('${actplayer} must confirm his turn'),
+    'descriptionmyturn' => clienttranslate('${you} must confirm your turn'),
+    'type' => ACTIVE_PLAYER,
+    'args' => 'argConfirm',
+    'action' => 'stConfirm',
+    'possibleactions' => ['actConfirm', 'actUndo'],
+    'transitions' => [
+      UNDO => ST_PLAYER_TURN,
+      END_TURN => ST_NEXT_PLAYER,
     ],
+  ],
 
-    ST_NEXT_PLAYER => [
-        "name" => "nextPlayer",
-        "description" => clienttranslate('Next player'),
-        "type" => GAME,
-        "action" => 'stNextPlayer',
-        "transitions" => [
-            END_GAME => ST_PRE_END_OF_GAME,
-            END_TURN => ST_PLAYER_TURN,
-        ]
+  ST_NEXT_PLAYER => [
+    'name' => 'nextPlayer',
+    'description' => clienttranslate('Next player'),
+    'type' => GAME,
+    'action' => 'stNextPlayer',
+    'transitions' => [
+      END_GAME => ST_PRE_END_OF_GAME,
+      END_TURN => ST_PLAYER_TURN,
     ],
+  ],
 
-    ST_SECURE => [
-        "name" => "secure",
-        "description" => clienttranslate('${actplayer} must secure a card from one of his adjacent columns (X {remainingMoves})'),
-        "descriptionmyturn" => clienttranslate('${you} must secure a card from one of your adjacent columns (X {remainingMoves})'),
-        "type" => ACTIVE_PLAYER,
-        "args" => "argSecure",
-        'action' => 'stSecure',
-        "possibleactions" => ['actSecure'],
-        "transitions" => [
-            AGAIN => ST_SECURE,
-            END_TURN => ST_CONFIRM
-        ]
+  ST_SECURE => [
+    'name' => 'secure',
+    'description' => clienttranslate('${actplayer} must secure a card from one of his adjacent columns (X ${remainingActions})'),
+    'descriptionmyturn' => clienttranslate('${you} must secure a card from one of your adjacent columns (X ${remainingActions})'),
+    'type' => ACTIVE_PLAYER,
+    'args' => 'argSecure',
+    'action' => 'stSecure',
+    'possibleactions' => ['actSecure'],
+    'transitions' => [
+      AGAIN => ST_SECURE,
+      END_TURN => ST_CONFIRM,
     ],
+  ],
 
-    ST_MOVE => [
-        "name" => "move",
-        "description" => clienttranslate('${actplayer} must move a card from one of his adjacent columns'),
-        "descriptionmyturn" => clienttranslate('${you} must move a card from one of your adjacent columns'),
-        "type" => ACTIVE_PLAYER,
-        "args" => "argMove",
-        "possibleactions" => ['actMove'],
-        "transitions" => [
-            END_TURN => ST_CONFIRM
-        ]
+  ST_MOVE => [
+    'name' => 'move',
+    'description' => clienttranslate('${actplayer} must move a card from one of his adjacent columns'),
+    'descriptionmyturn' => clienttranslate('${you} must move a card from one of your adjacent columns'),
+    'type' => ACTIVE_PLAYER,
+    'args' => 'argMove',
+    'possibleactions' => ['actMove'],
+    'transitions' => [
+      END_TURN => ST_CONFIRM,
     ],
+  ],
 
-    ST_CALL_BACK => [
-        "name" => "callBack",
-        "description" => clienttranslate('${actplayer} must call back a card from one of his columns'),
-        "descriptionmyturn" => clienttranslate('${you} must call back a card from one of your columns'),
-        "type" => ACTIVE_PLAYER,
-        "args" => "argCallBack",
-        'action' => 'stCallBack',
-        "possibleactions" => ['actCallBack'],
-        "transitions" => [
-            END_TURN => ST_CONFIRM
-        ]
+  ST_CALL_BACK => [
+    'name' => 'callBack',
+    'description' => clienttranslate('${actplayer} must call back a card from one of his columns'),
+    'descriptionmyturn' => clienttranslate('${you} must call back a card from one of your columns'),
+    'type' => ACTIVE_PLAYER,
+    'args' => 'argCallBack',
+    'action' => 'stCallBack',
+    'possibleactions' => ['actCallBack'],
+    'transitions' => [
+      END_TURN => ST_CONFIRM,
     ],
+  ],
 
-    ST_OBSERVE => [
-        "name" => "secure",
-        "description" => clienttranslate('${actplayer} can observe the 2 first cards of his Crew deck and replace them on the top or on the bottom'),
-        "descriptionmyturn" => clienttranslate('${you} can observe the 2 first cards of your Crew deck and replace them on the top or on the bottom'),
-        "type" => ACTIVE_PLAYER,
-        "args" => "argObserve",
-        "possibleactions" => ['actReplace'],
-        "transitions" => [
-            END_TURN => ST_NEXT_PLAYER
-        ]
+  ST_OBSERVE => [
+    'name' => 'secure',
+    'description' => clienttranslate(
+      '${actplayer} can observe the 2 first cards of his Crew deck and replace them on the top or on the bottom'
+    ),
+    'descriptionmyturn' => clienttranslate(
+      '${you} can observe the 2 first cards of your Crew deck and replace them on the top or on the bottom'
+    ),
+    'type' => ACTIVE_PLAYER,
+    'args' => 'argObserve',
+    'possibleactions' => ['actReplace'],
+    'transitions' => [
+      END_TURN => ST_NEXT_PLAYER,
     ],
+  ],
 
-    ST_PRE_END_OF_GAME => [
-        'name' => 'preEndOfGame',
-        'type' => GAME,
-        'action' => 'stPreEndOfGame',
-        'transitions' => ['' => ST_END_GAME],
-    ],
+  ST_PRE_END_OF_GAME => [
+    'name' => 'preEndOfGame',
+    'type' => GAME,
+    'action' => 'stPreEndOfGame',
+    'transitions' => ['' => ST_END_GAME],
+  ],
 
-    // Final state.
-    // Please do not modify (and do not overload action/args methods).
-    ST_END_GAME => [
-        "name" => "gameEnd",
-        "description" => clienttranslate("End of game"),
-        "type" => "manager",
-        "action" => "stGameEnd",
-        "args" => "argGameEnd"
-
-    ]
+  // Final state.
+  // Please do not modify (and do not overload action/args methods).
+  ST_END_GAME => [
+    'name' => 'gameEnd',
+    'description' => clienttranslate('End of game'),
+    'type' => 'manager',
+    'action' => 'stGameEnd',
+    'args' => 'argGameEnd',
+  ],
 ];
