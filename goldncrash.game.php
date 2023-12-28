@@ -52,6 +52,9 @@ class GoldnCrash extends Table
   use GNC\States\PlayCardTrait;
   use GNC\States\DiscardTrait;
   use GNC\States\SecureTrait;
+  use GNC\States\CallBackTrait;
+  use GNC\States\MoveTrait;
+  use GNC\States\ObserveTrait;
 
 
 

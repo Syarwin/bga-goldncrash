@@ -69,6 +69,49 @@ class action_goldncrash extends APP_GameAction
     self::ajaxResponse();
   }
 
+  public function actSecure()
+  {
+    self::setAjaxMode();
+
+    // Retrieve arguments
+    // Note: these arguments correspond to what has been sent through the javascript "ajaxcall" method
+    $cardId = self::getArg("cardId", AT_posint, true);
+
+    // Then, call the appropriate method in your game logic, like "playCard" or "myAction"
+    $this->game->actSecure($cardId);
+
+    self::ajaxResponse();
+  }
+
+  public function actMove()
+  {
+    self::setAjaxMode();
+
+    // Retrieve arguments
+    // Note: these arguments correspond to what has been sent through the javascript "ajaxcall" method
+    $cardId = self::getArg("cardId", AT_posint, true);
+    $columnId = self::getArg("columnId", AT_posint, true);
+
+    // Then, call the appropriate method in your game logic, like "playCard" or "myAction"
+    $this->game->actMove($cardId, $columnId);
+
+    self::ajaxResponse();
+  }
+
+  public function actCallBack()
+  {
+    self::setAjaxMode();
+
+    // Retrieve arguments
+    // Note: these arguments correspond to what has been sent through the javascript "ajaxcall" method
+    $cardId = self::getArg("cardId", AT_posint, true);
+
+    // Then, call the appropriate method in your game logic, like "playCard" or "myAction"
+    $this->game->actCallback($cardId);
+
+    self::ajaxResponse();
+  }
+
   public function actDraw()
   {
     self::setAjaxMode();
