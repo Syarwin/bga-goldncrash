@@ -344,6 +344,10 @@ html {
       background-position: 20% 66.66%; }
     .goldncrash-card .card-inner[data-type="BLUE"][data-value="3"] {
       background-position: 40% 66.66%; }
+    .goldncrash-card .card-inner[data-type="YELLOW"][data-value="4"] {
+      background-position: 60% 66.66%; }
+    .goldncrash-card .card-inner[data-type="YELLOW"][data-value="6"] {
+      background-position: 80% 66.66%; }
     .goldncrash-card .card-inner[data-type="BALLOON"][data-value="back"] {
       background-position: 100% 66.66%; }
     .goldncrash-card .card-inner[data-deck="GUEST"] {

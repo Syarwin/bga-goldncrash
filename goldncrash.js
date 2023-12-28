@@ -223,6 +223,18 @@ define([
             this.clientState('playerTurnChooseColumn', _('Where do you want to play that card?'), { cardId, columns })
           );
       });
+
+      let selectedCard = null;
+      args.discardableCardIds.forEach((cardId) => {
+        this.onClick(`card-${cardId}`, () => {
+          if (selectedCard !== null) $(`card-${selectedCard}`).classList.remove('selected');
+          selectedCard = cardId;
+          $(`card-${selectedCard}`).classList.add('selected');
+          this.addPrimaryActionButton('btnConfirm', _('Confirm discard'), () =>
+            this.takeAction('actDiscard', { cardId: selectedCard })
+          );
+        });
+      });
     },
 
     onEnteringStatePlayerTurnChooseColumn(args) {

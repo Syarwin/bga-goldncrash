@@ -166,7 +166,7 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
     clearTitleBar() {
       this.removeActionButtons();
       this.empty('customActions');
-      // this.empty('restartAction');
+      this.empty('restartAction');
       // this.empty('anytimeActions');
       // $('gameaction_status').innerHTML = '';
       // $('pagemaintitletext').innerHTML = '';

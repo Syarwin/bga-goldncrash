@@ -5,12 +5,12 @@ use GNC\Core\CheatModule;
 /**
  *------
  * BGA framework: © Gregory Isabelli <gisabelli@boardgamearena.com> & Emmanuel Colin <ecolin@boardgamearena.com>
- * GoldnCrash implementation : ©  Timothée Pecatte <tim.pecatte@gmail.com>, Emmanuel Albisser <emmanuel.albisser@gmail.com> 
+ * GoldnCrash implementation : ©  Timothée Pecatte <tim.pecatte@gmail.com>, Emmanuel Albisser <emmanuel.albisser@gmail.com>
  *
  * This code has been produced on the BGA studio platform for use on https://boardgamearena.com.
  * See http://en.doc.boardgamearena.com/Studio for more information.
  * -----
- * 
+ *
  * goldncrash.action.php
  *
  * GoldnCrash main action entry point
@@ -18,12 +18,11 @@ use GNC\Core\CheatModule;
  *
  * In this file, you are describing all the methods that can be called from your
  * user interface logic (javascript).
- *       
+ *
  * If you define a method "myAction" here, then you can call it from your javascript code with:
  * this.ajaxcall( "/goldncrash/goldncrash/myAction.html", ...)
  *
  */
-
 
 class action_goldncrash extends APP_GameAction
 {
@@ -31,11 +30,11 @@ class action_goldncrash extends APP_GameAction
   public function __default()
   {
     if (self::isArg('notifwindow')) {
-      $this->view = "common_notifwindow";
-      $this->viewArgs['table'] = self::getArg("table", AT_posint, true);
+      $this->view = 'common_notifwindow';
+      $this->viewArgs['table'] = self::getArg('table', AT_posint, true);
     } else {
-      $this->view = "goldncrash_goldncrash";
-      self::trace("Complete reinitialization of board game");
+      $this->view = 'goldncrash_goldncrash';
+      self::trace('Complete reinitialization of board game');
     }
   }
 
@@ -45,8 +44,8 @@ class action_goldncrash extends APP_GameAction
 
     // Retrieve arguments
     // Note: these arguments correspond to what has been sent through the javascript "ajaxcall" method
-    $cardId = self::getArg("cardId", AT_posint, true);
-    $columnId = self::getArg("columnId", AT_posint, true);
+    $cardId = self::getArg('cardId', AT_posint, true);
+    $columnId = self::getArg('columnId', AT_posint, true);
 
     // Then, call the appropriate method in your game logic, like "playCard" or "myAction"
     $this->game->actPlay($cardId, $columnId);
@@ -60,11 +59,10 @@ class action_goldncrash extends APP_GameAction
 
     // Retrieve arguments
     // Note: these arguments correspond to what has been sent through the javascript "ajaxcall" method
-    $cardId = self::getArg("cardId", AT_posint, true);
-    $columnId = self::getArg("columnId", AT_posint, true);
+    $cardId = self::getArg('cardId', AT_posint, true);
 
     // Then, call the appropriate method in your game logic, like "playCard" or "myAction"
-    $this->game->actDiscard($cardId, $columnId);
+    $this->game->actDiscard($cardId);
 
     self::ajaxResponse();
   }
@@ -75,7 +73,7 @@ class action_goldncrash extends APP_GameAction
 
     // Retrieve arguments
     // Note: these arguments correspond to what has been sent through the javascript "ajaxcall" method
-    $cardId = self::getArg("cardId", AT_posint, true);
+    $cardId = self::getArg('cardId', AT_posint, true);
 
     // Then, call the appropriate method in your game logic, like "playCard" or "myAction"
     $this->game->actSecure($cardId);
@@ -89,8 +87,8 @@ class action_goldncrash extends APP_GameAction
 
     // Retrieve arguments
     // Note: these arguments correspond to what has been sent through the javascript "ajaxcall" method
-    $cardId = self::getArg("cardId", AT_posint, true);
-    $columnId = self::getArg("columnId", AT_posint, true);
+    $cardId = self::getArg('cardId', AT_posint, true);
+    $columnId = self::getArg('columnId', AT_posint, true);
 
     // Then, call the appropriate method in your game logic, like "playCard" or "myAction"
     $this->game->actMove($cardId, $columnId);
@@ -104,7 +102,7 @@ class action_goldncrash extends APP_GameAction
 
     // Retrieve arguments
     // Note: these arguments correspond to what has been sent through the javascript "ajaxcall" method
-    $cardId = self::getArg("cardId", AT_posint, true);
+    $cardId = self::getArg('cardId', AT_posint, true);
 
     // Then, call the appropriate method in your game logic, like "playCard" or "myAction"
     $this->game->actCallback($cardId);
@@ -125,18 +123,17 @@ class action_goldncrash extends APP_GameAction
     self::ajaxResponse();
   }
 
-
   //   █████████  █████   █████ ██████████   █████████   ███████████
   //  ███░░░░░███░░███   ░░███ ░░███░░░░░█  ███░░░░░███ ░█░░░███░░░█
-  // ███     ░░░  ░███    ░███  ░███  █ ░  ░███    ░███ ░   ░███  ░ 
-  //░███          ░███████████  ░██████    ░███████████     ░███    
-  //░███          ░███░░░░░███  ░███░░█    ░███░░░░░███     ░███    
-  //░░███     ███ ░███    ░███  ░███ ░   █ ░███    ░███     ░███    
-  // ░░█████████  █████   █████ ██████████ █████   █████    █████   
-  //  ░░░░░░░░░  ░░░░░   ░░░░░ ░░░░░░░░░░ ░░░░░   ░░░░░    ░░░░░    
-  //                                                                
-  //                                                                
-  //                                                                
+  // ███     ░░░  ░███    ░███  ░███  █ ░  ░███    ░███ ░   ░███  ░
+  //░███          ░███████████  ░██████    ░███████████     ░███
+  //░███          ░███░░░░░███  ░███░░█    ░███░░░░░███     ░███
+  //░░███     ███ ░███    ░███  ░███ ░   █ ░███    ░███     ░███
+  // ░░█████████  █████   █████ ██████████ █████   █████    █████
+  //  ░░░░░░░░░  ░░░░░   ░░░░░ ░░░░░░░░░░ ░░░░░   ░░░░░    ░░░░░
+  //
+  //
+  //
 
   public function cheat()
   {

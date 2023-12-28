@@ -99,7 +99,14 @@
         background-position: 40% 66.66%;
       }
     }
-
+    &[data-type="YELLOW"] {
+      &[data-value="4"] {
+        background-position: 60% 66.66%;
+      }
+      &[data-value="6"] {
+        background-position: 80% 66.66%;
+      }
+    }
     &[data-type="BALLOON"] {
       &[data-value="back"] {
         background-position: 100% 66.66%;
