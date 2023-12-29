@@ -15,6 +15,7 @@
   height: $cardH;
   border-radius: calc(var(--cardScale) * 30px);
   box-shadow: 2px 2px 6px -1px black;
+  position: relative;
   .card-inner {
     border-radius: calc(var(--cardScale) * 30px);
   }
@@ -27,6 +28,54 @@
     .card-inner {
       transform-origin: 50.5% 35%;
       transform: rotate(-90deg);
+    }
+  }
+
+  .goldncrash-card {
+    position: absolute;
+    top: 0;
+    left: 0;
+    opacity: 0;
+    transition: opacity 0.6s;
+    &.fade-in {
+      opacity: 1;
+    }
+  }
+
+  &.shake-it {
+    animation: shake 0.82s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    transform: translate3d(0, 0, 0);
+    backface-visibility: hidden;
+    perspective: 1000px;
+
+    @keyframes shake {
+      10% {
+        transform: translate3d(-1px, 0, 0);
+      }
+      20% {
+        transform: translate3d(2px, 0, 0);
+      }
+      30% {
+        transform: translate3d(-4px, 0, 0);
+      }
+      50% {
+        transform: translate3d(4px, 0, 0);
+      }
+      60% {
+        transform: translate3d(-4px, 0, 0);
+      }
+      70% {
+        transform: translate3d(4px, 0, 0);
+      }
+      80% {
+        transform: translate3d(-2px, 0, 0);
+      }
+      90% {
+        transform: translate3d(1px, 0, 0);
+      }
+      100% {
+        transform: translate3d(0px, 0, 0);
+      }
     }
   }
 

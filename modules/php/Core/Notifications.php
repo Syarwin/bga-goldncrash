@@ -32,24 +32,29 @@ class Notifications
   {
     $data = [
       'player' => $player,
+      'player2' => $defensivePlayer,
+      'balloonDeck' => $defensivePlayer->getCharacter(),
       'columnId' => $columnId,
       'force' => $n,
     ];
-    $privateData = [
-      'card' => $balloon,
-      'columnId' => $columnId,
-      'value' => $balloon->getValue(),
-    ];
-    static::notify(
-      $defensivePlayer,
-      'bombcheck',
-      clienttranslate('(Your Zeppelin in column ${displayableColumnId) has a strengh of ${value})'),
-      $privateData
-    );
     $msg = clienttranslate(
       'With a bomb level ${force}, ${player_name} failed to destroy Zeppelin in column ${displayableColumnId}'
     );
-    static::notifyAll('bombPass', $msg, $data);
+    static::notifyAll('bombFail', $msg, $data);
+
+    $privateData = [
+      'player' => $player,
+      'player2' => $defensivePlayer,
+      'balloonDeck' => $defensivePlayer->getCharacter(),
+      'columnId' => $columnId,
+      'force' => $n,
+      'card' => $balloon->getUiData(),
+      'value' => $balloon->getValue(),
+    ];
+    $msg = clienttranslate(
+      'With a bomb level ${force}, ${player_name} failed your destroy Zeppelin in column ${displayableColumnId} of strength ${value}'
+    );
+    static::notify($defensivePlayer, 'pBombFail', $msg, $privateData);
   }
 
   /**

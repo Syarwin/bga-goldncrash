@@ -47,6 +47,8 @@ define([
         ['drawCards', null, (notif) => notif.args.player_id == this.player_id],
         ['pDrawCards', null],
         ['bombPass', 2000],
+        ['bombFail', 2000, (notif) => notif.args.player_id2 == this.player_id],
+        ['pBombFail', 3000],
         //  ['confirmSetupObjectives', 1200],
         //  ['clearTurn', 200],
         //  ['refreshUI', 200],
@@ -579,6 +581,61 @@ define([
       }).then(() => {
         this.addCard(n.args.card);
         this.flipAndReplace(target, `card-${n.args.card.id}`);
+      });
+    },
+
+    notif_bombFail(n) {
+      debug('Notif: bomb fail', n);
+      if (this.isFastMode()) return;
+
+      let elem = `<div id='bomb-animation'>
+      ${n.args.force}
+      <div class="icon-container icon-container-bomb">
+        <div class="goldncrash-icon icon-bomb"></div>
+      </div>
+    </div>`;
+      $('page-content').insertAdjacentHTML('beforeend', elem);
+
+      let target = $(`card-balloon-${n.args.balloonDeck.toUpperCase()}-${n.args.columnId}`);
+      this.slide('bomb-animation', target, {
+        from: $(`column-${this.getPos(n.args.player_id)}-${n.args.columnId}`),
+        destroy: true,
+        phantom: false,
+        duration: 1200,
+      }).then(() => {
+        target.classList.add('shake-it');
+        this.wait(900).then(() => target.classList.remove('shake-it'));
+      });
+    },
+
+    notif_pBombFail(n) {
+      debug('Notif: bomb fail', n);
+      if (this.isFastMode()) return;
+
+      let elem = `<div id='bomb-animation'>
+      ${n.args.force}
+      <div class="icon-container icon-container-bomb">
+        <div class="goldncrash-icon icon-bomb"></div>
+      </div>
+    </div>`;
+      $('page-content').insertAdjacentHTML('beforeend', elem);
+
+      let target = $(`card-balloon-${n.args.balloonDeck.toUpperCase()}-${n.args.columnId}`);
+      this.addCard(n.args.card, target);
+      this.wait(300).then(() => $(`card-${n.args.card.id}`).classList.add('fade-in'));
+
+      this.slide('bomb-animation', target, {
+        from: $(`column-${this.getPos(n.args.player_id)}-${n.args.columnId}`),
+        destroy: true,
+        phantom: false,
+        duration: 1200,
+      }).then(() => {
+        target.classList.add('shake-it');
+        this.wait(900).then(() => {
+          target.classList.remove('shake-it');
+          $(`card-${n.args.card.id}`).classList.remove('fade-in');
+          this.wait(800).then(() => $(`card-${n.args.card.id}`).remove());
+        });
       });
     },
 
