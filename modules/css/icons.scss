@@ -1,4 +1,28 @@
 .goldncrash-icon {
+  background-image: url("img/icons.png");
+  background-size: 600% 100%;
+
+  width: 1.5em;
+  height: 1.5em;
+
+  &.icon-attack {
+    background-position: 0% 0%;
+  }
+  &.icon-bomb {
+    background-position: 20% 0%;
+  }
+  &.icon-fish {
+    background-position: 40% 0%;
+  }
+  &.icon-money {
+    background-position: 60% 0%;
+  }
+  &.icon-reinforce {
+    background-position: 80% 0%;
+  }
+  &.icon-safe {
+    background-position: 100% 0%;
+  }
 }
 
 /////////////////////////////////////////////////////////
@@ -9,4 +33,23 @@
 .icon-container {
   display: inline-block;
   vertical-align: middle;
+}
+
+#bomb-animation {
+  font-weight: bold;
+  font-size: 20px;
+  background: #e4584a;
+  position: absolute;
+  border-radius: 12px;
+  height: 46px;
+  width: 64px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid black;
+  box-shadow: 1px 1px 3px black;
+
+  .icon-container {
+    margin: 0px -3px;
+  }
 }

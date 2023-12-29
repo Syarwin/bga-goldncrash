@@ -46,6 +46,7 @@ define([
         ['secure', 1200],
         ['drawCards', null, (notif) => notif.args.player_id == this.player_id],
         ['pDrawCards', null],
+        ['bombPass', 2000],
         //  ['confirmSetupObjectives', 1200],
         //  ['clearTurn', 200],
         //  ['refreshUI', 200],
@@ -558,21 +559,28 @@ define([
       });
     },
 
-    // public static function draw($player, $cards, $fromDeck)
-    // {
-    //   $data = [
-    //     'player' => $player,
-    //     'cards' => $cards,
-    //     'n' => $cards->count(),
-    //     'fromDeck' => $fromDeck
-    //   ];
+    notif_bombPass(n) {
+      debug('Notif: bomb success', n);
 
-    //   $msg = ($fromDeck) ? clienttranslate('${player_name} draw ${n} card(s) from his deck')
-    //     : clienttranslate('${player_name} draw ${n} card(s) from his discard pile');
+      let elem = `<div id='bomb-animation'>
+      ${n.args.force}
+      <div class="icon-container icon-container-bomb">
+        <div class="goldncrash-icon icon-bomb"></div>
+      </div>
+    </div>`;
+      $('page-content').insertAdjacentHTML('beforeend', elem);
 
-    //   static::notify($player, 'draw', '', $data);
-    //   unset($data['cards']);
-    //   static::notifyAll('draw', $msg, $data);
+      let target = $(`card-balloon-${n.args.card.deck.toUpperCase()}-${n.args.columnId}`);
+      this.slide('bomb-animation', target, {
+        from: $(`column-${this.getPos(n.args.player_id)}-${n.args.columnId}`),
+        destroy: true,
+        phantom: false,
+        duration: 1200,
+      }).then(() => {
+        this.addCard(n.args.card);
+        this.flipAndReplace(target, `card-${n.args.card.id}`);
+      });
+    },
 
     ////////////////////////////////////////////////////////////
     // _____                          _   _   _

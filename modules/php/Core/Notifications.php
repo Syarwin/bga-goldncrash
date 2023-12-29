@@ -18,7 +18,7 @@ class Notifications
       'player' => $player,
       'columnId' => $columnId,
       'force' => $n,
-      'card' => $balloon,
+      'card' => $balloon->getUiData(),
     ];
     $msg = clienttranslate('With a bomb level ${force}, ${player_name} destroys Zeppelin in column ${displayableColumnId}');
     static::notifyAll('bombPass', $msg, $data);
@@ -46,7 +46,9 @@ class Notifications
       clienttranslate('(Your Zeppelin in column ${displayableColumnId) has a strengh of ${value})'),
       $privateData
     );
-    $msg = clienttranslate('With a bomb level ${force}, ${player_name} failed to destroy Zeppelin in column ${displayableColumnId}');
+    $msg = clienttranslate(
+      'With a bomb level ${force}, ${player_name} failed to destroy Zeppelin in column ${displayableColumnId}'
+    );
     static::notifyAll('bombPass', $msg, $data);
   }
 
@@ -103,7 +105,7 @@ class Notifications
       'player' => $player,
       'card' => $cards,
       'columnId' => $columnId,
-      'n' => count($cards)
+      'n' => count($cards),
     ];
 
     $msg = clienttranslate('${player_name} discard ${n} card(s) from his column ${displayableColumnId}');
@@ -145,7 +147,7 @@ class Notifications
       'player' => $player,
       'card' => $card,
       'columnId' => $fromColumnId,
-      'columnId2' => $toColumnId
+      'columnId2' => $toColumnId,
     ];
 
     $msg = clienttranslate('${player_name} move a card from column ${displayableColumnId} to column ${displayableColumnId2}');
@@ -181,8 +183,8 @@ class Notifications
 
     $msg =
       $card->getType() == GUEST
-      ? clienttranslate('${player_name} definitely secure a Guest and all cards under it')
-      : clienttranslate('${player_name} secure a new card');
+        ? clienttranslate('${player_name} definitely secure a Guest and all cards under it')
+        : clienttranslate('${player_name} secure a new card');
 
     static::notifyAll('secure', $msg, $data);
   }
