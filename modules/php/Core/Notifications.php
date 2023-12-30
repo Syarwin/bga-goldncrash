@@ -120,6 +120,19 @@ class Notifications
     static::notifyAll('discard', $msg, $data);
   }
 
+  public static function displayScore($score, $cards, $player)
+  {
+    $data = [
+      'player' => $player,
+      'cards' => $cards->toArray(),
+      'n' => count($cards),
+      'score' => $score
+    ];
+
+    $msg = clienttranslate('${player_name} has ${n} card(s) in his treasure pile and ${score} point(s)');
+    static::notifyAll('displayScore', $msg, $data);
+  }
+
   /**
    * pick a card from discard or from deck
    */
@@ -146,6 +159,15 @@ class Notifications
     );
     unset($data['cards']);
     static::notifyAll('drawCards', $msg, $data);
+  }
+
+  public static function lastTurn($player)
+  {
+    $data = [
+      'player' => $player,
+    ];
+    $msg = clienttranslate('${player_name} has emptied his deck, it\'s the last turn');
+    static::notifyAll('lastTurn', $msg, $data);
   }
 
   public static function move($card, $fromColumnId, $toColumnId, $player)

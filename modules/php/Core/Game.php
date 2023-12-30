@@ -21,7 +21,7 @@ class Game
   }
 
 
-  public static function transition($transition)
+  public static function transition($transition = '')
   {
     static::get()->gamestate->nextState($transition);
   }

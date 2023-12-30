@@ -23,6 +23,7 @@ trait GameTrait
 			$player = Players::getActive();
 			if (Cards::countInLocation($player->getDeckName()) == 0) {
 				Globals::setLastTurn(true);
+				Notifications::lastTurn($player);
 			}
 
 			//anyway launch new turn
@@ -31,5 +32,25 @@ trait GameTrait
 
 			Game::transition(END_TURN);
 		}
+	}
+
+	public function stPreEndOfGame()
+	{
+		$players = Players::getAll();
+
+		foreach ($players as $pId => $player) {
+			if ($player->hasLostGame()) {
+				$player->setScore(1);
+				$player->getOpponent()->setScore(0);
+				Notifications::message(clienttranslate('${player_name} losts his last Zeppelin, game is over'), ['player' => $player]);
+				Game::transition();
+				return;
+			}
+		}
+
+		foreach ($players as $pId => $player) {
+			$player->countScore();
+		}
+		Game::transition();
 	}
 }

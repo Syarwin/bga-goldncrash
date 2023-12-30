@@ -68,19 +68,30 @@ class Player extends \GNC\Helpers\DB_Model
       if ($guest) {
         Cards::move($guest->getId(), 'trash');
       }
-      return $this->checkEndGame();
+      return $this->hasLostGame() ? ST_PRE_END_OF_GAME : null;
     } else {
       Notifications::bombFail($this->getOpponent(), $columnId, $n, $balloon, $this);
     }
   }
 
-  public function checkEndGame()
+  public function hasLostGame()
   {
     $balloons = $this->getBalloons();
     foreach ($balloons as $cardId => $balloon) {
-      if ($balloon->getFlipped() == FLIPPED) return;
+      if ($balloon->getFlipped() == FLIPPED) return false;
     }
-    return ST_PRE_END_OF_GAME;
+    return true;
+  }
+
+  public function countScore()
+  {
+    $cards = Cards::getInLocation($this->getTreasureName());
+    $score = 0;
+    foreach ($cards as $cardId => $card) {
+      $score += $card->getValue();
+    }
+    $this->setScore($score);
+    Notifications::displayScore($score, $cards, $this);
   }
 
   public function discardFromColumn($columnId, $n = 1, $withEffect = true)
