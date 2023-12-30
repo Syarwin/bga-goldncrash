@@ -15,6 +15,21 @@ trait DebugTrait
     Log::revertAll();
   }
 
+  function move($cardId, $columnId)
+  {
+    $this->actMove($cardId, $columnId);
+  }
+
+  function callBack($cardId)
+  {
+    $this->actCallBack($cardId);
+  }
+
+  function observe($cardId, $cardId2)
+  {
+    $this->actObserve([$cardId, $cardId2], []);
+  }
+
   // ████                         █████ ██████████            █████                        
   //░░███                        ░░███ ░░███░░░░███          ░░███                         
   // ░███   ██████   ██████    ███████  ░███   ░░███  ██████  ░███████  █████ ████  ███████

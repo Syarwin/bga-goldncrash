@@ -14,6 +14,11 @@ use GNC\Models\Player;
 
 trait PlayerTurnTrait
 {
+  public function stPlayerTurn()
+  {
+    $this->giveExtraTime(Players::getActiveId());
+  }
+
   public function argPlayerTurn()
   {
     $activePlayer = Players::getActive();
@@ -25,10 +30,11 @@ trait PlayerTurnTrait
 
     foreach ($playablesCard as $cardId => $card) {
       $type = $card->getType();
-      $whereToPlay[$cardId] = array_values(array_filter(array_keys($columns), fn($columnId) => $columns[$columnId][$type]));
+      $whereToPlay[$cardId] = array_values(array_filter(array_keys($columns), fn ($columnId) => $columns[$columnId][$type]));
     }
 
     return [
+      'nAction' => Globals::getMoveNumber() + 1,
       '_private' => [
         $activePlayer->getId() => [
           'canDraw' => Cards::countInLocation($activePlayer->getDeckName()) > 0,
@@ -184,6 +190,7 @@ trait PlayerTurnTrait
   {
     //if there is an action to complete, do it
     if ($nextState) {
+      $this->giveExtraTime(Players::getActiveId());
       Game::goTo($nextState);
     }
     //else play again if it's your first Move,

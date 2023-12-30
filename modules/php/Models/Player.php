@@ -63,6 +63,11 @@ class Player extends \GNC\Helpers\DB_Model
     if ($balloonValue <= $n) {
       $balloon->setFlipped(NOT_FLIPPED);
       Notifications::bombPass($this->getOpponent(), $columnId, $n, $balloon);
+      //if there was a GUEST trash it
+      $guest = $this->getGuest($columnId);
+      if ($guest) {
+        Cards::move($guest->getId(), 'trash');
+      }
       return $this->checkEndGame();
     } else {
       Notifications::bombFail($this->getOpponent(), $columnId, $n, $balloon, $this);
@@ -150,8 +155,7 @@ class Player extends \GNC\Helpers\DB_Model
   public function getColumn($n)
   {
     $location = $this->getColumnName($n);
-    // die($location);
-    return Cards::getInLocation($location);
+    return Cards::getInLocation($location, null, 'card_state');
   }
 
   public function getlastCardOfColumn($columnId)

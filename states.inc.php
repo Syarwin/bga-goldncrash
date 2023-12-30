@@ -64,10 +64,11 @@ $machinestates = [
 
   ST_PLAYER_TURN => [
     'name' => 'playerTurn',
-    'description' => clienttranslate('${actplayer} must draw, play or discard a card'),
-    'descriptionmyturn' => clienttranslate('${you} must draw, play or discard a card'),
+    'description' => clienttranslate('Action ${nAction}: ${actplayer} must draw, play or discard a card'),
+    'descriptionmyturn' => clienttranslate('Action ${nAction}: ${you} must draw, play or discard a card'),
     'type' => ACTIVE_PLAYER,
     'args' => 'argPlayerTurn',
+    'action' => 'stPlayerTurn',
     'possibleactions' => ['actPlay', 'actDraw', 'actDiscard'],
     'transitions' => [
       'secondTurn' => ST_PLAYER_TURN,
@@ -136,7 +137,6 @@ $machinestates = [
     'descriptionmyturn' => clienttranslate('${you} must call back a card from one of your columns'),
     'type' => ACTIVE_PLAYER,
     'args' => 'argCallBack',
-    'action' => 'stCallBack',
     'possibleactions' => ['actCallBack'],
     'transitions' => [
       END_TURN => ST_CONFIRM,
@@ -144,7 +144,7 @@ $machinestates = [
   ],
 
   ST_OBSERVE => [
-    'name' => 'secure',
+    'name' => 'observe',
     'description' => clienttranslate(
       '${actplayer} can observe the 2 first cards of his Crew deck and replace them on the top or on the bottom'
     ),
@@ -153,7 +153,7 @@ $machinestates = [
     ),
     'type' => ACTIVE_PLAYER,
     'args' => 'argObserve',
-    'possibleactions' => ['actReplace'],
+    'possibleactions' => ['actObserve'],
     'transitions' => [
       END_TURN => ST_NEXT_PLAYER,
     ],

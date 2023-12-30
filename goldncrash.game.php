@@ -206,7 +206,7 @@ class GoldnCrash extends Table
     if ($state['type'] === 'activeplayer') {
       switch ($statename) {
         default:
-          $this->gamestate->nextState('zombiePass');
+          $this->gamestate->nextState(END_TURN);
           break;
       }
 
