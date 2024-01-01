@@ -23,7 +23,7 @@ trait SecureTrait
     $activePlayer = Players::getActive();
     $activeColumn = Globals::getActiveColumn();
 
-    $columnIds = array_filter([1, 2, 3], fn($cId) => $cId != $activeColumn);
+    $columnIds = ADJACENT_COLUMNS[$activeColumn];
 
     $cardIds = [];
 

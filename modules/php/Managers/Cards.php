@@ -47,7 +47,7 @@ class Cards extends \GNC\Helpers\Pieces
       $data[$pId] = [
         'hand' => $isCurrent ? $player->getCardsInHand($isCurrent)->toArray() : [],
         'nHand' => $player->getCardsInHand($isCurrent)->count(),
-        'discard' => static::getInLocation($discard)->toArray(),
+        'discard' => static::getInLocation($discard, null, 'card_state')->toArray(),
         'lastDiscard' => static::getTopOf($discard),
         'nTreasure' => static::countInLocation($treasure),
         'lastTreasure' => static::getLastTreasure($character),
@@ -100,8 +100,8 @@ class Cards extends \GNC\Helpers\Pieces
       switch ($type) {
         case RED:
           if (
-            !is_null(static::getLastTreasure($player->getCharacter())) &&
-            static::getLastTreasure($player->getCharacter())->getDeck() != GUEST
+            !is_null(static::getLastTreasure($player->getOpponent()->getCharacter())) &&
+            static::getLastTreasure($player->getOpponent()->getCharacter())->getDeck() != GUEST
           ) {
             $result[$i] = $card->getId();
           }
@@ -224,7 +224,10 @@ class Cards extends \GNC\Helpers\Pieces
       static::pickForLocation(3, DECK_GUEST, 'guest_' . $character);
       static::shuffle('guest_' . $character);
       //pick 5 cards for discard
-      static::pickForLocation(5, 'deck_' . $character, 'discard_' . $character);
+      for ($i = 0; $i < 5; $i++) {
+        $c = static::getTopOf('deck_' . $character);
+        static::insertOnTop($c->getId(), 'discard_' . $character);
+      }
       //pick 5 cards for hand
       static::pickForLocationPId(5, 'deck_' . $character, HAND, $pId);
     }

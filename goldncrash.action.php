@@ -123,6 +123,18 @@ class action_goldncrash extends APP_GameAction
     self::ajaxResponse();
   }
 
+  public function actObserve()
+  {
+    self::setAjaxMode();
+    $cardsToPutBack = self::getArg('cardsToPutBack', AT_json, true);
+    $cardsToDiscard = self::getArg('cardsToDiscard', AT_json, true);
+    $this->validateJSonAlphaNum($cardsToPutBack, 'cardsToPutBack');
+    $this->validateJSonAlphaNum($cardsToDiscard, 'cardsToDiscard');
+
+    $this->game->actObserve($cardsToPutBack, $cardsToDiscard);
+    self::ajaxResponse();
+  }
+
   //   █████████  █████   █████ ██████████   █████████   ███████████
   //  ███░░░░░███░░███   ░░███ ░░███░░░░░█  ███░░░░░███ ░█░░░███░░░█
   // ███     ░░░  ░███    ░███  ░███  █ ░  ░███    ░███ ░   ░███  ░

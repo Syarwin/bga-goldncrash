@@ -23,20 +23,30 @@ trait ObserveTrait
 		];
 	}
 
-	public function actObserve($cardId)
+	public function actObserve($cardsToPutBack, $cardsToDiscard)
 	{
-		// // get infos
-		// $player = Players::getActive();
-		// self::checkAction('actObserve');
+		// get infos
+		$player = Players::getActive();
+		self::checkAction('actObserve');
 
-		// $args = $this->getArgs();
+		$possibleCardIds = Cards::getTopOf($player->getDeckName(), 2)->getIds();
 
-		// if (!in_array($cardId, $args['cardIds'])) {
-		// 	throw new \BgaVisibleSystemException("You can't Observe this card, $cardId.");
-		// }
+		foreach ($cardsToDiscard as $cardId) {
+			if (!in_array($cardId, $possibleCardIds)) {
+				throw new \BgaVisibleSystemException("You can't 'Observe' this card, $cardId. Should not happen");
+			}
+			Cards::insertAtBottom($cardId, $player->getDeckName());
+		}
+		$cardsToPutBack = array_reverse($cardsToPutBack);
+		foreach ($cardsToPutBack as $cardId) {
+			if (!in_array($cardId, $possibleCardIds)) {
+				throw new \BgaVisibleSystemException("You can't 'Observe' this card, $cardId. Should not happen");
+			}
+			Cards::insertOnTop($cardId, $player->getDeckName());
+		}
 
-		// $player->Observe(Cards::get($cardId));
+		Notifications::observe(count($cardsToPutBack), count($cardsToDiscard), $player);
 
-		// Game::transition(END_TURN);
+		Game::transition(END_TURN);
 	}
 }

@@ -63,19 +63,35 @@ class Player extends \GNC\Helpers\DB_Model
     if ($balloonValue <= $n) {
       $balloon->setFlipped(NOT_FLIPPED);
       Notifications::bombPass($this->getOpponent(), $columnId, $n, $balloon);
-      return $this->checkEndGame();
+      //if there was a GUEST trash it
+      $guest = $this->getGuest($columnId);
+      if ($guest) {
+        Cards::move($guest->getId(), 'trash');
+      }
+      return $this->hasLostGame() ? ST_PRE_END_OF_GAME : null;
     } else {
       Notifications::bombFail($this->getOpponent(), $columnId, $n, $balloon, $this);
     }
   }
 
-  public function checkEndGame()
+  public function hasLostGame()
   {
     $balloons = $this->getBalloons();
     foreach ($balloons as $cardId => $balloon) {
-      if ($balloon->getFlipped() == FLIPPED) return;
+      if ($balloon->getFlipped() == FLIPPED) return false;
     }
-    return ST_PRE_END_OF_GAME;
+    return true;
+  }
+
+  public function countScore()
+  {
+    $cards = Cards::getInLocation($this->getTreasureName());
+    $score = 0;
+    foreach ($cards as $cardId => $card) {
+      $score += $card->getValue();
+    }
+    $this->setScore($score);
+    Notifications::displayScore($score, $cards, $this);
   }
 
   public function discardFromColumn($columnId, $n = 1, $withEffect = true)
@@ -150,8 +166,7 @@ class Player extends \GNC\Helpers\DB_Model
   public function getColumn($n)
   {
     $location = $this->getColumnName($n);
-    // die($location);
-    return Cards::getInLocation($location);
+    return Cards::getInLocation($location, null, 'card_state');
   }
 
   public function getlastCardOfColumn($columnId)

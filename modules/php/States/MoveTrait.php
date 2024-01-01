@@ -23,7 +23,7 @@ trait MoveTrait
 		for ($i = 0; $i < 3; $i++) {
 			$card = $activePlayer->getlastCardOfColumn($i);
 			if ($card) {
-				$cardIds[$card->getId()] = ADJACENT_COLUMNS[$i];
+				$cards[$card->getId()] = ADJACENT_COLUMNS[$i];
 			}
 		}
 
