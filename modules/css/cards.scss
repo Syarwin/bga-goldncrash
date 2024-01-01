@@ -201,3 +201,27 @@
     }
   }
 }
+
+.card-tooltip {
+  --cardScale: 0.8;
+  display: flex;
+  position: relative;
+
+  .card-id {
+    position: absolute;
+    left: 15px;
+    top: 0;
+    background: yellow;
+    border: 1px solid black;
+    border-radius: 5px;
+    padding: 5px 7px;
+    box-shadow: 2px 2px 5px black;
+  }
+
+  .card-desc {
+    margin-left: 20px;
+    display: flex;
+    flex-flow: column;
+    justify-content: space-between;
+  }
+}

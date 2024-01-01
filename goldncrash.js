@@ -313,14 +313,135 @@ define([
       let o = this.place('tplCard', card, location == null ? this.getCardContainer(card) : location);
       let tooltipDesc = this.getCardTooltip(card);
       if (tooltipDesc != null) {
-        this.addCustomTooltip(o.id, tooltipDesc.map((t) => this.formatString(t)).join('<br/>'));
+        this.addCustomTooltip(o.id, tooltipDesc);
       }
 
       return o;
     },
 
     getCardTooltip(card) {
-      return [`<h4>Id: ${card.id}</h4>`];
+      card.uid = card.id + 'tooltip';
+
+      let desc = '';
+      if (card.type == RED) {
+        desc = `<div class='play-effect'>
+          <h4>${_('Play effect: BOMB')}</h4>
+          <p>
+            ${_(
+              'Target the Zeppelin of the opposite column of your opponent. The opponent checks if the Zeppelin resists the bombing by looking at the robustness value on the other side of the card.'
+            )} <br />
+            ${_(
+              'If the robustness value is lower than or equal to the number of cards opposite column: the Zeppelin card is fl ipped face Destroyed up. If an Esteemed Guest was on this Zeppelin, put it back in the box.'
+            )} <br />
+            ${_(
+              'Otherwise, nothing happens. The player who was just attacked simply states that the Zeppelin resisted the attack, and the Zeppelin card remains with the Undamaged face up.'
+            )}
+          </p>
+        </div>
+        <div class='discard-effect'>
+          <h4>${_('Discard effect: CRACK THE SAFE')}</h4>
+          <p>
+            ${_('Place the card from the top of your opponent’s Treasure in their discard pile.')}
+          </p>
+        </div>`;
+      }
+      if (card.type == BLUE) {
+        desc = `<div class='play-effect'>
+          <h4>${_('Play effect: BOARD')}</h4>
+          <p>
+            ${_('Discard the last card of the opposite column of your opponent, without applying its discard effect.')}
+          </p>
+        </div>
+        <div class='discard-effect'>
+          <h4>${_('Discard effect: MANOEUVRE')}</h4>
+          <p>
+            ${_('Move the last card of one of your columns to an adjacent column but do not trigger its play effect.')}
+          </p>
+        </div>`;
+      }
+      if (card.type == PURPLE) {
+        desc = `<div class='play-effect'>
+          <h4>${_('Play effect: FISH')}</h4>
+          <p>
+            ${_('Take the first card in your discard pile and add it to your hand.')}
+          </p>
+        </div>
+        <div class='discard-effect'>
+          <h4>${_('Discard effect: CALL BACK')}</h4>
+          <p>
+            ${_('Take the last card in one of your columns and add it to your hand')}
+          </p>
+        </div>`;
+      }
+      if (card.type == GREEN) {
+        desc = `<div class='play-effect'>
+          <h4>${_('Play effect: REINFORCE')}</h4>
+          <p>
+            ${_('Draw the first card of the Crew deck and add it to your hand.')}
+          </p>
+        </div>
+        <div class='discard-effect'>
+          <h4>${_('Discard effect: OBSERVE')}</h4>
+          <p>
+            ${_(
+              'Look at the 2 first cards of your Crew deck and choose, for each card, if you leave it on the top or the bottom of your deck in the order of your choice.'
+            )}
+          </p>
+        </div>`;
+      }
+      if (card.type == BROWN) {
+        desc = `<div class='play-effect'>
+          <h4>${_('Play effect: SECURE')}</h4>
+          <p>
+            ${_('Place face down the last card of one of your adjacent columns in your Treasure.')}
+          </p>
+        </div>
+        <div class='discard-effect'>
+          <h4>${_('Discard effect: LOOT')}</h4>
+          <p>
+            ${_('Place face down the top card of your opponent’s discard pile in your Treasure.')}
+          </p>
+        </div>`;
+      }
+      if (card.type == YELLOW) {
+        desc = `<div class='play-effect'><h4>${_('No play effect')}</h4></div>
+        <div class='discard-effect'>
+        <h4>Cannot be discarded</h4>`;
+      }
+      if (card.type == GUEST) {
+        let guestDescs = {
+          1: _('you have 9 Goldin the column'),
+          2: _('you have played 2 cards in this column in the same turn'),
+          3: _('you have played or moved the 5th card in this column'),
+          4: _('you have played or moved the 4th card of a different type in this column'),
+          5: _('you have played or moved the 3rd purple card in this column'),
+          6: _('you have played or moved the 3rd blue card in this column'),
+          7: _('you have played or moved the 3rd green card in this column'),
+          8: _('you have played or moved the 2nd yellow card in this column'),
+        };
+        desc = `<div>
+          <h4>${_('Esteemed Guest')}</h4>
+          <p>
+            ${_(
+              'When you meet the requirements indicated on their card, secure them:place them immediately in your Treasure.'
+            )} <br/>
+            <b>${_('This card cannot be discarded from your Treasure, nor the cards underneath it.')}</b>
+          </p>
+          <h4>${_('Secure this Esteemed Guest as soon as :')}</h4>
+          <p>
+            ${guestDescs[card.id]}
+          </p>
+        </div>`;
+      }
+
+      return `<div class='card-tooltip'>
+        ${this.tplCard(card)}
+        <div class='card-desc'>
+          <h4 class='card-id'>Id: ${card.id}</h4>
+          ${desc}
+        </div>
+      </div>  
+      `;
     },
 
     tplCard(card) {
