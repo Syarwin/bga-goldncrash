@@ -290,7 +290,11 @@ html {
   border-radius: calc(var(--cardScale) * 30px);
   box-shadow: 2px 2px 6px -1px black;
   position: relative; }
+  .goldncrash-card.moving {
+    transition: margin 0.7s, transform 0.7s;
+    transform-origin: center center; }
   .goldncrash-card.selectable {
+    box-shadow: 0px 0px 8px 3px red;
     cursor: pointer; }
     .goldncrash-card.selectable:hover {
       transform: scale(1.05); }
@@ -410,6 +414,8 @@ html {
         background-position: 50% 100%; }
       .goldncrash-card .card-inner[data-deck="GUEST"][data-id="8"] {
         background-position: 100% 100%; }
+      .goldncrash-card .card-inner[data-deck="GUEST"][data-type="BACK"] {
+        background-position: 0% 0%; }
 
 .card-tooltip {
   --cardScale: 0.8;
@@ -524,7 +530,11 @@ html {
           #goldncrash-main-container .goldncrash-player-board .side-zone .side-zone-holder .banner-chest-holder .chest-holder {
             margin: 2px 0px;
             width: calc(var(--cardScale) * 415px);
-            height: calc(var(--cardScale) * 292px); }
+            height: calc(var(--cardScale) * 292px);
+            position: relative; }
+            #goldncrash-main-container .goldncrash-player-board .side-zone .side-zone-holder .banner-chest-holder .chest-holder .goldncrash-card {
+              position: absolute;
+              top: 0; }
         #goldncrash-main-container .goldncrash-player-board .side-zone .side-zone-holder .deck-holder {
           margin: 0px 10px 0px 5px;
           width: calc(var(--cardScale) * 292px);
@@ -565,13 +575,15 @@ html {
           border-radius: calc(var(--cardScale) * 30px); }
           #goldncrash-main-container .goldncrash-player-board .columns-zone .column-holder .column-cards-holder.selectable {
             border-color: red;
+            box-shadow: 0px 0px 6px 2px red;
             cursor: pointer; }
             #goldncrash-main-container .goldncrash-player-board .columns-zone .column-holder .column-cards-holder.selectable:hover {
               border-style: solid; }
           #goldncrash-main-container .goldncrash-player-board .columns-zone .column-holder .column-cards-holder.selected {
             border: 1px solid green;
             outline: 2px solid green; }
-          #goldncrash-main-container .goldncrash-player-board .columns-zone .column-holder .column-cards-holder .goldncrash-card ~ .goldncrash-card {
+          #goldncrash-main-container .goldncrash-player-board .columns-zone .column-holder .column-cards-holder .goldncrash-card ~ .goldncrash-card,
+          #goldncrash-main-container .goldncrash-player-board .columns-zone .column-holder .column-cards-holder .goldncrash-card ~ .flip-container {
             margin-top: calc(var(--cardScale) * 0.78 * (-415px)); }
         #goldncrash-main-container .goldncrash-player-board .columns-zone .column-holder .zeppelin-holder {
           width: calc(var(--cardScale) * 415px);

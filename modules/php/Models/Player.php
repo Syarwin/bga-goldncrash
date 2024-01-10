@@ -78,7 +78,9 @@ class Player extends \GNC\Helpers\DB_Model
   {
     $balloons = $this->getBalloons();
     foreach ($balloons as $cardId => $balloon) {
-      if ($balloon->getFlipped() == FLIPPED) return false;
+      if ($balloon->getFlipped() == FLIPPED) {
+        return false;
+      }
     }
     return true;
   }
@@ -100,14 +102,21 @@ class Player extends \GNC\Helpers\DB_Model
     $cards = [];
     for ($i = 0; $i < $n; $i++) {
       $card = Cards::getTopOf($this->getColumnName($columnId));
+      if (is_null($card)) {
+        break;
+      }
+
       $cards[] = $card;
       Cards::insertOnTop($card->getId(), $this->getDiscardName());
-      if ($withEffect) {
+    }
+    Notifications::discard($cards, $columnId, $this);
+
+    if ($withEffect) {
+      foreach ($cards as $card) {
         $method = 'discardEffect' . ucfirst($card->getType());
         $nextState = Game::get()->$method($columnId, $this);
       }
     }
-    Notifications::discard($cards, $columnId, $this);
 
     return $nextState;
   }
@@ -137,7 +146,9 @@ class Player extends \GNC\Helpers\DB_Model
   {
     $players = Players::getAll();
     foreach ($players as $pId => $player) {
-      if ($pId != $this->id) return $player;
+      if ($pId != $this->id) {
+        return $player;
+      }
     }
   }
 
@@ -199,7 +210,6 @@ class Player extends \GNC\Helpers\DB_Model
   {
     return 'column_' . $n . '_' . $this->getCharacter();
   }
-
 
   /*
      █████████                                          ███                  

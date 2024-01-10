@@ -43,12 +43,13 @@ define([
       this._activeStates = ['playerTurn'];
       this._notifications = [
         ['playCard', 1200],
-        ['secure', 1200],
+        ['secure', 2000],
         ['drawCards', null, (notif) => notif.args.player_id == this.player_id],
         ['pDrawCards', null],
         ['bombPass', 2000],
         ['bombFail', 2000, (notif) => notif.args.player_id2 == this.player_id],
         ['pBombFail', 3000],
+        ['discard', null],
         //  ['confirmSetupObjectives', 1200],
         //  ['clearTurn', 200],
         //  ['refreshUI', 200],
@@ -606,12 +607,33 @@ define([
       this.slide(`card-${card.id}`, $(`column-${pos}-${n.args.columnId}`));
     },
 
+    notif_discard(n) {
+      debug('Notif: discard cards', n);
+
+      let pos = this.getPos(n.args.player_id);
+      Promise.all(
+        n.args.cards.map((card, i) => this.wait(100 * i).then(() => this.slide(`card-${card.id}`, $(`discard-${pos}`))))
+      ).then(() => this.notifqueue.setSynchronousDuration(100));
+    },
+
     notif_secure(n) {
       debug('Notif: secure a card', n);
 
       let card = n.args.card;
       let pos = this.getPos(n.args.player_id);
-      this.slide(`card-${card.id}`, $(`chest-${pos}`));
+
+      let oCard = $(`card-${card.id}`);
+      let oCard2 = oCard.cloneNode(true);
+      let inner = oCard2.querySelector('.card-inner');
+      inner.dataset.type = 'BACK';
+      inner.dataset.value = '';
+      oCard.id += 'old';
+
+      this.flipAndReplace(oCard, oCard2).then(() => {
+        this.slide(`card-${card.id}`, $(`chest-${pos}`));
+        $(`card-${card.id}_animated`).style.marginTop = '0px';
+        $(`card-${card.id}_animated`).style.transform = `rotate(-90deg)`;
+      });
     },
 
     notif_drawCards(n) {

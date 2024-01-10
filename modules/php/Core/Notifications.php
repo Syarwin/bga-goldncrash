@@ -36,7 +36,7 @@ class Notifications
       'balloonDeck' => $defensivePlayer->getCharacter(),
       'columnId' => $columnId,
       'force' => $n,
-      'preserve' => ['player2']
+      'preserve' => ['player2'],
     ];
     $msg = clienttranslate(
       'With a bomb level ${force}, ${player_name} failed to destroy Zeppelin in column ${displayableColumnId}'
@@ -51,7 +51,7 @@ class Notifications
       'force' => $n,
       'card' => $balloon->getUiData(),
       'value' => $balloon->getValue(),
-      'preserve' => ['player2']
+      'preserve' => ['player2'],
     ];
     $msg = clienttranslate(
       'With a bomb level ${force}, ${player_name} failed to destroy your Zeppelin in column ${displayableColumnId} of strength ${value}'
@@ -110,7 +110,7 @@ class Notifications
   {
     $data = [
       'player' => $player,
-      'card' => $cards,
+      'cards' => $cards,
       'columnId' => $columnId,
       'n' => count($cards),
     ];
@@ -126,7 +126,7 @@ class Notifications
       'player' => $player,
       'cards' => $cards->toArray(),
       'n' => count($cards),
-      'score' => $score
+      'score' => $score,
     ];
 
     $msg = clienttranslate('${player_name} has ${n} card(s) in his treasure pile and ${score} point(s)');
@@ -192,7 +192,9 @@ class Notifications
       'nOnBottom' => $nCardsToDiscard,
     ];
 
-    $msg = clienttranslate('${player_name} observe his 2 next cards and replace them : ${nOnTop} on top and ${nOnBottom} on bottom');
+    $msg = clienttranslate(
+      '${player_name} observe his 2 next cards and replace them : ${nOnTop} on top and ${nOnBottom} on bottom'
+    );
 
     static::notifyAll('observe', $msg, $data);
   }
@@ -225,8 +227,8 @@ class Notifications
 
     $msg =
       $card->getType() == GUEST
-      ? clienttranslate('${player_name} definitely secure a Guest and all cards under it')
-      : clienttranslate('${player_name} secure a new card');
+        ? clienttranslate('${player_name} definitely secure a Guest and all cards under it')
+        : clienttranslate('${player_name} secure a new card');
 
     static::notifyAll('secure', $msg, $data);
   }

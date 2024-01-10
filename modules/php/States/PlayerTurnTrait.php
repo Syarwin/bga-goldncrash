@@ -30,7 +30,7 @@ trait PlayerTurnTrait
 
     foreach ($playablesCard as $cardId => $card) {
       $type = $card->getType();
-      $whereToPlay[$cardId] = array_values(array_filter(array_keys($columns), fn ($columnId) => $columns[$columnId][$type]));
+      $whereToPlay[$cardId] = array_values(array_filter(array_keys($columns), fn($columnId) => $columns[$columnId][$type]));
     }
 
     return [
@@ -120,6 +120,9 @@ trait PlayerTurnTrait
   public function checkGetGuest($player, $columnId, $isPlayCardAction = true)
   {
     $guest = $player->getGuest($columnId);
+    if (is_null($guest)) {
+      return;
+    }
 
     switch ($guest->getId()) {
       case 1:
