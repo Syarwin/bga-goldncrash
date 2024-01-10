@@ -625,13 +625,14 @@ define([
         return;
       }
 
+      let deck = this.gamedatas.players[n.args.player_id].character.toUpperCase();
       Promise.all(
         Array.from(Array(nCards), (x, i) => i).map((i) => {
           return this.wait(100 * i).then(() => {
             let source = n.args.fromDeck
               ? $(`deck-${this.getPos(n.args.player_id)}`)
               : $(`discard-${this.getPos(n.args.player_id)}`);
-            let o = this.addCard({ uid: -1 }, source);
+            let o = this.addCard({ uid: -1, deck, type: 'BACK' }, source);
             return this.slide(o, `player_board_${n.args.player_id}`, {
               duration: 1000,
               destroy: true,

@@ -170,6 +170,9 @@
         background-position: 0% 100%;
       }
     }
+    &[data-type="BACK"] {
+      background-position: 60% 100%;
+    }
 
     &[data-deck="GUEST"] {
       background-image: url("img/guests.jpg");

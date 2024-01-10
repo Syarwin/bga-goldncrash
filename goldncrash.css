@@ -389,6 +389,8 @@ html {
       background-position: 20% 100%; }
     .goldncrash-card .card-inner[data-type="BALLOON"][data-value="3"] {
       background-position: 0% 100%; }
+    .goldncrash-card .card-inner[data-type="BACK"] {
+      background-position: 60% 100%; }
     .goldncrash-card .card-inner[data-deck="GUEST"] {
       background-image: url("img/guests.jpg");
       background-size: 300% 300%; }
