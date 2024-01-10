@@ -91,11 +91,12 @@ class Notifications
     static::notifyAll('clearColumn', $msg, $data);
   }
 
-  public static function crackSafe($card, $player)
+  public static function crackSafe($card, $player, $lastTreasure)
   {
     $data = [
       'player' => $player,
       'card' => $card,
+      'lastTreasure' => $lastTreasure,
     ];
 
     $msg = clienttranslate('${player_name} discards his last treasure');

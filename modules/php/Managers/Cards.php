@@ -73,10 +73,10 @@ class Cards extends \GNC\Helpers\Pieces
       $result[$columnId] = [
         RED => true,
         BLUE =>
-        $player
-          ->getOpponent()
-          ->getColumn($columnId)
-          ->count() > 0,
+          $player
+            ->getOpponent()
+            ->getColumn($columnId)
+            ->count() > 0,
         PURPLE => static::countInLocation($player->getDiscardName()) > 0,
         GREEN => static::countInLocation($player->getDeckName()) > 0,
         BROWN => static::isAdjacentAvailable($player, $columnId),
@@ -123,7 +123,7 @@ class Cards extends \GNC\Helpers\Pieces
             $result[$i] = $card->getId();
           }
           break;
-          //yellow can't be discarded
+        //yellow can't be discarded
       }
     }
     return $result;
@@ -132,8 +132,6 @@ class Cards extends \GNC\Helpers\Pieces
   //check if there are n available cards in adjacents
   public static function isAdjacentAvailable($player, $columnId, $n = 1)
   {
-
-
     $nCards = 0;
     foreach (ADJACENT_COLUMNS[$columnId] as $column) {
       $nCards += $player->getColumn($column)->count();
@@ -148,7 +146,7 @@ class Cards extends \GNC\Helpers\Pieces
       $columnSizes[$i] = $player->getColumn($i)->count();
     }
     $max = max(array_values($columnSizes));
-    $lowests = array_keys(array_filter($columnSizes, fn ($value) => $value != $max));
+    $lowests = array_keys(array_filter($columnSizes, fn($value) => $value != $max));
     return $lowests ? $lowests : [0, 1, 2]; //if all columns are max, return all
   }
 
@@ -156,13 +154,13 @@ class Cards extends \GNC\Helpers\Pieces
   {
     return $player
       ->getColumn($columnId)
-      ->filter(fn ($card) => $card->getType() == $color)
+      ->filter(fn($card) => $card->getType() == $color)
       ->count();
   }
 
   public static function getNColors($player, $columnId)
   {
-    return $player->getColumn($columnId)->countDifferent(fn ($card) => $card->getType());
+    return $player->getColumn($columnId)->countDifferent(fn($card) => $card->getType());
   }
 
   public static function getTotalValue($cards)
@@ -187,7 +185,7 @@ class Cards extends \GNC\Helpers\Pieces
     return $card;
   }
 
-  protected static function getLastTreasure($character)
+  public static function getLastTreasure($character)
   {
     return static::getTopOf('treasure_' . $character);
   }

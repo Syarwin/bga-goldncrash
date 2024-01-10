@@ -765,6 +765,8 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
           to: null,
 
           phantom: true,
+
+          rotate: false,
         },
         options
       );
@@ -792,6 +794,10 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
       // Handle phantom at start
       if (config.phantomStart && config.from == null) {
         mobile = dojo.clone(mobileElt);
+        if (config.rotate) {
+          mobile.style.transform = `rotate(-90deg)`;
+        }
+
         dojo.attr(mobile, 'id', mobileElt.id + '_animated');
         dojo.place(mobile, 'game_play_area');
         this.placeOnObject(mobile, mobileElt);

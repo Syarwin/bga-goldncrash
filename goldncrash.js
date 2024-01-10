@@ -50,6 +50,7 @@ define([
         ['bombFail', 2000, (notif) => notif.args.player_id2 == this.player_id],
         ['pBombFail', 3000],
         ['discard', null],
+        ['crackSafe', 1200],
         //  ['confirmSetupObjectives', 1200],
         //  ['clearTurn', 200],
         //  ['refreshUI', 200],
@@ -295,7 +296,10 @@ define([
         });
         cards.discard.forEach((card) => this.addCard(card));
         cards.columns.forEach((column) => column.forEach((card) => this.addCard(card)));
-        if (cards.lastTreasure) this.addCard(cards.lastTreasure);
+        if (cards.lastTreasure) {
+          cards.lastTreasure.type = 'BACK';
+          this.addCard(cards.lastTreasure);
+        }
 
         this._counters[player.id]['deckCount'].toValue(cards.nDeck);
         this._counters[player.id]['handCount'].toValue(cards.nHand);
@@ -303,10 +307,15 @@ define([
     },
 
     addCard(card, location = null) {
+      let isBack = card.type == 'BACK';
       card.uid = card.uid || card.id;
       if (card.uid == -1) card.uid = this._fakeCardCounter--;
       else {
         card = Object.assign(card, this.getCardData(card));
+      }
+
+      if (isBack) {
+        card.type = 'BACK';
       }
 
       if ($('card-' + card.uid)) return;
@@ -633,6 +642,30 @@ define([
         this.slide(`card-${card.id}`, $(`chest-${pos}`));
         $(`card-${card.id}_animated`).style.marginTop = '0px';
         $(`card-${card.id}_animated`).style.transform = `rotate(-90deg)`;
+      });
+    },
+
+    notif_crackSafe(n) {
+      debug('Notif: Crack safe', n);
+
+      let card = n.args.card;
+      let pos = this.getPos(n.args.player_id);
+      let oCard = $(`card-${card.id}`);
+
+      let lastTreasure = n.args.lastTreasure;
+      if (lastTreasure && !$(`card-${lastTreasure.id}`)) {
+        lastTreasure.type = 'BACK';
+        this.addCard(lastTreasure);
+        oCard.insertAdjacentElement('beforebegin', $(`card-${lastTreasure.id}`));
+      }
+
+      oCard.id += 'old';
+      this.addCard(card, this.getVisibleTitleContainer());
+      let oCard2 = $(`card-${card.id}`);
+
+      this.flipAndReplace(oCard, oCard2).then(() => {
+        this.slide(`card-${card.id}`, $(`discard-${pos}`), { rotate: true });
+        $(`card-${card.id}_animated`).style.transform = `rotate(0deg)`;
       });
     },
 
