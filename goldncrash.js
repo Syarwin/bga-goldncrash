@@ -410,7 +410,7 @@ define([
       }
       if (card.type == GUEST) {
         let guestDescs = {
-          1: _('you have 9 Goldin the column'),
+          1: _('you have 9 Gold in the column'),
           2: _('you have played 2 cards in this column in the same turn'),
           3: _('you have played or moved the 5th card in this column'),
           4: _('you have played or moved the 4th card of a different type in this column'),
@@ -702,6 +702,9 @@ define([
       }).then(() => {
         this.addCard(n.args.card);
         this.flipAndReplace(target, `card-${n.args.card.id}`);
+
+        let guest = $(`guest-${this.getCPos(n.args.card.deck)}-${n.args.columnId}`).querySelector('.goldncrash-card');
+        if (guest) this.fadeOutAndDestroy(guest);
       });
     },
 
