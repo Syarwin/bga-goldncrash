@@ -51,6 +51,7 @@ define([
         ['pBombFail', 3000],
         ['discard', null],
         ['crackSafe', 1200],
+        ['move', 1200],
         //  ['confirmSetupObjectives', 1200],
         //  ['clearTurn', 200],
         //  ['refreshUI', 200],
@@ -126,7 +127,11 @@ define([
       return `<div class='player-info'>
         <div class='hand-counter-wrapper'>
           <span id='counter-${player.id}-hand'>0</span>
-          CARDS
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 296.664 296.664">
+            <path d="M 58.355,226.748 V 69.414 c 0,-1.709 0.294,-3.391 0.526,-5.039 L 13.778,79.057 C 3.316,82.455 -2.42,93.797 0.979,104.258 l 48.639,149.633 c 2.738,8.428 10.639,13.816 19.075,13.816 2.035,0 4.109,-0.315 6.143,-0.975 l 12.796,-4.211 C 71.066,259.213 58.355,244.242 58.355,226.748 Z" />
+            <path d="M 91.098,203.275 139.715,53.673 c 0.491,-1.512 1.078,-3.342 1.746,-4.342 H 94.688 c -11,0 -20.333,9.082 -20.333,20.082 v 157.334 c 0,11 9.333,20.584 20.333,20.584 h 15.969 C 94.061,239.332 85.361,220.932 91.098,203.275 Z" />
+            <path d="M 282.848,79.057 180.134,45.684 c -2.034,-0.662 -4.102,-0.975 -6.138,-0.975 -8.436,0 -16.326,5.387 -19.064,13.814 l -48.617,149.633 c -3.399,10.463 2.379,21.803 12.841,25.203 l 102.713,33.373 c 2.034,0.66 4.102,0.975 6.138,0.975 8.436,0 16.326,-5.389 19.064,-13.816 L 295.689,104.258 C 299.088,93.797 293.31,82.455 282.848,79.057 Z" />
+          </svg>
         </div>
       </div>`;
     },
@@ -277,6 +282,98 @@ define([
       });
     },
 
+    onEnteringStateMove(args) {
+      Object.keys(args.cardIds).forEach((cardId) => {
+        let columns = args.cardIds[cardId];
+        if (columns.length)
+          this.onClick(`card-${cardId}`, () =>
+            this.clientState('moveChooseColumn', _('Where do you want to move that card?'), { cardId, columns })
+          );
+      });
+    },
+
+    onEnteringStateMoveChooseColumn(args) {
+      this.addCancelStateBtn();
+      $(`card-${args.cardId}`).classList.add('selected');
+
+      let pos = this.getPos(this.player_id);
+      args.columns.forEach((col) => {
+        this.onClick(`column-${pos}-${col}`, () => {
+          this.takeAction('actMove', {
+            cardId: args.cardId,
+            columnId: col,
+          });
+        });
+      });
+
+      // let selectedColumn = null;
+      // args.columns.forEach((col) => {
+      //   this.onClick(`column-${pos}-${col}`, () => {
+      //     if (selectedColumn != null) $(`column-${pos}-${selectedColumn}`).classList.remove('selected');
+      //     selectedColumn = col;
+      //     $(`column-${pos}-${selectedColumn}`).classList.add('selected');
+      //     this.addPrimaryActionButton('btnConfirm', _('Confirm'), () =>
+      //       this.takeAction('actMove', {
+      //         cardId: args.cardId,
+      //         columnId: selectedColumn,
+      //       })
+      //     );
+      //   });
+      // });
+    },
+
+    onEnteringStateObserve(publicArgs) {
+      let bottom = [],
+        top = [];
+      let args = publicArgs._private;
+      let updateStatus = () => {
+        args.cards.forEach((card) => {
+          let o = $(`card-${card.id}`);
+          delete o.dataset.nbr;
+          delete o.dataset.pos;
+        });
+
+        top.forEach((cardId, i) => {
+          let o = $(`card-${cardId}`);
+          o.dataset.nbr = i + 1;
+          o.dataset.pos = _('TOP');
+        });
+
+        bottom.forEach((cardId, i) => {
+          let o = $(`card-${cardId}`);
+          o.dataset.nbr = i + 1;
+          o.dataset.pos = _('BOTTOM');
+        });
+
+        $('btnConfirm').classList.toggle('disabled', top.length + bottom.length != 2);
+      };
+
+      args.cards.forEach((card) => {
+        let cardId = card.id;
+        this.addCard(card, $('pending-deck-cards'));
+        this.onClick(`card-${cardId}`, () => {
+          this.multipleChoiceDialog(_('Where do you want to place that card?'), [_('Top'), _('Bottom')], (choice) => {
+            let onTop = choice == 0;
+            top = top.filter((v) => v != cardId);
+            bottom = bottom.filter((v) => v != cardId);
+            if (onTop) top.push(cardId);
+            else bottom.push(cardId);
+
+            updateStatus();
+          });
+        });
+      });
+
+      this.addPrimaryActionButton('btnConfirm', _('Confirm'), () => {
+        this.takeAction('actObserve', { cardsToPutBack: JSON.stringify(top), cardsToDiscard: JSON.stringify(bottom) });
+      });
+      updateStatus();
+    },
+
+    onLeavingStateObserve() {
+      dojo.empty('pending-deck-cards');
+    },
+
     ////////////////////////////////
     //    ____              _
     //   / ___|__ _ _ __ __| |___
@@ -341,7 +438,7 @@ define([
               'Target the Zeppelin of the opposite column of your opponent. The opponent checks if the Zeppelin resists the bombing by looking at the robustness value on the other side of the card.'
             )} <br />
             ${_(
-              'If the robustness value is lower than or equal to the number of cards opposite column: the Zeppelin card is fl ipped face Destroyed up. If an Esteemed Guest was on this Zeppelin, put it back in the box.'
+              'If the robustness value is lower than or equal to the number of cards opposite column: the Zeppelin card is flipped face Destroyed up. If an Esteemed Guest was on this Zeppelin, put it back in the box.'
             )} <br />
             ${_(
               'Otherwise, nothing happens. The player who was just attacked simply states that the Zeppelin resisted the attack, and the Zeppelin card remains with the Undamaged face up.'
@@ -614,6 +711,12 @@ define([
       let counter = 'handCount';
       this._counters[n.args.player_id][counter].incValue(-1);
       this.slide(`card-${card.id}`, $(`column-${pos}-${n.args.columnId}`));
+    },
+
+    notif_move(n) {
+      debug('Notif: move a card', n);
+      let pos = this.getPos(n.args.player_id);
+      this.slide(`card-${n.args.card.id}`, $(`column-${pos}-${n.args.columnId2}`));
     },
 
     notif_discard(n) {
