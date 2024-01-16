@@ -52,6 +52,7 @@ define([
         ['discard', null],
         ['crackSafe', 1200],
         ['move', 1200],
+        ['clearColumn', null],
         //  ['confirmSetupObjectives', 1200],
         //  ['clearTurn', 200],
         //  ['refreshUI', 200],
@@ -726,6 +727,16 @@ define([
       Promise.all(
         n.args.cards.map((card, i) => this.wait(100 * i).then(() => this.slide(`card-${card.id}`, $(`discard-${pos}`))))
       ).then(() => this.notifqueue.setSynchronousDuration(100));
+    },
+
+    notif_clearColumn(n) {
+      debug('Notif: clear column cards', n);
+
+      let pos = this.getPos(n.args.player_id);
+      let cards = [...$(`column-${pos}-${n.args.columnId}`).querySelectorAll('.goldncrash-card')];
+      Promise.all(cards.map((card, i) => this.wait(100 * i).then(() => this.slide(card, $(`discard-${pos}`))))).then(() =>
+        this.notifqueue.setSynchronousDuration(100)
+      );
     },
 
     notif_secure(n) {
