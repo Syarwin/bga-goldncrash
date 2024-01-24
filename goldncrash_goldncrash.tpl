@@ -38,6 +38,7 @@
             <div class='side-zone-holder'>
                 <div class='deck-holder' id='deck-bottom'>
                     <span class='deck-counter' id='deck-counter-bottom'></span>
+                    <div id='pending-deck-cards'></div>
                 </div>
                 <div class='banner-chest-holder'>
                     <div class='banner-holder' id='banner-bottom'></div>
