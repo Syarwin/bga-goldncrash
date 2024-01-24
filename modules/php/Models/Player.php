@@ -123,8 +123,7 @@ class Player extends \GNC\Helpers\DB_Model
 
   public function clearColumn($columnId)
   {
-    while (true) {
-      $card = Cards::getBottomOf($this->getColumnName($columnId));
+    while ($card = Cards::getBottomOf($this->getColumnName($columnId))) {
       Cards::insertOnTop($card->getId(), $this->getDiscardName());
     }
     Notifications::clearColumn($columnId, $this);
