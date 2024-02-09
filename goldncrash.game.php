@@ -96,7 +96,7 @@ class GoldnCrash extends Table
   protected function setupNewGame($players, $options = [])
   {
     Players::setupNewGame($players, $options);
-    Preferences::setupNewGame($players, $this->player_preferences);
+    // Preferences::setupNewGame($players, $this->player_preferences);
     //Stats::checkExistence();
     Cards::setupNewGame($players, $options);
     Globals::setupNewGame($players, $options, Players::getActiveId());
