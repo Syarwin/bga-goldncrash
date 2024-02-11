@@ -40,7 +40,7 @@ define([
 
   return declare('bgagame.goldncrash', [customgame.game], {
     constructor() {
-      this._activeStates = ['playerTurn'];
+      this._inactiveStates = [];
       this._notifications = [
         ['playCard', 1200],
         ['secure', 2000],
@@ -52,6 +52,7 @@ define([
         ['discard', null],
         ['crackSafe', 1200],
         ['move', 1200],
+        ['callBack', 1200],
         ['clearColumn', null],
         //  ['confirmSetupObjectives', 1200],
         //  ['clearTurn', 200],
@@ -213,7 +214,7 @@ define([
         this.changePageTitle(args.args.descSuffix);
       }
 
-      if (this._activeStates.includes(stateName) && !this.isCurrentPlayerActive()) return;
+      if (!this._inactiveStates.includes(stateName) && !this.isCurrentPlayerActive()) return;
 
       // Call appropriate method
       var methodName = 'onEnteringState' + stateName.charAt(0).toUpperCase() + stateName.slice(1);
@@ -373,6 +374,20 @@ define([
 
     onLeavingStateObserve() {
       dojo.empty('pending-deck-cards');
+    },
+
+    onEnteringStateCallBack(args) {
+      let selectedCard = null;
+      args.cardIds.forEach((cardId) => {
+        this.onClick(`card-${cardId}`, () => {
+          if (selectedCard !== null) $(`card-${selectedCard}`).classList.remove('selected');
+          selectedCard = cardId;
+          $(`card-${selectedCard}`).classList.add('selected');
+          this.addPrimaryActionButton('btnConfirm', _('Confirm call back'), () =>
+            this.takeAction('actCallBack', { cardId: selectedCard })
+          );
+        });
+      });
     },
 
     ////////////////////////////////
@@ -931,6 +946,20 @@ define([
           this.wait(800).then(() => $(`card-${n.args.card.id}`).remove());
         });
       });
+    },
+
+    notif_callBack(n) {
+      debug('Notif: call back a card', n);
+
+      let card = n.args.card;
+      let counter = 'handCount';
+      this._counters[n.args.player_id][counter].incValue(1);
+      if (n.args.player_id == this.player_id) {
+        let container = this.getCardContainer(card);
+        this.slide(`card-${card.id}`, container);
+      } else {
+        this.slide(`card-${card.id}`, `player_board_${n.args.player_id}`, { destroy: true });
+      }
     },
 
     ////////////////////////////////////////////////////////////
