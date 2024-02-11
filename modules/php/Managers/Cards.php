@@ -50,7 +50,7 @@ class Cards extends \GNC\Helpers\Pieces
         'discard' => static::getInLocation($discard, null, 'card_state')->toArray(),
         'lastDiscard' => static::getTopOf($discard),
         'nTreasure' => static::countInLocation($treasure),
-        'lastTreasure' => static::getLastTreasure($character),
+        'lastTreasure' => static::bindCard(static::getLastTreasure($character)),
         'nDeck' => static::countInLocation($deck),
         'guests' => [$player->getGuest(0), $player->getGuest(1), $player->getGuest(2)],
         'ballons' => [
@@ -73,10 +73,10 @@ class Cards extends \GNC\Helpers\Pieces
       $result[$columnId] = [
         RED => true,
         BLUE =>
-          $player
-            ->getOpponent()
-            ->getColumn($columnId)
-            ->count() > 0,
+        $player
+          ->getOpponent()
+          ->getColumn($columnId)
+          ->count() > 0,
         PURPLE => static::countInLocation($player->getDiscardName()) > 0,
         GREEN => static::countInLocation($player->getDeckName()) > 0,
         BROWN => static::isAdjacentAvailable($player, $columnId),
@@ -123,7 +123,7 @@ class Cards extends \GNC\Helpers\Pieces
             $result[$i] = $card->getId();
           }
           break;
-        //yellow can't be discarded
+          //yellow can't be discarded
       }
     }
     return $result;
@@ -146,7 +146,7 @@ class Cards extends \GNC\Helpers\Pieces
       $columnSizes[$i] = $player->getColumn($i)->count();
     }
     $max = max(array_values($columnSizes));
-    $lowests = array_keys(array_filter($columnSizes, fn($value) => $value != $max));
+    $lowests = array_keys(array_filter($columnSizes, fn ($value) => $value != $max));
     return $lowests ? $lowests : [0, 1, 2]; //if all columns are max, return all
   }
 
@@ -154,13 +154,13 @@ class Cards extends \GNC\Helpers\Pieces
   {
     return $player
       ->getColumn($columnId)
-      ->filter(fn($card) => $card->getType() == $color)
+      ->filter(fn ($card) => $card->getType() == $color)
       ->count();
   }
 
   public static function getNColors($player, $columnId)
   {
-    return $player->getColumn($columnId)->countDifferent(fn($card) => $card->getType());
+    return $player->getColumn($columnId)->countDifferent(fn ($card) => $card->getType());
   }
 
   public static function getTotalValue($cards)
@@ -180,7 +180,8 @@ class Cards extends \GNC\Helpers\Pieces
 
     if ($card->getFlipped() == FLIPPED || $forced) {
       $card->id = 0;
-      $card->value = 'back';
+      $card->value = 'BACK';
+      $card->type = 'BACK';
     }
     return $card;
   }
@@ -243,8 +244,8 @@ class Cards extends \GNC\Helpers\Pieces
     };
 
     return [
-      1 => $f([1, GUEST, GUEST, 5]),
-      2 => $f([2, GUEST, GUEST, 4]),
+      1 => $f([1, GUEST, GUEST, 5]), //ok
+      2 => $f([2, GUEST, GUEST, 4]), //ok
       3 => $f([3, GUEST, GUEST, 5]),
       4 => $f([4, GUEST, GUEST, 6]),
       5 => $f([5, GUEST, GUEST, 5]),

@@ -19,6 +19,7 @@ trait GameTrait
 		//first check if it was last turn -> end
 		if (Globals::getLastTurn()) {
 			Game::transition(END_GAME);
+			return;
 		} else { //check if it IS last turn 
 			$player = Players::getActive();
 			if (Cards::countInLocation($player->getDeckName()) == 0) {

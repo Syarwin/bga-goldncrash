@@ -367,7 +367,10 @@ define([
       });
 
       this.addPrimaryActionButton('btnConfirm', _('Confirm'), () => {
-        this.takeAction('actObserve', { cardsToPutBack: JSON.stringify(top), cardsToDiscard: JSON.stringify(bottom) });
+        this.takeAction('actObserve', {
+          cardsToPutBack: JSON.stringify(top),
+          cardsToDiscard: JSON.stringify(bottom),
+        });
       });
       updateStatus();
     },
@@ -535,12 +538,12 @@ define([
         let guestDescs = {
           1: _('you have 9 Gold in the column'),
           2: _('you have played 2 cards in this column in the same turn'),
-          3: _('you have played or moved the 5th card in this column'),
-          4: _('you have played or moved the 4th card of a different type in this column'),
-          5: _('you have played or moved the 3rd purple card in this column'),
-          6: _('you have played or moved the 3rd blue card in this column'),
-          7: _('you have played or moved the 3rd green card in this column'),
-          8: _('you have played or moved the 2nd yellow card in this column'),
+          3: _('you have played or moved the 3rd green card in this column'),
+          4: _('you have played or moved the 5th card in this column'),
+          5: _('you have played or moved the 4th card of a different type in this column'),
+          6: _('you have played or moved the 3rd purple card in this column'),
+          7: _('you have played or moved the 2nd yellow card in this column'),
+          8: _('you have played or moved the 3rd blue card in this column'),
         };
         desc = `<div>
           <h4>${_('Esteemed Guest')}</h4>
