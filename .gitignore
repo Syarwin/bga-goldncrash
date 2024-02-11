@@ -5,3 +5,4 @@
 .gitignore
 .prettierrc
 deploy.sh
+sync-css.sh

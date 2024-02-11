@@ -70,14 +70,29 @@ define([
     getSettingsSections() {
       return {
         layout: _('Layout'),
-        playerBoard: _('Player Board/Panel'),
-        gameFlow: _('Game Flow'),
-        other: _('Other'),
+        // playerBoard: _('Player Board/Panel'),
+        // gameFlow: _('Game Flow'),
+        // other: _('Other'),
       };
     },
 
     getSettingsConfig() {
-      return {};
+      return {
+        boardScale: {
+          default: 70,
+          name: _('Board scale'),
+          type: 'slider',
+          sliderConfig: {
+            step: 3,
+            padding: 0,
+            range: {
+              min: [20],
+              max: [100],
+            },
+          },
+          section: 'layout',
+        },
+      };
     },
 
     /**
@@ -729,13 +744,13 @@ define([
       let pos = this.getPos(n.args.player_id);
       let counter = 'handCount';
       this._counters[n.args.player_id][counter].incValue(-1);
-      this.slide(`card-${card.id}`, $(`column-${pos}-${n.args.columnId}`));
+      this.slide(`card-${card.id}`, $(`column-${pos}-${n.args.columnId}`)).then(() => this.updateLayout());
     },
 
     notif_move(n) {
       debug('Notif: move a card', n);
       let pos = this.getPos(n.args.player_id);
-      this.slide(`card-${n.args.card.id}`, $(`column-${pos}-${n.args.columnId2}`));
+      this.slide(`card-${n.args.card.id}`, $(`column-${pos}-${n.args.columnId2}`)).then(() => this.updateLayout());
     },
 
     notif_discard(n) {
@@ -744,7 +759,10 @@ define([
       let pos = this.getPos(n.args.player_id);
       Promise.all(
         n.args.cards.map((card, i) => this.wait(100 * i).then(() => this.slide(`card-${card.id}`, $(`discard-${pos}`))))
-      ).then(() => this.notifqueue.setSynchronousDuration(100));
+      ).then(() => {
+        this.notifqueue.setSynchronousDuration(100);
+        this.updateLayout();
+      });
     },
 
     notif_clearColumn(n) {
@@ -752,9 +770,10 @@ define([
 
       let pos = this.getPos(n.args.player_id);
       let cards = [...$(`column-${pos}-${n.args.columnId}`).querySelectorAll('.goldncrash-card')];
-      Promise.all(cards.map((card, i) => this.wait(100 * i).then(() => this.slide(card, $(`discard-${pos}`))))).then(() =>
-        this.notifqueue.setSynchronousDuration(100)
-      );
+      Promise.all(cards.map((card, i) => this.wait(100 * i).then(() => this.slide(card, $(`discard-${pos}`))))).then(() => {
+        this.notifqueue.setSynchronousDuration(100);
+        this.updateLayout();
+      });
     },
 
     notif_secure(n) {
@@ -959,9 +978,9 @@ define([
       this._counters[n.args.player_id][counter].incValue(1);
       if (n.args.player_id == this.player_id) {
         let container = this.getCardContainer(card);
-        this.slide(`card-${card.id}`, container);
+        this.slide(`card-${card.id}`, container).then(() => this.updateLayout());
       } else {
-        this.slide(`card-${card.id}`, `player_board_${n.args.player_id}`, { destroy: true });
+        this.slide(`card-${card.id}`, `player_board_${n.args.player_id}`, { destroy: true }).then(() => this.updateLayout());
       }
     },
 
@@ -1046,18 +1065,19 @@ define([
     },
 
     tplInfoPanel() {
+      //     <div id="show-scores">
+      //     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+      //       <g class="fa-group">
+      //         <path class="fa-secondary" fill="currentColor" d="M0 192v272a48 48 0 0 0 48 48h352a48 48 0 0 0 48-48V192zm324.13 141.91a11.92 11.92 0 0 1-3.53 6.89L281 379.4l9.4 54.6a12 12 0 0 1-17.4 12.6l-49-25.8-48.9 25.8a12 12 0 0 1-17.4-12.6l9.4-54.6-39.6-38.6a12 12 0 0 1 6.6-20.5l54.7-8 24.5-49.6a12 12 0 0 1 21.5 0l24.5 49.6 54.7 8a12 12 0 0 1 10.13 13.61zM304 128h32a16 16 0 0 0 16-16V16a16 16 0 0 0-16-16h-32a16 16 0 0 0-16 16v96a16 16 0 0 0 16 16zm-192 0h32a16 16 0 0 0 16-16V16a16 16 0 0 0-16-16h-32a16 16 0 0 0-16 16v96a16 16 0 0 0 16 16z" opacity="0.4"></path>
+      //         <path class="fa-primary" fill="currentColor" d="M314 320.3l-54.7-8-24.5-49.6a12 12 0 0 0-21.5 0l-24.5 49.6-54.7 8a12 12 0 0 0-6.6 20.5l39.6 38.6-9.4 54.6a12 12 0 0 0 17.4 12.6l48.9-25.8 49 25.8a12 12 0 0 0 17.4-12.6l-9.4-54.6 39.6-38.6a12 12 0 0 0-6.6-20.5zM400 64h-48v48a16 16 0 0 1-16 16h-32a16 16 0 0 1-16-16V64H160v48a16 16 0 0 1-16 16h-32a16 16 0 0 1-16-16V64H48a48 48 0 0 0-48 48v80h448v-80a48 48 0 0 0-48-48z"></path>
+      //       </g>
+      //     </svg>
+      //  </div>
+
       return `
     <div class='player-board' id="player_board_config">
       <div id="player_config" class="player_board_content">
         <div class="player_config_row">
-          <div id="show-scores">
-             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
-               <g class="fa-group">
-                 <path class="fa-secondary" fill="currentColor" d="M0 192v272a48 48 0 0 0 48 48h352a48 48 0 0 0 48-48V192zm324.13 141.91a11.92 11.92 0 0 1-3.53 6.89L281 379.4l9.4 54.6a12 12 0 0 1-17.4 12.6l-49-25.8-48.9 25.8a12 12 0 0 1-17.4-12.6l9.4-54.6-39.6-38.6a12 12 0 0 1 6.6-20.5l54.7-8 24.5-49.6a12 12 0 0 1 21.5 0l24.5 49.6 54.7 8a12 12 0 0 1 10.13 13.61zM304 128h32a16 16 0 0 0 16-16V16a16 16 0 0 0-16-16h-32a16 16 0 0 0-16 16v96a16 16 0 0 0 16 16zm-192 0h32a16 16 0 0 0 16-16V16a16 16 0 0 0-16-16h-32a16 16 0 0 0-16 16v96a16 16 0 0 0 16 16z" opacity="0.4"></path>
-                 <path class="fa-primary" fill="currentColor" d="M314 320.3l-54.7-8-24.5-49.6a12 12 0 0 0-21.5 0l-24.5 49.6-54.7 8a12 12 0 0 0-6.6 20.5l39.6 38.6-9.4 54.6a12 12 0 0 0 17.4 12.6l48.9-25.8 49 25.8a12 12 0 0 0 17.4-12.6l-9.4-54.6 39.6-38.6a12 12 0 0 0-6.6-20.5zM400 64h-48v48a16 16 0 0 1-16 16h-32a16 16 0 0 1-16-16V64H160v48a16 16 0 0 1-16 16h-32a16 16 0 0 1-16-16V64H48a48 48 0 0 0-48 48v80h448v-80a48 48 0 0 0-48-48z"></path>
-               </g>
-             </svg>
-          </div>
  
           <div id="help-mode-switch">
             <input type="checkbox" class="checkbox" id="help-mode-chk" />
@@ -1085,16 +1105,21 @@ define([
       dojo.place('player_board_config', 'player_boards', 'first');
     },
 
+    onChangeBoardScaleSetting() {
+      this.updateLayout();
+    },
+
     updateLayout() {
       if (!this.settings) return;
-      return; // TODO
+
       const ROOT = document.documentElement;
 
-      const WIDTH = $('goldncrash-main-container').getBoundingClientRect()['width'] - 5;
-      const BOARD_WIDTH = 1510;
-      const BOARD_SIZE = (WIDTH * this.settings.boardSizes) / 100;
+      const WIDTH = $('goldncrash-main-wrapper').getBoundingClientRect()['width'] - 5;
+      const BOARD_WIDTH = 1142;
+      const BOARD_SIZE = (WIDTH * this.settings.boardScale) / 100;
       let boardScale = BOARD_SIZE / BOARD_WIDTH;
       ROOT.style.setProperty('--goldncrashBoardScale', boardScale);
+      $('goldncrash-main-wrapper').style.height = boardScale * $('goldncrash-main-container').offsetHeight + 'px';
     },
   });
 });

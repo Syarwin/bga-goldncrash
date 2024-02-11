@@ -569,18 +569,21 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
         this._settingsSections = this.getSettingsSections();
         dojo.place(`<div id='settings-controls-header'></div><div id='settings-controls-wrapper'></div>`, container);
         Object.keys(this._settingsSections).forEach((sectionName, i) => {
-          dojo.place(`<div id='settings-section-${sectionName}' class='settings-section'></div>`, 'settings-controls-wrapper');
-          let div = dojo.place(`<div>${this._settingsSections[sectionName]}</div>`, 'settings-controls-header');
-          let openSection = () => {
-            dojo.query('#settings-controls-header div').removeClass('open');
-            div.classList.add('open');
-            dojo.query('#settings-controls-wrapper div.settings-section').removeClass('open');
-            $(`settings-section-${sectionName}`).classList.add('open');
-          };
-          div.addEventListener('click', openSection);
-          if (i == 0) {
-            openSection();
-          }
+          dojo.place(
+            `<div id='settings-section-${sectionName}' class='settings-section open'></div>`,
+            'settings-controls-wrapper'
+          );
+          // let div = dojo.place(`<div>${this._settingsSections[sectionName]}</div>`, 'settings-controls-header');
+          // let openSection = () => {
+          //   dojo.query('#settings-controls-header div').removeClass('open');
+          //   div.classList.add('open');
+          //   dojo.query('#settings-controls-wrapper div.settings-section').removeClass('open');
+          //   $(`settings-section-${sectionName}`).classList.add('open');
+          // };
+          // div.addEventListener('click', openSection);
+          // if (i == 0) {
+          //   openSection();
+          // }
         });
       }
 

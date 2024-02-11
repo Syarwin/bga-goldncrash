@@ -281,7 +281,8 @@ html {
   right: 28px; }
 
 :root {
-  --cardScale: 0.4; }
+  --cardScale: 0.4;
+  --goldncrashBoardScale: 1; }
 
 .goldncrash-card {
   box-sizing: border-box;
@@ -494,7 +495,9 @@ html {
 #goldncrash-main-container {
   display: flex;
   flex-flow: column;
-  align-items: center; }
+  align-items: center;
+  transform: scale(var(--goldncrashBoardScale));
+  transform-origin: top center; }
   #goldncrash-main-container .goldncrash-player-board {
     display: flex;
     align-items: center;
@@ -671,13 +674,7 @@ html {
     display: flex;
     justify-content: space-around;
     align-items: center;
-    padding: 5px 0px;
-    border-bottom: 1px solid #80502e; }
-    #player_config .player_config_row#susan-holder {
-      height: 355px;
-      cursor: zoom-in;
-      border-bottom: none;
-      padding-bottom: 0px; }
+    padding: 5px 0px; }
   #player_config #help-mode-switch .checkbox {
     display: none; }
   #player_config #help-mode-switch .label {
