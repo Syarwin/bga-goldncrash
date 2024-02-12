@@ -55,6 +55,6 @@ trait MoveTrait
 			$player->clearColumn($columnId);
 		}
 
-		Game::transition(END_TURN);
+		$this->finishMove();
 	}
 }

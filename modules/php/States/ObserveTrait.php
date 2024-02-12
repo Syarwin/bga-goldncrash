@@ -51,6 +51,6 @@ trait ObserveTrait
 
     Notifications::observe(count($cardsToPutBack), count($cardsToDiscard), $player);
 
-    Game::transition(END_TURN);
+    $this->finishMove();
   }
 }

@@ -46,6 +46,6 @@ trait CallBackTrait
 
 		$player->callBack(Cards::get($cardId));
 
-		Game::transition(END_TURN);
+		$this->finishMove();
 	}
 }
