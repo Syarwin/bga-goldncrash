@@ -41,8 +41,8 @@ trait GameTrait
 
 		foreach ($players as $pId => $player) {
 			if ($player->hasLostGame()) {
-				$player->setScore(1);
-				$player->getOpponent()->setScore(0);
+				$player->setScore(0);
+				$player->getOpponent()->setScore(1);
 				Notifications::message(clienttranslate('${player_name} losts his last Zeppelin, game is over'), ['player' => $player]);
 				Game::transition();
 				return;
