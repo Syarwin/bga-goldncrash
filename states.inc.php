@@ -114,6 +114,7 @@ $machinestates = [
     'action' => 'stSecure',
     'possibleactions' => ['actSecure'],
     'transitions' => [
+      'secondTurn' => ST_PLAYER_TURN,
       AGAIN => ST_SECURE,
       END_TURN => ST_CONFIRM,
     ],
@@ -127,6 +128,7 @@ $machinestates = [
     'args' => 'argMove',
     'possibleactions' => ['actMove'],
     'transitions' => [
+      'secondTurn' => ST_PLAYER_TURN,
       END_TURN => ST_CONFIRM,
     ],
   ],
@@ -139,6 +141,7 @@ $machinestates = [
     'args' => 'argCallBack',
     'possibleactions' => ['actCallBack'],
     'transitions' => [
+      'secondTurn' => ST_PLAYER_TURN,
       END_TURN => ST_CONFIRM,
     ],
   ],
@@ -155,6 +158,7 @@ $machinestates = [
     'args' => 'argObserve',
     'possibleactions' => ['actObserve'],
     'transitions' => [
+      'secondTurn' => ST_PLAYER_TURN,
       END_TURN => ST_NEXT_PLAYER,
     ],
   ],
