@@ -125,6 +125,7 @@ $machinestates = [
     'action' => 'stSecure',
     'possibleactions' => ['actSecure', 'actRestart'],
     'transitions' => [
+      'secondTurn' => ST_PLAYER_TURN,
       AGAIN => ST_SECURE,
       END_TURN => ST_CONFIRM_TURN,
     ],

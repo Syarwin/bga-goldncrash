@@ -60,7 +60,7 @@ trait SecureTrait
       Globals::setRemainingActions($remainingActions);
       Game::transition(AGAIN);
     } else {
-      Game::transition(END_TURN);
+      $this->finishMove();
     }
   }
 }
