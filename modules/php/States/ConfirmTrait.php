@@ -11,29 +11,81 @@ use GNC\Core\Stats;
 use GNC\Managers\Cards;
 use GNC\Managers\Players;
 use GNC\Models\Player;
+use GNC\Helpers\Log;
 
 trait ConfirmTrait
 {
-	public function argConfirm()
+	public function addCheckpoint($state)
 	{
-		$activePlayer = Players::getActive();
-
-		return [];
+		Globals::setChoices(0);
+		Log::checkpoint($state);
 	}
 
-	public function stConfirm()
+	public function addStep()
 	{
-		//TODO
-		Game::transition(END_TURN);
+		$stepId = Log::step($this->gamestate->state_id());
+		Notifications::newUndoableStep(Players::getCurrent(), $stepId);
+		Globals::incChoices();
 	}
 
-	public function actConfirm()
+	public function argsConfirmTurn()
 	{
-		//TODO
+		$data = [
+			'previousSteps' => Log::getUndoableSteps(),
+			'previousChoices' => Globals::getChoices(),
+		];
+		return $data;
 	}
 
-	public function actUndo()
+	public function stConfirmTurn()
 	{
-		//TODO
+		if (Globals::getChoices() == 0) {
+			$this->actConfirmTurn(true);
+		}
 	}
+
+	public function actConfirmTurn($auto = false)
+	{
+		if (!$auto) {
+			self::checkAction('actConfirmTurn');
+		}
+		$this->gamestate->nextState('confirm');
+	}
+
+
+	public function actRestart()
+	{
+		self::checkAction('actRestart');
+		Log::undoTurn();
+	}
+
+	public function actUndoToStep($stepId)
+	{
+		self::checkAction('actRestart');
+		Log::undoToStep($stepId);
+	}
+
+
+	// public function argConfirm()
+	// {
+	// 	$activePlayer = Players::getActive();
+
+	// 	return [];
+	// }
+
+	// public function stConfirm()
+	// {
+	// 	//TODO
+	// 	Game::transition(END_TURN);
+	// }
+
+	// public function actConfirm()
+	// {
+	// 	//TODO
+	// }
+
+	// public function actUndo()
+	// {
+	// 	//TODO
+	// }
 }

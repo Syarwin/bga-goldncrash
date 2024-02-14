@@ -30,6 +30,7 @@ trait GameTrait
 			//anyway launch new turn
 			Globals::newTurn();
 			$this->activeNextPlayer();
+			$this->addCheckpoint(ST_PLAYER_TURN);
 
 			Game::transition(END_TURN);
 		}

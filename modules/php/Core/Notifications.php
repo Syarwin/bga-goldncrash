@@ -9,6 +9,36 @@ use GNC\Core\Globals;
 
 class Notifications
 {
+  public static function refreshUI($datas)
+  {
+    // // Keep only the thing that matters
+    $fDatas = [
+      'players' => $datas['players'],
+      // TODO
+    ];
+
+    self::notifyAll('refreshUI', '', [
+      'datas' => $fDatas,
+    ]);
+  }
+
+  public static function newUndoableStep($player, $stepId)
+  {
+    self::notify($player, 'newUndoableStep', clienttranslate('Undo here'), [
+      'stepId' => $stepId,
+      'preserve' => ['stepId'],
+    ]);
+  }
+
+  public static function clearTurn($player, $notifIds)
+  {
+    self::notifyAll('clearTurn', clienttranslate('${player_name} restarts their turn'), [
+      'player' => $player,
+      'notifIds' => $notifIds,
+    ]);
+  }
+
+
   /**
    * To flip matching zeppelin card
    */
@@ -228,8 +258,8 @@ class Notifications
 
     $msg =
       $card->getType() == GUEST
-        ? clienttranslate('${player_name} definitely secure a Guest and all cards under it')
-        : clienttranslate('${player_name} secure a new card');
+      ? clienttranslate('${player_name} definitely secure a Guest and all cards under it')
+      : clienttranslate('${player_name} secure a new card');
 
     static::notifyAll('secure', $msg, $data);
   }

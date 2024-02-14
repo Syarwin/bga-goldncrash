@@ -101,9 +101,8 @@ class GoldnCrash extends Table
     Cards::setupNewGame($players, $options);
     Globals::setupNewGame($players, $options, Players::getActiveId());
 
-    $this->setGameStateInitialValue('logging', false);
+    $this->setGameStateInitialValue('logging', true);
     $this->activeNextPlayer();
-    // Log::enable();
   }
 
   /*

@@ -60,6 +60,7 @@ const ST_MOVE = 10;
 const ST_CALL_BACK = 11;
 const ST_OBSERVE = 12;
 
+const ST_CONFIRM_TURN = 13;
 
 
 const ST_PRE_END_OF_GAME = 98;
@@ -73,6 +74,15 @@ const ST_END_GAME = 99;
 const OPTION_DEBUG = 103;
 const OPTION_DEBUG_OFF = 0;
 const OPTION_DEBUG_ON = 1;
+
+/*
+ * User preferences
+ */
+const OPTION_CONFIRM = 103;
+const OPTION_CONFIRM_DISABLED = 0;
+const OPTION_CONFIRM_TIMER = 1;
+const OPTION_CONFIRM_ENABLED = 2;
+
 
 /******************
  ****** STATS ******

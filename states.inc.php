@@ -69,30 +69,41 @@ $machinestates = [
     'type' => ACTIVE_PLAYER,
     'args' => 'argPlayerTurn',
     'action' => 'stPlayerTurn',
-    'possibleactions' => ['actPlay', 'actDraw', 'actDiscard'],
+    'possibleactions' => ['actPlay', 'actDraw', 'actDiscard', 'actRestart'],
     'transitions' => [
       'secondTurn' => ST_PLAYER_TURN,
       'secure' => ST_SECURE,
       'move' => ST_MOVE,
       'callBack' => ST_CALL_BACK,
       'observer' => ST_OBSERVE,
-      END_TURN => ST_CONFIRM,
+      END_TURN => ST_CONFIRM_TURN,
     ],
   ],
 
-  ST_CONFIRM => [
-    'name' => 'confirm',
-    'description' => clienttranslate('${actplayer} must confirm his turn'),
-    'descriptionmyturn' => clienttranslate('${you} must confirm your turn'),
+  // ST_CONFIRM => [
+  //   'name' => 'confirm',
+  //   'description' => clienttranslate('${actplayer} must confirm his turn'),
+  //   'descriptionmyturn' => clienttranslate('${you} must confirm your turn'),
+  //   'type' => ACTIVE_PLAYER,
+  //   'args' => 'argConfirm',
+  //   'action' => 'stConfirm',
+  //   'possibleactions' => ['actConfirm', 'actUndo'],
+  //   'transitions' => [
+  //     UNDO => ST_PLAYER_TURN,
+  //     END_TURN => ST_NEXT_PLAYER,
+  //   ],
+  // ],
+  ST_CONFIRM_TURN => [
+    'name' => 'confirmTurn',
+    'description' => clienttranslate('${actplayer} must confirm or restart their turn'),
+    'descriptionmyturn' => clienttranslate('${you} must confirm or restart your turn'),
     'type' => ACTIVE_PLAYER,
-    'args' => 'argConfirm',
-    'action' => 'stConfirm',
-    'possibleactions' => ['actConfirm', 'actUndo'],
-    'transitions' => [
-      UNDO => ST_PLAYER_TURN,
-      END_TURN => ST_NEXT_PLAYER,
-    ],
+    'args' => 'argsConfirmTurn',
+    'action' => 'stConfirmTurn',
+    'possibleactions' => ['actConfirmTurn', 'actRestart'],
+    'transitions' => ['confirm' => ST_NEXT_PLAYER],
   ],
+
 
   ST_NEXT_PLAYER => [
     'name' => 'nextPlayer',
@@ -112,10 +123,10 @@ $machinestates = [
     'type' => ACTIVE_PLAYER,
     'args' => 'argSecure',
     'action' => 'stSecure',
-    'possibleactions' => ['actSecure'],
+    'possibleactions' => ['actSecure', 'actRestart'],
     'transitions' => [
       AGAIN => ST_SECURE,
-      END_TURN => ST_CONFIRM,
+      END_TURN => ST_CONFIRM_TURN,
     ],
   ],
 
@@ -125,9 +136,9 @@ $machinestates = [
     'descriptionmyturn' => clienttranslate('${you} must move a card from one of your adjacent columns'),
     'type' => ACTIVE_PLAYER,
     'args' => 'argMove',
-    'possibleactions' => ['actMove'],
+    'possibleactions' => ['actMove', 'actRestart'],
     'transitions' => [
-      END_TURN => ST_CONFIRM,
+      END_TURN => ST_CONFIRM_TURN,
     ],
   ],
 
@@ -137,9 +148,9 @@ $machinestates = [
     'descriptionmyturn' => clienttranslate('${you} must call back a card from one of your columns'),
     'type' => ACTIVE_PLAYER,
     'args' => 'argCallBack',
-    'possibleactions' => ['actCallBack'],
+    'possibleactions' => ['actCallBack', 'actRestart'],
     'transitions' => [
-      END_TURN => ST_CONFIRM,
+      END_TURN => ST_CONFIRM_TURN,
     ],
   ],
 
@@ -153,11 +164,13 @@ $machinestates = [
     ),
     'type' => ACTIVE_PLAYER,
     'args' => 'argObserve',
-    'possibleactions' => ['actObserve'],
+    'possibleactions' => ['actObserve', 'actRestart'],
     'transitions' => [
-      END_TURN => ST_NEXT_PLAYER,
+      END_TURN => ST_CONFIRM_TURN,
     ],
   ],
+
+
 
   ST_PRE_END_OF_GAME => [
     'name' => 'preEndOfGame',
