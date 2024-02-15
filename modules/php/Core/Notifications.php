@@ -14,13 +14,22 @@ class Notifications
     // // Keep only the thing that matters
     $fDatas = [
       'players' => $datas['players'],
-      // TODO
+      'cards' => $datas['cards'],
     ];
 
     self::notifyAll('refreshUI', '', [
       'datas' => $fDatas,
     ]);
   }
+
+  public static function refreshHand($player, $hand)
+  {
+    self::notify($player, 'refreshHand', '', [
+      'player' => $player,
+      'hand' => $hand,
+    ]);
+  }
+
 
   public static function newUndoableStep($player, $stepId)
   {

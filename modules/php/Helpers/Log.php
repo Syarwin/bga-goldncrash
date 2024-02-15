@@ -204,8 +204,10 @@ class Log extends \APP_DbObject
         Globals::fetch();
 
         // Notify
-        $datas = Game::get()->getAllDatas();
+        $datas = Game::get()->getAllDatas(0);
         Notifications::refreshUI($datas);
+        $player = Players::getCurrent();
+        Notifications::refreshHand($player, $player->getCardsInHand()->ui());
 
         // Force notif flush to be able to delete "restart turn" notif
         Game::get()->sendNotifications();

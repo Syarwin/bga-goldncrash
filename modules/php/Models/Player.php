@@ -151,7 +151,7 @@ class Player extends \GNC\Helpers\DB_Model
     }
   }
 
-  public function getCardsInHand($isCurrent = true)
+  public function getCardsInHand()
   {
     return Cards::getInLocationPId(HAND, $this->id);
   }

@@ -43,7 +43,8 @@ define([
       this._inactiveStates = [];
       this._notifications = [
         ['clearTurn', 200],
-        ['refreshUI', 200],
+        ['refreshUI', 10],
+        ['refreshHand', 10],
         ['playCard', 1200],
         ['secure', 2000],
         ['drawCards', null, (notif) => notif.args.player_id == this.player_id],
@@ -205,10 +206,17 @@ define([
     notif_refreshUI(n) {
       debug('Notif: refreshing UI', n);
       this.clearPossible();
-      //  ['cards', 'meeples', 'players', 'tiles'].forEach((value) => {
-      //    this.gamedatas[value] = n.args.datas[value];
-      //  });
-      //  this.setupMeeples();
+      ['players', 'cards'].forEach((value) => {
+        this.gamedatas[value] = n.args.datas[value];
+      });
+
+      this.setupCards();
+    },
+
+    notif_refreshHand(n) {
+      debug('Notif: refreshing hand', n);
+      let cards = n.args.hand;
+      cards.forEach((card) => this.addCard(card));
     },
 
     onUpdateActionButtons(stateName, args) {
@@ -298,35 +306,6 @@ define([
       let n = args.previousChoices;
       let timer = Math.min(10 + 2 * n, 20);
       this.startActionTimer('btnConfirmTurn', timer, this.prefs[OPTION_CONFIRM].value);
-    },
-
-    undoToStep(stepId) {
-      this.stopActionTimer();
-      this.checkAction('actRestart');
-      this.takeAction('actUndoToStep', { stepId }, false);
-    },
-
-    notif_clearTurn(n) {
-      debug('Notif: restarting turn', n);
-      this.cancelLogs(n.args.notifIds);
-    },
-
-    notif_refreshUI(n) {
-      debug('Notif: refreshing UI', n);
-      ['players'].forEach((value) => {
-        this.gamedatas[value] = n.args.datas[value];
-      });
-
-      // this.setupCards();
-      // this.setupMeeples();
-      // this.setupTiles();
-
-      // this.forEachPlayer((player) => {
-      //   let pId = player.id;
-      //   this._counters[pId].worker.toValue(player.workers);
-      //   this._counters[pId].money.toValue(player.money);
-
-      // });
     },
 
     onEnteringStatePlayerTurn(publicArgs) {
@@ -510,7 +489,10 @@ define([
     ////////////////////////////////
 
     setupCards() {
-      // TODO : clear cards to refresh UI
+      $('goldncrash-main-container')
+        .querySelectorAll('.goldncrash-card')
+        .forEach((o) => this.destroy(o));
+
       this.forEachPlayer((player) => {
         let cards = this.gamedatas.cards[player.id];
         cards.hand.forEach((card) => this.addCard(card));

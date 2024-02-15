@@ -64,8 +64,8 @@ $machinestates = [
 
   ST_PLAYER_TURN => [
     'name' => 'playerTurn',
-    'description' => clienttranslate('Action ${nAction}: ${actplayer} must draw, play or discard a card'),
-    'descriptionmyturn' => clienttranslate('Action ${nAction}: ${you} must draw, play or discard a card'),
+    'description' => clienttranslate('Action ${nAction}: ${actplayer} must draw a card, play a card from their hand or discard a card in a column'),
+    'descriptionmyturn' => clienttranslate('Action ${nAction}: ${you} must draw a card, play a card from your hand or discard a card in a column'),
     'type' => ACTIVE_PLAYER,
     'args' => 'argPlayerTurn',
     'action' => 'stPlayerTurn',

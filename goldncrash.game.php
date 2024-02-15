@@ -114,9 +114,9 @@ class GoldnCrash extends Table
         _ when the game starts
         _ when a player refreshes the game page (F5)
     */
-  public function getAllDatas()
+  public function getAllDatas($pId = null)
   {
-    $pId = self::getCurrentPId();
+    $pId = $pId ?? self::getCurrentPId();
     return [
       'prefs' => Preferences::getUiData($pId),
       'players' => Players::getUiData($pId),
