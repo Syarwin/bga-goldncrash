@@ -8,6 +8,7 @@ use GNC\Core\Globals;
 use GNC\Core\Notifications;
 use GNC\Core\Engine;
 use GNC\Core\Stats;
+use GNC\Helpers\Log;
 use GNC\Managers\Cards;
 use GNC\Managers\Players;
 use GNC\Models\Player;
@@ -37,6 +38,8 @@ trait SecureTrait
     return [
       'cardIds' => $cardIds,
       'remainingActions' => Globals::getRemainingActions(),
+      'previousSteps' => Log::getUndoableSteps(),
+      'previousChoices' => Globals::getChoices(),
     ];
   }
 
@@ -45,6 +48,7 @@ trait SecureTrait
     // get infos
     $player = Players::getActive();
     self::checkAction('actSecure');
+    $this->addStep();
 
     $args = $this->getArgs();
 

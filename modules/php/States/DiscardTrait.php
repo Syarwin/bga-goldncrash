@@ -31,6 +31,7 @@ trait DiscardTrait
 
   public function discardEffectRed($columnId, $player)
   {
+    Globals::setCanReset(false);
     $opp = $player->getOpponent();
     $card = Cards::getTopOf($opp->getTreasureName());
 

@@ -103,6 +103,8 @@ class GoldnCrash extends Table
 
     $this->setGameStateInitialValue('logging', true);
     $this->activeNextPlayer();
+
+    $this->addCheckpoint(ST_PLAYER_TURN);
   }
 
   /*

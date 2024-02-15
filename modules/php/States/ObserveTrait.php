@@ -32,6 +32,8 @@ trait ObserveTrait
     // get infos
     $player = Players::getActive();
     self::checkAction('actObserve');
+    //can't reset action
+    Globals::setCanReset(false);
 
     $possibleCardIds = Cards::getTopOf($player->getDeckName(), 2)->getIds();
 

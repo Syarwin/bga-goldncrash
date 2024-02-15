@@ -38,6 +38,8 @@ trait PlayerTurnTrait
       'previousSteps' => Log::getUndoableSteps(),
       'previousChoices' => Globals::getChoices(),
       'nAction' => Globals::getMoveNumber() + 1,
+      'previousSteps' => Log::getUndoableSteps(),
+      'previousChoices' => Globals::getChoices(),
       '_private' => [
         $activePlayer->getId() => [
           'canDraw' => Cards::countInLocation($activePlayer->getDeckName()) > 0,
@@ -66,13 +68,6 @@ trait PlayerTurnTrait
     $columnId = $card->getColumnId();
 
     $nextState = $player->discardFromColumn($columnId);
-
-    // $this->checkGetGuest($player, $columnId);
-
-    // //check if the column must be discarded entirely
-    // if ($n >= 3) {
-    // 	$player->clearColumn($columnId);
-    // }
 
     Globals::setActiveColumn($columnId);
     Globals::setLastAction('discard');
@@ -180,6 +175,7 @@ trait PlayerTurnTrait
     // get infos
     $pId = Game::get()->getCurrentPlayerId();
     self::checkAction('actDraw');
+    Globals::setCanReset(false);
 
     $currentPlayer = Players::get($pId);
 
@@ -199,13 +195,28 @@ trait PlayerTurnTrait
     //if there is an action to complete, do it
     if ($nextState) {
       $this->giveExtraTime(Players::getActiveId());
+
+      if (!Globals::getCanReset()) {
+        $this->addCheckpoint($nextState);
+      }
+
       Game::goTo($nextState);
     }
     //else play again if it's your first Move,
     elseif (Globals::getMoveNumber() == 0) {
       Globals::setMoveNumber(1);
+
+      if (!Globals::getCanReset()) {
+        $this->addCheckpoint(ST_PLAYER_TURN);
+      }
+
       Game::transition('secondTurn');
     } else {
+
+      if (!Globals::getCanReset()) {
+        $this->addCheckpoint(ST_NEXT_PLAYER);
+      }
+
       //else end your turn
       Game::transition(END_TURN);
     }

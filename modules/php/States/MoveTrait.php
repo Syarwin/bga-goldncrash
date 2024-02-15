@@ -8,6 +8,7 @@ use GNC\Core\Globals;
 use GNC\Core\Notifications;
 use GNC\Core\Engine;
 use GNC\Core\Stats;
+use GNC\Helpers\Log;
 use GNC\Managers\Cards;
 use GNC\Managers\Players;
 use GNC\Models\Player;
@@ -28,7 +29,9 @@ trait MoveTrait
 		}
 
 		return [
-			'cardIds' => $cards
+			'cardIds' => $cards,
+			'previousSteps' => Log::getUndoableSteps(),
+			'previousChoices' => Globals::getChoices(),
 		];
 	}
 
@@ -37,6 +40,7 @@ trait MoveTrait
 		// get infos
 		$player = Players::getActive();
 		self::checkAction('actMove');
+		$this->addStep();
 
 		$args = $this->getArgs();
 

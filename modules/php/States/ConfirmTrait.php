@@ -18,6 +18,7 @@ trait ConfirmTrait
 	public function addCheckpoint($state)
 	{
 		Globals::setChoices(0);
+		Globals::setCanReset(true);
 		Log::checkpoint($state);
 	}
 

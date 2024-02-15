@@ -15,6 +15,11 @@ class Game
     return GoldnCrash::get();
   }
 
+  public static function getStateId()
+  {
+    static::get()->gamestate->state_id();
+  }
+
   public static function isStateId($stateId)
   {
     return static::get()->gamestate->state_id() == $stateId;

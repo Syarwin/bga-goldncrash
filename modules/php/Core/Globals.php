@@ -19,6 +19,7 @@ class Globals extends \GNC\Helpers\DB_Manager
     'activeColumn' => 'int', //0,1,2 to store which are 'adjacents columns' (and detect special guest activation)
     'lastAction' => 'str', // 'discard' or 'play'
     'remainingActions' => 'int', //3,2,1 depending on how many cards in the column
+    'canReset' => 'bool',
 
     'choices' => 'int',
   ];
@@ -36,6 +37,7 @@ class Globals extends \GNC\Helpers\DB_Manager
     static::setTurn(0);
     static::setFirstPlayer($activePlayerId);
     static::setLastTurn(false);
+
     // static::setCheatMode($options[OPTION_DEBUG] == 1);
     static::newTurn();
   }
