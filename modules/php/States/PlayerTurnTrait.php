@@ -9,6 +9,7 @@ use GNC\Core\Notifications;
 use GNC\Core\Engine;
 use GNC\Core\Stats;
 use GNC\Managers\Cards;
+use GNC\Helpers\Log;
 use GNC\Managers\Players;
 use GNC\Models\Player;
 
@@ -30,10 +31,12 @@ trait PlayerTurnTrait
 
     foreach ($playablesCard as $cardId => $card) {
       $type = $card->getType();
-      $whereToPlay[$cardId] = array_values(array_filter(array_keys($columns), fn($columnId) => $columns[$columnId][$type]));
+      $whereToPlay[$cardId] = array_values(array_filter(array_keys($columns), fn ($columnId) => $columns[$columnId][$type]));
     }
 
     return [
+      'previousSteps' => Log::getUndoableSteps(),
+      'previousChoices' => Globals::getChoices(),
       'nAction' => Globals::getMoveNumber() + 1,
       '_private' => [
         $activePlayer->getId() => [
@@ -51,6 +54,7 @@ trait PlayerTurnTrait
     // get infos
     $player = Players::getActive();
     self::checkAction('actDiscard');
+    $this->addStep();
 
     $args = $this->getArgs();
 
@@ -81,6 +85,7 @@ trait PlayerTurnTrait
     // get infos
     $player = Players::getActive();
     self::checkAction('actPlay');
+    $this->addStep();
 
     $args = $this->getArgs();
 

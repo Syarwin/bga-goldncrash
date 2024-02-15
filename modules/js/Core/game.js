@@ -6,6 +6,8 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
   declare,
   noUiSlider
 ) => {
+  const isPromise = (v) => typeof v === 'object' && typeof v.then === 'function';
+
   return declare('customgame.game', ebg.core.gamegui, {
     /*
      * Constructor
@@ -163,17 +165,15 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
       var methodName = 'onLeavingState' + stateName.charAt(0).toUpperCase() + stateName.slice(1);
       if (this[methodName] !== undefined) this[methodName]();
     },
-    clearTitleBar() {
-      this.removeActionButtons();
-      this.empty('customActions');
-      this.empty('restartAction');
-      // this.empty('anytimeActions');
-      // $('gameaction_status').innerHTML = '';
-      // $('pagemaintitletext').innerHTML = '';
-    },
-    clearPossible() {
-      this.clearTitleBar();
 
+    removeAllActionButtons() {
+      this.removeActionButtons();
+      dojo.empty('customActions');
+      dojo.empty('restartAction');
+    },
+
+    clearPossible() {
+      this.removeAllActionButtons();
       this._connections.forEach(dojo.disconnect);
       this._connections = [];
       this._selectableNodes.forEach((node) => {
@@ -181,6 +181,7 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
       });
       this._selectableNodes = [];
       dojo.query('.unselectable').removeClass('unselectable');
+      dojo.query('.selectable').removeClass('selectable');
       dojo.query('.selected').removeClass('selected');
     },
 
@@ -233,9 +234,9 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
         let wrapper = (args) => {
           let msg = this.formatString(this.format_string_recursive(args.log, args.args));
           if (msg != '') {
-            this.clearTitleBar();
             $('gameaction_status').innerHTML = msg;
             $('pagemaintitletext').innerHTML = msg;
+            this.removeAllActionButtons();
           }
           let timing = this[functionName](args);
           if (args.args.scores) {
@@ -254,7 +255,7 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
             timing = this.isFastMode() ? 0 : notif[1];
           }
 
-          if (timing !== null) {
+          if (timing !== null && !isPromise(timing)) {
             this.notifqueue.setSynchronousDuration(timing);
           }
         };
@@ -851,6 +852,7 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
             if (config.phantomEnd) dojo.place(mobile, targetId, 'replace');
             else this.changeParent(mobile, newParent);
           }
+          if (config.destroy) dojo.destroy(mobile);
           if (config.clearPos && !config.destroy) dojo.style(mobile, { top: null, left: null, position: null });
           resolve();
         });

@@ -18,7 +18,9 @@ class Globals extends \GNC\Helpers\DB_Manager
     'moveNumber' => 'int', //0, 1 depending if it's first or second action
     'activeColumn' => 'int', //0,1,2 to store which are 'adjacents columns' (and detect special guest activation)
     'lastAction' => 'str', // 'discard' or 'play'
-    'remainingActions' => 'int' //3,2,1 depending on how many cards in the column
+    'remainingActions' => 'int', //3,2,1 depending on how many cards in the column
+
+    'choices' => 'int',
   ];
 
   protected static $table = 'global_variables';

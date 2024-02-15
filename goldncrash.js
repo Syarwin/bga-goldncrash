@@ -42,6 +42,9 @@ define([
     constructor() {
       this._inactiveStates = [];
       this._notifications = [
+        ['clearTurn', 200],
+        ['refreshUI', 10],
+        ['refreshHand', 10],
         ['playCard', 1200],
         ['secure', 2000],
         ['drawCards', null, (notif) => notif.args.player_id == this.player_id],
@@ -203,10 +206,17 @@ define([
     notif_refreshUI(n) {
       debug('Notif: refreshing UI', n);
       this.clearPossible();
-      //  ['cards', 'meeples', 'players', 'tiles'].forEach((value) => {
-      //    this.gamedatas[value] = n.args.datas[value];
-      //  });
-      //  this.setupMeeples();
+      ['players', 'cards'].forEach((value) => {
+        this.gamedatas[value] = n.args.datas[value];
+      });
+
+      this.setupCards();
+    },
+
+    notif_refreshHand(n) {
+      debug('Notif: refreshing hand', n);
+      let cards = n.args.hand;
+      cards.forEach((card) => this.addCard(card));
     },
 
     onUpdateActionButtons(stateName, args) {
@@ -231,9 +241,71 @@ define([
 
       if (!this._inactiveStates.includes(stateName) && !this.isCurrentPlayerActive()) return;
 
+      // Undo last steps
+      if (args.args && args.args.previousSteps) {
+        args.args.previousSteps.forEach((stepId) => {
+          let logEntry = $('logs').querySelector(`.log.notif_newUndoableStep[data-step="${stepId}"]`);
+          if (logEntry) this.onClick(logEntry, () => this.undoToStep(stepId));
+
+          logEntry = document.querySelector(`.chatwindowlogs_zone .log.notif_newUndoableStep[data-step="${stepId}"]`);
+          if (logEntry) this.onClick(logEntry, () => this.undoToStep(stepId));
+        });
+      }
+
+      // Restart turn button
+      if (args.args && args.args.previousChoices && args.args.previousChoices >= 1 && !args.args.automaticAction) {
+        if (args.args && args.args.previousSteps) {
+          let lastStep = Math.max(...args.args.previousSteps);
+          if (lastStep > 0)
+            this.addDangerActionButton('btnUndoLastStep', _('Undo last step'), () => this.undoToStep(lastStep), 'restartAction');
+        }
+
+        // Restart whole turn
+        this.addDangerActionButton(
+          'btnRestartTurn',
+          _('Restart turn'),
+          () => {
+            this.stopActionTimer();
+            this.takeAction('actRestart');
+          },
+          'restartAction'
+        );
+      }
+
       // Call appropriate method
       var methodName = 'onEnteringState' + stateName.charAt(0).toUpperCase() + stateName.slice(1);
       if (this[methodName] !== undefined) this[methodName](args.args);
+    },
+
+    onAddingNewUndoableStepToLog(notif) {
+      if (!$(`log_${notif.logId}`)) return;
+      let stepId = notif.msg.args.stepId;
+      $(`log_${notif.logId}`).dataset.step = stepId;
+      if ($(`dockedlog_${notif.mobileLogId}`)) $(`dockedlog_${notif.mobileLogId}`).dataset.step = stepId;
+
+      if (
+        this.gamedatas &&
+        this.gamedatas.gamestate &&
+        this.gamedatas.gamestate.args &&
+        this.gamedatas.gamestate.args.previousSteps &&
+        this.gamedatas.gamestate.args.previousSteps.includes(parseInt(stepId))
+      ) {
+        this.onClick($(`log_${notif.logId}`), () => this.undoToStep(stepId));
+
+        if ($(`dockedlog_${notif.mobileLogId}`)) this.onClick($(`dockedlog_${notif.mobileLogId}`), () => this.undoToStep(stepId));
+      }
+    },
+
+    onEnteringStateConfirmTurn(args) {
+      this.addPrimaryActionButton('btnConfirmTurn', _('Confirm'), () => {
+        this.stopActionTimer();
+        this.takeAction('actConfirmTurn');
+      });
+
+      const OPTION_CONFIRM = 103;
+      let n = args.previousChoices;
+      let timer = Math.min(10 + 2 * n, 20);
+      this.startActionTimer('btnConfirmTurn', timer, this.prefs[OPTION_CONFIRM].value);
     },
 
     onEnteringStatePlayerTurn(publicArgs) {
@@ -417,7 +489,10 @@ define([
     ////////////////////////////////
 
     setupCards() {
-      // TODO : clear cards to refresh UI
+      $('goldncrash-main-container')
+        .querySelectorAll('.goldncrash-card')
+        .forEach((o) => this.destroy(o));
+
       this.forEachPlayer((player) => {
         let cards = this.gamedatas.cards[player.id];
         cards.hand.forEach((card) => this.addCard(card));
