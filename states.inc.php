@@ -140,6 +140,7 @@ $machinestates = [
     'args' => 'argMove',
     'possibleactions' => ['actMove', 'actRestart'],
     'transitions' => [
+      'secondTurn' => ST_PLAYER_TURN,
       END_TURN => ST_CONFIRM_TURN,
     ],
   ],
@@ -152,6 +153,7 @@ $machinestates = [
     'args' => 'argCallBack',
     'possibleactions' => ['actCallBack', 'actRestart'],
     'transitions' => [
+      'secondTurn' => ST_PLAYER_TURN,
       END_TURN => ST_CONFIRM_TURN,
     ],
   ],
@@ -168,6 +170,7 @@ $machinestates = [
     'args' => 'argObserve',
     'possibleactions' => ['actObserve', 'actRestart'],
     'transitions' => [
+      'secondTurn' => ST_PLAYER_TURN,
       END_TURN => ST_CONFIRM_TURN,
     ],
   ],
