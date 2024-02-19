@@ -110,6 +110,7 @@ $machinestates = [
     'description' => clienttranslate('Next player'),
     'type' => GAME,
     'action' => 'stNextPlayer',
+    'updateGameProgression' => true,
     'transitions' => [
       END_GAME => ST_PRE_END_OF_GAME,
       END_TURN => ST_PLAYER_TURN,

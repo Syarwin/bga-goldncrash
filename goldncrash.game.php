@@ -122,7 +122,7 @@ class GoldnCrash extends Table
     return [
       'prefs' => Preferences::getUiData($pId),
       'players' => Players::getUiData($pId),
-      'cheatModule' => Globals::isCheatMode() ? CheatModule::getUiData() : null,
+      // 'cheatModule' => Globals::isCheatMode() ? CheatModule::getUiData() : null,
       'cards' => Cards::getUiData($pId),
     ];
   }
@@ -139,7 +139,14 @@ class GoldnCrash extends Table
     */
   function getGameProgression()
   {
-    return 0;
+    $minCardInDeck = 50;
+    $maxExplodedBalloons = 0;
+    //game progression = min (remainingCards) * 100 / nbCards at begin OR killedZeppelin * 33;
+    foreach (Players::getAll() as $pId => $player) {
+      $minCardInDeck = min($minCardInDeck, Cards::countInLocation($player->getDeckName()));
+      $maxExplodedBalloons = max($maxExplodedBalloons, $player->countExplodedBallons());
+    }
+    return max($maxExplodedBalloons * 33, ceil((26 - $minCardInDeck) * 100 / 26));
   }
 
   function actChangePreference($pref, $value)

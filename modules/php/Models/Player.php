@@ -85,6 +85,18 @@ class Player extends \GNC\Helpers\DB_Model
     return true;
   }
 
+  public function countExplodedBallons()
+  {
+    $balloons = $this->getBalloons();
+    $explodedBalloons = 0;
+    foreach ($balloons as $cardId => $balloon) {
+      if ($balloon->getFlipped() != FLIPPED) {
+        $explodedBalloons++;
+      }
+    }
+    return $explodedBalloons;
+  }
+
   public function countScore()
   {
     $cards = Cards::getInLocation($this->getTreasureName());
