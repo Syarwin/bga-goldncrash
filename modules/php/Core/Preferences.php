@@ -24,7 +24,7 @@ class Preferences extends \GNC\Helpers\DB_Manager
   public static function setupNewGame($players, $prefs)
   {
     // Load user preferences
-    include dirname(__FILE__) . '/../../../gameoptions.inc.php';
+    include dirname(__FILE__) . '/../gamepreferences.inc.php';
 
     $values = [];
     foreach ($game_preferences as $id => $data) {
@@ -52,7 +52,7 @@ class Preferences extends \GNC\Helpers\DB_Manager
   public static function checkExistence()
   {
     // Load user preferences
-    include dirname(__FILE__) . '/../../../gameoptions.inc.php';
+    include dirname(__FILE__) . '/../gamepreferences.inc.php';
 
     $playerIds = array_keys(Game::get()->loadPlayersBasicInfos());
     $values = [];
