@@ -30,7 +30,7 @@ trait GameTrait
 			//anyway launch new turn
 			Globals::newTurn();
 			$this->activeNextPlayer();
-			$this->addCheckpoint(ST_PLAYER_TURN);
+			// $this->addCheckpoint(ST_PLAYER_TURN);
 
 			Game::transition(END_TURN);
 		}
@@ -39,6 +39,10 @@ trait GameTrait
 	public function stPreEndOfGame()
 	{
 		$players = Players::getAll();
+
+		foreach ($players as $pId => $player) {
+			$player->countScore();
+		}
 
 		foreach ($players as $pId => $player) {
 			if ($player->hasLostGame()) {
@@ -50,9 +54,7 @@ trait GameTrait
 			}
 		}
 
-		foreach ($players as $pId => $player) {
-			$player->countScore();
-		}
+
 		Game::transition();
 	}
 }
