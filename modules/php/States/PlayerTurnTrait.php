@@ -29,10 +29,19 @@ trait PlayerTurnTrait
 
     $whereToPlay = [];
 
+    $isOneCardPlayable = false;
+
     foreach ($playablesCard as $cardId => $card) {
       $type = $card->getType();
-      $whereToPlay[$cardId] = array_values(array_filter(array_keys($columns), fn ($columnId) => $columns[$columnId][$type]));
+      $wToP = array_values(array_filter(array_keys($columns), fn ($columnId) => $columns[$columnId][$type]));
+      $whereToPlay[$cardId] = $wToP;
+      if (!empty($wToP)) {
+        $isOneCardPlayable = true;
+      }
     }
+
+    $discardableCards = Cards::getDiscardableCards($activePlayer);
+    $canDraw = Cards::countInLocation($activePlayer->getDeckName()) > 0;
 
     return [
       // 'previousSteps' => Log::getUndoableSteps(),
@@ -40,13 +49,27 @@ trait PlayerTurnTrait
       'nAction' => Globals::getMoveNumber() + 1,
       '_private' => [
         $activePlayer->getId() => [
-          'canDraw' => Cards::countInLocation($activePlayer->getDeckName()) > 0,
+          'canDraw' => $canDraw,
           'columns' => $columns,
           'playableCardIds' => $whereToPlay,
-          'discardableCardIds' => Cards::getDiscardableCards($activePlayer),
+          'discardableCardIds' => $discardableCards,
+          'mustPass' => empty($discardableCards) && !$isOneCardPlayable && !$canDraw
         ],
       ],
     ];
+  }
+
+  public function actPass()
+  {
+    $args = $this->getArgs();
+    $player = Players::getActive();
+    self::checkAction('actPass');
+
+    if (!$args['_private'][$player->getId()]['mustPass']) {
+      throw new \BgaVisibleSystemException("You can't pass now.");
+    }
+
+    Game::transition(END_TURN);
   }
 
   public function actDiscard($cardId)

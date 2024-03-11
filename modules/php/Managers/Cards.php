@@ -72,7 +72,7 @@ class Cards extends \GNC\Helpers\Pieces
 
     foreach ($columnIds as $columnId) {
       $result[$columnId] = [
-        RED => !is_null($player->getOpponent()->getBalloons($columnId)),
+        RED => $player->getOpponent()->getBalloons($columnId)->isFlipped(),
         BLUE =>
         $player
           ->getOpponent()

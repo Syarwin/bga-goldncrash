@@ -146,6 +146,15 @@ class action_goldncrash extends APP_GameAction
     self::ajaxResponse();
   }
 
+  public function actPass()
+  {
+    self::setAjaxMode();
+
+    $this->game->actPass();
+
+    self::ajaxResponse();
+  }
+
   public function actObserve()
   {
     self::setAjaxMode();
