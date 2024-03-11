@@ -35,11 +35,9 @@ trait PlayerTurnTrait
     }
 
     return [
-      'previousSteps' => Log::getUndoableSteps(),
-      'previousChoices' => Globals::getChoices(),
+      // 'previousSteps' => Log::getUndoableSteps(),
+      // 'previousChoices' => Globals::getChoices(),
       'nAction' => Globals::getMoveNumber() + 1,
-      'previousSteps' => Log::getUndoableSteps(),
-      'previousChoices' => Globals::getChoices(),
       '_private' => [
         $activePlayer->getId() => [
           'canDraw' => Cards::countInLocation($activePlayer->getDeckName()) > 0,
@@ -56,7 +54,7 @@ trait PlayerTurnTrait
     // get infos
     $player = Players::getActive();
     self::checkAction('actDiscard');
-    $this->addStep();
+    // $this->addStep();
 
     $args = $this->getArgs();
 
@@ -80,7 +78,7 @@ trait PlayerTurnTrait
     // get infos
     $player = Players::getActive();
     self::checkAction('actPlay');
-    $this->addStep();
+    // $this->addStep();
 
     $args = $this->getArgs();
 
@@ -175,7 +173,7 @@ trait PlayerTurnTrait
     // get infos
     $pId = Game::get()->getCurrentPlayerId();
     self::checkAction('actDraw');
-    Globals::setCanReset(false);
+    // Globals::setCanReset(false);
 
     $currentPlayer = Players::get($pId);
 
@@ -196,9 +194,9 @@ trait PlayerTurnTrait
     if ($nextState) {
       $this->giveExtraTime(Players::getActiveId());
 
-      if (!Globals::getCanReset()) {
-        $this->addCheckpoint($nextState);
-      }
+      // if (!Globals::getCanReset()) {
+      //   $this->addCheckpoint($nextState);
+      // }
 
       Game::goTo($nextState);
     }
@@ -206,16 +204,16 @@ trait PlayerTurnTrait
     elseif (Globals::getMoveNumber() == 0) {
       Globals::setMoveNumber(1);
 
-      if (!Globals::getCanReset()) {
-        $this->addCheckpoint(ST_PLAYER_TURN);
-      }
+      // if (!Globals::getCanReset()) {
+      //   $this->addCheckpoint(ST_PLAYER_TURN);
+      // }
 
       Game::transition('secondTurn');
     } else {
 
-      if (!Globals::getCanReset()) {
-        $this->addCheckpoint(ST_NEXT_PLAYER);
-      }
+      // if (!Globals::getCanReset()) {
+      //   $this->addCheckpoint(ST_NEXT_PLAYER);
+      // }
 
       //else end your turn
       Game::transition(END_TURN);

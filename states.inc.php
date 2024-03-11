@@ -76,33 +76,21 @@ $machinestates = [
       'move' => ST_MOVE,
       'callBack' => ST_CALL_BACK,
       'observer' => ST_OBSERVE,
-      END_TURN => ST_CONFIRM_TURN,
+      END_TURN => ST_NEXT_PLAYER,
     ],
   ],
 
-  // ST_CONFIRM => [
-  //   'name' => 'confirm',
-  //   'description' => clienttranslate('${actplayer} must confirm his turn'),
-  //   'descriptionmyturn' => clienttranslate('${you} must confirm your turn'),
+  //USELESS
+  // ST_CONFIRM_TURN => [
+  //   'name' => 'confirmTurn',
+  //   'description' => clienttranslate('${actplayer} must confirm or restart their turn'),
+  //   'descriptionmyturn' => clienttranslate('${you} must confirm or restart your turn'),
   //   'type' => ACTIVE_PLAYER,
-  //   'args' => 'argConfirm',
-  //   'action' => 'stConfirm',
-  //   'possibleactions' => ['actConfirm', 'actUndo'],
-  //   'transitions' => [
-  //     UNDO => ST_PLAYER_TURN,
-  //     END_TURN => ST_NEXT_PLAYER,
-  //   ],
+  //   'args' => 'argsConfirmTurn',
+  //   'action' => 'stConfirmTurn',
+  //   'possibleactions' => ['actConfirmTurn', 'actRestart'],
+  //   'transitions' => ['confirm' => ST_NEXT_PLAYER],
   // ],
-  ST_CONFIRM_TURN => [
-    'name' => 'confirmTurn',
-    'description' => clienttranslate('${actplayer} must confirm or restart their turn'),
-    'descriptionmyturn' => clienttranslate('${you} must confirm or restart your turn'),
-    'type' => ACTIVE_PLAYER,
-    'args' => 'argsConfirmTurn',
-    'action' => 'stConfirmTurn',
-    'possibleactions' => ['actConfirmTurn', 'actRestart'],
-    'transitions' => ['confirm' => ST_NEXT_PLAYER],
-  ],
 
 
   ST_NEXT_PLAYER => [
@@ -128,7 +116,7 @@ $machinestates = [
     'transitions' => [
       'secondTurn' => ST_PLAYER_TURN,
       AGAIN => ST_SECURE,
-      END_TURN => ST_CONFIRM_TURN,
+      END_TURN => ST_NEXT_PLAYER,
     ],
   ],
 
@@ -141,7 +129,7 @@ $machinestates = [
     'possibleactions' => ['actMove', 'actRestart'],
     'transitions' => [
       'secondTurn' => ST_PLAYER_TURN,
-      END_TURN => ST_CONFIRM_TURN,
+      END_TURN => ST_NEXT_PLAYER,
     ],
   ],
 
@@ -154,7 +142,7 @@ $machinestates = [
     'possibleactions' => ['actCallBack', 'actRestart'],
     'transitions' => [
       'secondTurn' => ST_PLAYER_TURN,
-      END_TURN => ST_CONFIRM_TURN,
+      END_TURN => ST_NEXT_PLAYER,
     ],
   ],
 
@@ -171,7 +159,7 @@ $machinestates = [
     'possibleactions' => ['actObserve', 'actRestart'],
     'transitions' => [
       'secondTurn' => ST_PLAYER_TURN,
-      END_TURN => ST_CONFIRM_TURN,
+      END_TURN => ST_NEXT_PLAYER,
     ],
   ],
 

@@ -40,7 +40,7 @@ trait MoveTrait
 		// get infos
 		$player = Players::getActive();
 		self::checkAction('actMove');
-		$this->addStep();
+		// $this->addStep();
 
 		$args = $this->getArgs();
 

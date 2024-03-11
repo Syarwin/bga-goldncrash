@@ -16,7 +16,7 @@ trait PlayCardTrait
 {
 	public function playEffectGreen($n, $player, $columnId)
 	{
-		Globals::setCanReset(false);
+		// Globals::setCanReset(false);
 		Cards::draw($player, $n);
 	}
 
@@ -32,7 +32,7 @@ trait PlayCardTrait
 
 	public function playEffectRed($n, $player, $columnId)
 	{
-		Globals::setCanReset(false);
+		// Globals::setCanReset(false);
 		return $player->getOpponent()->checkBomb($columnId, $n);
 	}
 

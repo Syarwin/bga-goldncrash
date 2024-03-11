@@ -29,8 +29,8 @@ trait CallBackTrait
 		}
 
 		return [
-			'previousSteps' => Log::getUndoableSteps(),
-			'previousChoices' => Globals::getChoices(),
+			// 'previousSteps' => Log::getUndoableSteps(),
+			// 'previousChoices' => Globals::getChoices(),
 			'cardIds' => $cardIds
 		];
 	}
@@ -40,7 +40,7 @@ trait CallBackTrait
 		// get infos
 		$player = Players::getActive();
 		self::checkAction('actCallBack');
-		$this->addStep();
+		// $this->addStep();
 
 		$args = $this->getArgs();
 

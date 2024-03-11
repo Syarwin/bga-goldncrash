@@ -38,8 +38,8 @@ trait SecureTrait
     return [
       'cardIds' => $cardIds,
       'remainingActions' => Globals::getRemainingActions(),
-      'previousSteps' => Log::getUndoableSteps(),
-      'previousChoices' => Globals::getChoices(),
+      // 'previousSteps' => Log::getUndoableSteps(),
+      // 'previousChoices' => Globals::getChoices(),
     ];
   }
 
@@ -48,7 +48,7 @@ trait SecureTrait
     // get infos
     $player = Players::getActive();
     self::checkAction('actSecure');
-    $this->addStep();
+    // $this->addStep();
 
     $args = $this->getArgs();
 

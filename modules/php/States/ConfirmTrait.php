@@ -13,6 +13,8 @@ use GNC\Managers\Players;
 use GNC\Models\Player;
 use GNC\Helpers\Log;
 
+//useless now, finally no undo in this game.
+
 trait ConfirmTrait
 {
 	public function addCheckpoint($state)
@@ -65,28 +67,4 @@ trait ConfirmTrait
 		self::checkAction('actRestart');
 		Log::undoToStep($stepId);
 	}
-
-
-	// public function argConfirm()
-	// {
-	// 	$activePlayer = Players::getActive();
-
-	// 	return [];
-	// }
-
-	// public function stConfirm()
-	// {
-	// 	//TODO
-	// 	Game::transition(END_TURN);
-	// }
-
-	// public function actConfirm()
-	// {
-	// 	//TODO
-	// }
-
-	// public function actUndo()
-	// {
-	// 	//TODO
-	// }
 }
