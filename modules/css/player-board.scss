@@ -36,10 +36,17 @@
                     width: $cardW;
                     height: $cardH;
                     position: relative;
+                    cursor: zoom-in;
 
-                    .goldncrash-card {
-                        position: absolute;
-                        top: 0;
+                    .discard {
+                        width: $cardW;
+                        height: $cardH;
+                        position: relative;
+
+                        .goldncrash-card {
+                            position: absolute;
+                            top: 0;
+                        }
                     }
                 }
 

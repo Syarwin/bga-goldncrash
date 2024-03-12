@@ -1033,6 +1033,8 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
 
       if (this._displayedTooltip == null) return;
       else {
+        if (this._displayedTooltip.showTimeout != null) clearTimeout(this._displayedTooltip.showTimeout);
+
         this._displayedTooltip.close();
         this._displayedTooltip = null;
       }

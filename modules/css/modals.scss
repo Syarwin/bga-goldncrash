@@ -1,5 +1,6 @@
 #popin_showSettings,
-.goldncrash_popin_cards {
+.goldncrash_popin_cards,
+.goldncrash_discard_popin {
     background-color: #ebd5bd;
     border-radius: 8px;
     box-shadow: 0 3px 8px black;
@@ -42,5 +43,20 @@
         border-radius: 8px 8px 0px 0px;
         padding: 11px 0px 3px;
         border-bottom: 1px solid #734f2a;
+    }
+}
+
+.discard-modal {
+    width: 700px;
+    padding: 15px;
+    .discard {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+        align-items: center;
+
+        .goldncrash-card {
+            margin: 5px;
+        }
     }
 }

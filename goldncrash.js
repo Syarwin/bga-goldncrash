@@ -63,6 +63,7 @@ define([
       ];
 
       this._fakeCardCounter = -1;
+      this._discardModals = {};
 
       // Fix mobile viewport (remove CSS zoom)
       this.default_viewport = 'width=740';
@@ -140,6 +141,8 @@ define([
         this._counters[player.id] = {};
         this._counters[player.id]['deckCount'] = this.createCounter(`deck-counter-${pos}`);
         this._counters[player.id]['handCount'] = this.createCounter(`counter-${player.id}-hand`);
+
+        this.setupDiscardModal(player);
       });
     },
 
@@ -509,6 +512,39 @@ define([
 
         this._counters[player.id]['deckCount'].toValue(cards.nDeck);
         this._counters[player.id]['handCount'].toValue(cards.nHand);
+      });
+    },
+
+    setupDiscardModal(player) {
+      let pId = player.id;
+      let pos = this.getPos(player.id);
+
+      this._discardModals[pId] = new customgame.modal('discardDisplay' + pId, {
+        class: 'goldncrash_discard_popin',
+        autoShow: false,
+        closeIcon: null,
+        closeAction: 'hide',
+        title: this.fsr(_('Discard of ${player_name}'), {
+          player_name: player.name,
+        }),
+        verticalAlign: 'flex-start',
+        contentsTpl: `<div class='discard-modal' id='discard-cards-${pId}'></div>`,
+        scale: 0.9,
+        breakpoint: 800,
+        onStartShow: () => {
+          this.closeCurrentTooltip();
+          $(`discard-cards-${pId}`).insertAdjacentElement('beforeend', $(`discard-${pos}`));
+        },
+        onStartHide: () => {
+          this.closeCurrentTooltip();
+          $(`discard-holder-${pos}`).insertAdjacentElement('beforeend', $(`discard-${pos}`));
+        },
+        onShow: () => this.closeCurrentTooltip(),
+      });
+      $(`discard-${pos}`).addEventListener('click', () => {
+        this.closeCurrentTooltip();
+        if (this._discardModals[pId].isDisplayed()) this._discardModals[pId].hide();
+        else this._discardModals[pId].show();
       });
     },
 
