@@ -19,7 +19,7 @@
             display: flex;
             flex-flow: column;
             margin-right: 10px;
-            min-width: calc(var(--cardScale) * 5 * #{$cardWidth} + 20px);
+            width: calc(var(--cardScale) * 5 * #{$cardWidth} + 20px);
 
             .hand-holder {
                 height: $cardH;
@@ -80,10 +80,36 @@
                         width: $cardH;
                         height: $cardW;
                         position: relative;
+                        cursor: zoom-in;
 
-                        .goldncrash-card {
+                        &::before {
+                            content: "";
                             position: absolute;
-                            top: 0;
+                            display: block;
+                            width: $cardW;
+                            height: $cardH;
+                            transform-origin: 50.5% 35%;
+                            transform: rotate(-90deg);
+                            background-size: 600% 400%;
+                            background-position: 100% 100%;
+                            border-radius: calc(var(--cardScale) * 30px);
+                            box-sizing: border-box;
+                            border: 1px solid black;
+                            box-shadow: 2px 2px 6px -1px black;
+
+                            background-position: 60% 100%;
+                            background-size: 600% 400%;
+                        }
+
+                        .treasure {
+                            width: $cardW;
+                            height: $cardH;
+                            position: relative;
+
+                            .goldncrash-card {
+                                position: absolute;
+                                top: 0;
+                            }
                         }
                     }
                 }
@@ -233,6 +259,9 @@
         }
 
         &[data-character="Poulpirate"] {
+            .chest-holder::before {
+                background-image: url("img/poulpirate.jpg");
+            }
             .side-zone {
                 .side-zone-holder {
                     .deck-holder {
@@ -247,6 +276,9 @@
             }
         }
         &[data-character="Chamourai"] {
+            .chest-holder::before {
+                background-image: url("img/chamourai.jpg");
+            }
             .side-zone {
                 .side-zone-holder {
                     .deck-holder {

@@ -10,7 +10,9 @@
                     </div>
                     <div class='banner-chest-holder'>
                         <div class='banner-holder' id='banner-top'></div>
-                        <div class='chest-holder' id='chest-top'></div>
+                        <div class='chest-holder' id='chest-holder-top'>
+                            <div class='treasure' id='treasure-top'></div>
+                        </div>
                     </div>
                     <div class='deck-holder' id='deck-top'>
                         <span class='deck-counter' id='deck-counter-top'></span>
@@ -45,7 +47,9 @@
                     </div>
                     <div class='banner-chest-holder'>
                         <div class='banner-holder' id='banner-bottom'></div>
-                        <div class='chest-holder' id='chest-bottom'></div>
+                        <div class='chest-holder' id='chest-holder-bottom'>
+                            <div class='treasure' id='treasure-bottom'></div>
+                        </div>
                     </div>
                     <div class='discard-holder' id='discard-holder-bottom'>
                         <div class='discard' id='discard-bottom'></div>

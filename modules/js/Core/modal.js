@@ -144,7 +144,7 @@ define(['dojo', 'dojo/_base/declare', 'dojo/fx', 'dojox/fx/ext-dojo/complex'], f
         display: 'flex',
         justifyContent: 'center',
         alignItems: this.verticalAlign,
-        paddingTop: this.verticalAlign == 'center' ? 0 : '75px',
+        paddingTop: this.verticalAlign == 'center' ? 0 : '130px',
         transformOrigin: 'top left',
       });
 

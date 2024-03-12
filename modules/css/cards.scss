@@ -8,24 +8,27 @@
     transform-origin: center center;
   }
   &.selectable {
-    box-shadow: 0px 0px 8px 3px red;
+    .card-inner {
+      box-shadow: 0px 0px 8px 3px red;
+    }
 
     cursor: pointer;
     &:hover {
       transform: scale(1.05);
+      z-index: 10;
     }
   }
-  &.selected {
+  &.selected .card-inner {
     outline: 4px solid rgb(28, 175, 28);
   }
 
   width: $cardW;
   height: $cardH;
   border-radius: calc(var(--cardScale) * 30px);
-  box-shadow: 2px 2px 6px -1px black;
   position: relative;
   .card-inner {
     border-radius: calc(var(--cardScale) * 30px);
+    box-shadow: 2px 2px 6px -1px black;
   }
 
   &[data-nbr]::before {
@@ -107,6 +110,7 @@
     height: $cardH;
     box-sizing: border-box;
     border: 1px solid black;
+    position: absolute;
 
     &[data-deck="CHAMOURAI"] {
       background-image: url("img/chamourai.jpg");

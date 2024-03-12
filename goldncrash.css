@@ -289,20 +289,22 @@ html {
   width: calc(var(--cardScale) * 292px);
   height: calc(var(--cardScale) * 415px);
   border-radius: calc(var(--cardScale) * 30px);
-  box-shadow: 2px 2px 6px -1px black;
   position: relative; }
   .goldncrash-card.moving {
     transition: margin 0.8s, transform 0.8s;
     transform-origin: center center; }
   .goldncrash-card.selectable {
-    box-shadow: 0px 0px 8px 3px red;
     cursor: pointer; }
+    .goldncrash-card.selectable .card-inner {
+      box-shadow: 0px 0px 8px 3px red; }
     .goldncrash-card.selectable:hover {
-      transform: scale(1.05); }
-  .goldncrash-card.selected {
+      transform: scale(1.05);
+      z-index: 10; }
+  .goldncrash-card.selected .card-inner {
     outline: 4px solid #1caf1c; }
   .goldncrash-card .card-inner {
-    border-radius: calc(var(--cardScale) * 30px); }
+    border-radius: calc(var(--cardScale) * 30px);
+    box-shadow: 2px 2px 6px -1px black; }
   .goldncrash-card[data-nbr]::before {
     content: attr(data-nbr) " - " attr(data-pos);
     position: absolute;
@@ -358,7 +360,8 @@ html {
     width: calc(var(--cardScale) * 292px);
     height: calc(var(--cardScale) * 415px);
     box-sizing: border-box;
-    border: 1px solid black; }
+    border: 1px solid black;
+    position: absolute; }
     .goldncrash-card .card-inner[data-deck="CHAMOURAI"] {
       background-image: url("img/chamourai.jpg");
       background-size: 600% 400%; }
@@ -507,7 +510,7 @@ html {
       display: flex;
       flex-flow: column;
       margin-right: 10px;
-      min-width: calc(var(--cardScale) * 5 * 292px + 20px); }
+      width: calc(var(--cardScale) * 5 * 292px + 20px); }
       #goldncrash-main-container .goldncrash-player-board .side-zone .hand-holder {
         height: calc(var(--cardScale) * 415px);
         padding: 5px 0px; }
@@ -553,10 +556,31 @@ html {
             margin: 2px 0px;
             width: calc(var(--cardScale) * 415px);
             height: calc(var(--cardScale) * 292px);
-            position: relative; }
-            #goldncrash-main-container .goldncrash-player-board .side-zone .side-zone-holder .banner-chest-holder .chest-holder .goldncrash-card {
+            position: relative;
+            cursor: zoom-in; }
+            #goldncrash-main-container .goldncrash-player-board .side-zone .side-zone-holder .banner-chest-holder .chest-holder::before {
+              content: "";
               position: absolute;
-              top: 0; }
+              display: block;
+              width: calc(var(--cardScale) * 292px);
+              height: calc(var(--cardScale) * 415px);
+              transform-origin: 50.5% 35%;
+              transform: rotate(-90deg);
+              background-size: 600% 400%;
+              background-position: 100% 100%;
+              border-radius: calc(var(--cardScale) * 30px);
+              box-sizing: border-box;
+              border: 1px solid black;
+              box-shadow: 2px 2px 6px -1px black;
+              background-position: 60% 100%;
+              background-size: 600% 400%; }
+            #goldncrash-main-container .goldncrash-player-board .side-zone .side-zone-holder .banner-chest-holder .chest-holder .treasure {
+              width: calc(var(--cardScale) * 292px);
+              height: calc(var(--cardScale) * 415px);
+              position: relative; }
+              #goldncrash-main-container .goldncrash-player-board .side-zone .side-zone-holder .banner-chest-holder .chest-holder .treasure .goldncrash-card {
+                position: absolute;
+                top: 0; }
         #goldncrash-main-container .goldncrash-player-board .side-zone .side-zone-holder .deck-holder {
           margin: 0px 10px 0px 5px;
           width: calc(var(--cardScale) * 292px);
@@ -649,10 +673,14 @@ html {
         order: 2; }
       #goldncrash-main-container .goldncrash-player-board#bottom-player .columns-zone .column-holder .guest-holder {
         order: 1; }
+    #goldncrash-main-container .goldncrash-player-board[data-character="Poulpirate"] .chest-holder::before {
+      background-image: url("img/poulpirate.jpg"); }
     #goldncrash-main-container .goldncrash-player-board[data-character="Poulpirate"] .side-zone .side-zone-holder .deck-holder {
       background-image: url("img/poulpirate.jpg"); }
     #goldncrash-main-container .goldncrash-player-board[data-character="Poulpirate"] .side-zone .side-zone-holder .banner-chest-holder .banner-holder::before {
       background-image: url("img/poulpirate.jpg"); }
+    #goldncrash-main-container .goldncrash-player-board[data-character="Chamourai"] .chest-holder::before {
+      background-image: url("img/chamourai.jpg"); }
     #goldncrash-main-container .goldncrash-player-board[data-character="Chamourai"] .side-zone .side-zone-holder .deck-holder {
       background-image: url("img/chamourai.jpg"); }
     #goldncrash-main-container .goldncrash-player-board[data-character="Chamourai"] .side-zone .side-zone-holder .banner-chest-holder .banner-holder::before {
@@ -841,17 +869,28 @@ html {
 
 #popin_showSettings,
 .goldncrash_popin_cards,
-.goldncrash_discard_popin {
+.goldncrash_discard_popin,
+.goldncrash_treasure_popin {
   background-color: #ebd5bd;
   border-radius: 8px;
   box-shadow: 0 3px 8px black;
   position: relative; }
   #popin_showSettings .goldncrash_popin_closeicon,
   #popin_showSettings .goldncrash_popin_cards_closeicon,
+  #popin_showSettings .goldncrash_discard_popin_closeicon,
+  #popin_showSettings .goldncrash_treasure_popin_closeicon,
   .goldncrash_popin_cards .goldncrash_popin_closeicon,
   .goldncrash_popin_cards .goldncrash_popin_cards_closeicon,
+  .goldncrash_popin_cards .goldncrash_discard_popin_closeicon,
+  .goldncrash_popin_cards .goldncrash_treasure_popin_closeicon,
   .goldncrash_discard_popin .goldncrash_popin_closeicon,
-  .goldncrash_discard_popin .goldncrash_popin_cards_closeicon {
+  .goldncrash_discard_popin .goldncrash_popin_cards_closeicon,
+  .goldncrash_discard_popin .goldncrash_discard_popin_closeicon,
+  .goldncrash_discard_popin .goldncrash_treasure_popin_closeicon,
+  .goldncrash_treasure_popin .goldncrash_popin_closeicon,
+  .goldncrash_treasure_popin .goldncrash_popin_cards_closeicon,
+  .goldncrash_treasure_popin .goldncrash_discard_popin_closeicon,
+  .goldncrash_treasure_popin .goldncrash_treasure_popin_closeicon {
     background-color: #a47a77;
     border-radius: 50%;
     width: 40px;
@@ -868,23 +907,44 @@ html {
     z-index: 2; }
     #popin_showSettings .goldncrash_popin_closeicon:hover,
     #popin_showSettings .goldncrash_popin_cards_closeicon:hover,
+    #popin_showSettings .goldncrash_discard_popin_closeicon:hover,
+    #popin_showSettings .goldncrash_treasure_popin_closeicon:hover,
     .goldncrash_popin_cards .goldncrash_popin_closeicon:hover,
     .goldncrash_popin_cards .goldncrash_popin_cards_closeicon:hover,
+    .goldncrash_popin_cards .goldncrash_discard_popin_closeicon:hover,
+    .goldncrash_popin_cards .goldncrash_treasure_popin_closeicon:hover,
     .goldncrash_discard_popin .goldncrash_popin_closeicon:hover,
-    .goldncrash_discard_popin .goldncrash_popin_cards_closeicon:hover {
+    .goldncrash_discard_popin .goldncrash_popin_cards_closeicon:hover,
+    .goldncrash_discard_popin .goldncrash_discard_popin_closeicon:hover,
+    .goldncrash_discard_popin .goldncrash_treasure_popin_closeicon:hover,
+    .goldncrash_treasure_popin .goldncrash_popin_closeicon:hover,
+    .goldncrash_treasure_popin .goldncrash_popin_cards_closeicon:hover,
+    .goldncrash_treasure_popin .goldncrash_discard_popin_closeicon:hover,
+    .goldncrash_treasure_popin .goldncrash_treasure_popin_closeicon:hover {
       text-decoration: none;
       color: #ccc !important;
       transform: scale(1.1); }
     #popin_showSettings .goldncrash_popin_closeicon i,
     #popin_showSettings .goldncrash_popin_cards_closeicon i,
+    #popin_showSettings .goldncrash_discard_popin_closeicon i,
+    #popin_showSettings .goldncrash_treasure_popin_closeicon i,
     .goldncrash_popin_cards .goldncrash_popin_closeicon i,
     .goldncrash_popin_cards .goldncrash_popin_cards_closeicon i,
+    .goldncrash_popin_cards .goldncrash_discard_popin_closeicon i,
+    .goldncrash_popin_cards .goldncrash_treasure_popin_closeicon i,
     .goldncrash_discard_popin .goldncrash_popin_closeicon i,
-    .goldncrash_discard_popin .goldncrash_popin_cards_closeicon i {
+    .goldncrash_discard_popin .goldncrash_popin_cards_closeicon i,
+    .goldncrash_discard_popin .goldncrash_discard_popin_closeicon i,
+    .goldncrash_discard_popin .goldncrash_treasure_popin_closeicon i,
+    .goldncrash_treasure_popin .goldncrash_popin_closeicon i,
+    .goldncrash_treasure_popin .goldncrash_popin_cards_closeicon i,
+    .goldncrash_treasure_popin .goldncrash_discard_popin_closeicon i,
+    .goldncrash_treasure_popin .goldncrash_treasure_popin_closeicon i {
       margin-top: -2px; }
   #popin_showSettings h2,
   .goldncrash_popin_cards h2,
-  .goldncrash_discard_popin h2 {
+  .goldncrash_discard_popin h2,
+  .goldncrash_treasure_popin h2 {
     font-family: MyriadPro-Semibold;
     text-align: center;
     font-size: 25px;
@@ -903,6 +963,17 @@ html {
     justify-content: center;
     align-items: center; }
     .discard-modal .discard .goldncrash-card {
+      margin: 5px; }
+
+.treasure-modal {
+  width: 700px;
+  padding: 15px; }
+  .treasure-modal .treasure {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center; }
+    .treasure-modal .treasure .goldncrash-card {
       margin: 5px; }
 
 .flip-container {
