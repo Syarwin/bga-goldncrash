@@ -321,6 +321,10 @@ define([
         this.addPrimaryActionButton('btnDraw', _('Draw'), () => this.takeAction('actDraw', {}));
       }
 
+      if (args.mustPass) {
+        this.addDangerActionButton('btnPass', _('Pass'), () => this.takeAction('actPass', {}));
+      }
+
       Object.keys(args.playableCardIds).forEach((cardId) => {
         let columns = args.playableCardIds[cardId];
         if (columns.length)
