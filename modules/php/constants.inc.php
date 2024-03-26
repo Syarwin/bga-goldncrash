@@ -14,6 +14,8 @@ const YELLOW = 'Yellow';
 const BLUE = 'Blue';
 const RED = 'Red';
 
+const COLORS = [BROWN, PURPLE, GREEN, YELLOW, BLUE, RED];
+
 const CHARACTERS = [CHAMOURAI, POULPIRATE];
 
 //Possible locations

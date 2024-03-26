@@ -125,20 +125,17 @@ trait PlayerTurnTrait
     $method = 'playEffect' . ucfirst($cardType);
     $nextState = $this->$method($n, $player, $columnId);
 
-    $this->checkGetGuest($player, $columnId);
-
-    //check if the column must be discarded entirely
-    if ($n >= 3) {
-      $player->clearColumn($columnId);
+    //flag if play twice on same column
+    if (Globals::getActiveColumn($columnId) && Globals::getLastAction('play')) {
+      Globals::setPlayedTwiceOn($columnId);
     }
-
     Globals::setActiveColumn($columnId);
     Globals::setLastAction('play');
 
     $this->finishMove($nextState);
   }
 
-  public function checkGetGuest($player, $columnId, $isPlayCardAction = true)
+  public function checkGetGuest($player, $columnId)
   {
     $guest = $player->getGuest($columnId);
     if (is_null($guest)) {
@@ -152,7 +149,7 @@ trait PlayerTurnTrait
         }
         break;
       case 2:
-        if (!$isPlayCardAction || Globals::getActiveColumn() != $columnId || Globals::getLastAction() === 'discard') {
+        if (Globals::getPlayedTwiceOn() != $columnId) {
           return;
         }
         break;
@@ -222,24 +219,25 @@ trait PlayerTurnTrait
       // }
 
       Game::goTo($nextState);
-    }
-    //else play again if it's your first Move,
-    elseif (Globals::getMoveNumber() == 0) {
-      Globals::setMoveNumber(1);
-
-      // if (!Globals::getCanReset()) {
-      //   $this->addCheckpoint(ST_PLAYER_TURN);
-      // }
-
-      Game::transition('secondTurn');
     } else {
+      Players::getActive()->endMoveChecks();
+      if (Globals::getMoveNumber() == 0) {
+        Globals::setMoveNumber(1);
 
-      // if (!Globals::getCanReset()) {
-      //   $this->addCheckpoint(ST_NEXT_PLAYER);
-      // }
+        // if (!Globals::getCanReset()) {
+        //   $this->addCheckpoint(ST_PLAYER_TURN);
+        // }
 
-      //else end your turn
-      Game::transition(END_TURN);
+        Game::transition('secondTurn');
+      } else {
+
+        // if (!Globals::getCanReset()) {
+        //   $this->addCheckpoint(ST_NEXT_PLAYER);
+        // }
+
+        //else end your turn
+        Game::transition(END_TURN);
+      }
     }
   }
 }

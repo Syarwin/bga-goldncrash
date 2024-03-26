@@ -133,8 +133,27 @@ class Player extends \GNC\Helpers\DB_Model
     return $nextState;
   }
 
+  public function endMoveChecks()
+  {
+    for ($columnId = 0; $columnId < 3; $columnId++) {
+      Game::get()->checkGetGuest($this, $columnId);
+
+      //check if the column must be discarded entirely
+      $this->clearColumn($columnId);
+    }
+  }
+
+  /**
+   * clear Column if needed (3 cards of same color)
+   */
   public function clearColumn($columnId)
   {
+    $nMax = 0;
+    foreach (COLORS as $color) {
+      $nMax =  max($nMax, Cards::getNOfSpecificColor($this, $columnId, $color));
+    }
+    if ($nMax < 3) return;
+
     while ($card = Cards::getBottomOf($this->getColumnName($columnId))) {
       Cards::insertOnTop($card->getId(), $this->getDiscardName());
     }

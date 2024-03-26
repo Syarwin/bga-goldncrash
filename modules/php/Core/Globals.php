@@ -18,6 +18,7 @@ class Globals extends \GNC\Helpers\DB_Manager
     'moveNumber' => 'int', //0, 1 depending if it's first or second action
     'activeColumn' => 'int', //0,1,2 to store which are 'adjacents columns' (and detect special guest activation)
     'lastAction' => 'str', // 'discard' or 'play'
+    'playedTwiceOn' => 'int', //to detect if a special guest can be secured
     'remainingActions' => 'int', //3,2,1 depending on how many cards in the column
     'canReset' => 'bool', //useless now
 
@@ -46,6 +47,7 @@ class Globals extends \GNC\Helpers\DB_Manager
     static::incTurn(1);
     static::setMoveNumber(0);
     static::setActiveColumn(-1);
+    static::setPlayedTwiceOn(-1);
     static::setRemainingActions(0);
   }
 
