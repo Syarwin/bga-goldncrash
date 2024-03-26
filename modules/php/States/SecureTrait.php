@@ -38,6 +38,7 @@ trait SecureTrait
     return [
       'cardIds' => $cardIds,
       'remainingActions' => Globals::getRemainingActions(),
+      'canPass' => !$cardIds
       // 'previousSteps' => Log::getUndoableSteps(),
       // 'previousChoices' => Globals::getChoices(),
     ];
@@ -62,6 +63,7 @@ trait SecureTrait
 
     if ($remainingActions > 0) {
       Globals::setRemainingActions($remainingActions);
+      Globals::setCanPass();
       Game::transition(AGAIN);
     } else {
       $this->finishMove();
