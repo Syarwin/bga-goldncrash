@@ -143,6 +143,16 @@ class Notifications
     static::notifyAll('crackSafe', $msg, $data);
   }
 
+  public static function updateScore($player, $score)
+  {
+    $data = [
+      'player' => $player,
+      'score' => $score,
+    ];
+
+    static::notify($player, 'updateScore', '', $data);
+  }
+
   /**
    * move a card from top of a column to discard
    */

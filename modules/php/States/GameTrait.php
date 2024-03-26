@@ -41,7 +41,7 @@ trait GameTrait
 		$players = Players::getAll();
 
 		foreach ($players as $pId => $player) {
-			$player->countScore();
+			$player->displayScore();
 		}
 
 		foreach ($players as $pId => $player) {

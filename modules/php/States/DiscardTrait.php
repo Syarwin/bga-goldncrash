@@ -39,6 +39,8 @@ trait DiscardTrait
       Cards::move($card->getId(), $opp->getDiscardName());
       $lastTreasure = Cards::getLastTreasure($opp->getCharacter());
       Notifications::crackSafe($card, $opp, $lastTreasure);
+
+      Notifications::updateScore($opp, $opp->countScore());
     }
   }
 

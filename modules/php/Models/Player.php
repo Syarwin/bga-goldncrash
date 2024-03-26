@@ -36,6 +36,7 @@ class Player extends \GNC\Helpers\DB_Model
     Cards::insertOnTop($card->getId(), $this->getTreasureName());
 
     Notifications::secure($card, $this);
+    Notifications::updateScore($this, $this->countScore());
   }
 
   public function callBack($card)
@@ -104,8 +105,15 @@ class Player extends \GNC\Helpers\DB_Model
     foreach ($cards as $cardId => $card) {
       $score += $card->getValue();
     }
+    return $score;
+  }
+
+  public function displayScore()
+  {
+    $score = $this->countScore();
+
     $this->setScore($score);
-    Notifications::displayScore($score, $cards, $this);
+    Notifications::displayScore($score, Cards::getInLocation($this->getTreasureName()), $this);
   }
 
   public function discardFromColumn($columnId, $n = 1, $withEffect = true)
@@ -163,7 +171,7 @@ class Player extends \GNC\Helpers\DB_Model
   public function getUiData($currentPlayerId = null)
   {
     $data = parent::getUiData();
-
+    $data['score'] = $currentPlayerId ? $this->countScore() : 0;
     return $data;
   }
 
