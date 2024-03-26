@@ -1029,10 +1029,14 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
     },
 
     closeCurrentTooltip() {
-      if (!this._helpMode) return;
+      // if (!this._helpMode) return;
 
       if (this._displayedTooltip == null) return;
       else {
+        if (this._displayedTooltip.showTimeout != null) {
+          clearTimeout(this._displayedTooltip.showTimeout);
+        }
+
         this._displayedTooltip.close();
         this._displayedTooltip = null;
       }
@@ -1139,6 +1143,7 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
       dojo.connect($(id), 'mouseenter', (evt) => {
         evt.stopPropagation();
         if (!this._helpMode && !this._dragndropMode) {
+          this._displayedTooltip = tooltip;
           if (tooltip.showTimeout != null) clearTimeout(tooltip.showTimeout);
 
           tooltip.showTimeout = setTimeout(() => {
@@ -1152,6 +1157,7 @@ define(['dojo', 'dojo/_base/declare', g_gamethemeurl + 'modules/js/vendor/nouisl
         if (!this._helpMode && !this._dragndropMode) {
           tooltip.close();
           if (tooltip.showTimeout != null) clearTimeout(tooltip.showTimeout);
+          this._displayedTooltip = null;
         }
       });
     },

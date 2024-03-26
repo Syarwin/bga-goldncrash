@@ -63,6 +63,7 @@ define([
       ];
 
       this._fakeCardCounter = -1;
+      this._discardModals = {};
 
       // Fix mobile viewport (remove CSS zoom)
       this.default_viewport = 'width=740';
@@ -140,6 +141,11 @@ define([
         this._counters[player.id] = {};
         this._counters[player.id]['deckCount'] = this.createCounter(`deck-counter-${pos}`);
         this._counters[player.id]['handCount'] = this.createCounter(`counter-${player.id}-hand`);
+
+        this.setupDiscardModal(player);
+        if (player.id == this.player_id) {
+          this.setupTreasureModal(player);
+        }
       });
     },
 
@@ -313,6 +319,10 @@ define([
 
       if (args.canDraw) {
         this.addPrimaryActionButton('btnDraw', _('Draw'), () => this.takeAction('actDraw', {}));
+      }
+
+      if (args.mustPass) {
+        this.addDangerActionButton('btnPass', _('Pass'), () => this.takeAction('actPass', {}));
       }
 
       Object.keys(args.playableCardIds).forEach((cardId) => {
@@ -502,13 +512,78 @@ define([
         });
         cards.discard.forEach((card) => this.addCard(card));
         cards.columns.forEach((column) => column.forEach((card) => this.addCard(card)));
-        if (cards.lastTreasure) {
-          cards.lastTreasure.type = 'BACK';
-          this.addCard(cards.lastTreasure);
-        }
+        cards.treasure.forEach((card) => this.addCard(card));
+        // if (cards.lastTreasure && player.id != this.player_id) {
+        //   cards.lastTreasure.type = 'BACK';
+        //   this.addCard(cards.lastTreasure);
+        // }
 
         this._counters[player.id]['deckCount'].toValue(cards.nDeck);
         this._counters[player.id]['handCount'].toValue(cards.nHand);
+      });
+    },
+
+    setupDiscardModal(player) {
+      let pId = player.id;
+      let pos = this.getPos(player.id);
+
+      this._discardModals[pId] = new customgame.modal('discardDisplay' + pId, {
+        class: 'goldncrash_discard_popin',
+        autoShow: false,
+        closeIcon: 'fa-times',
+        closeAction: 'hide',
+        title: this.fsr(_('Discard of ${player_name}'), {
+          player_name: player.name,
+        }),
+        verticalAlign: 'flex-start',
+        contentsTpl: `<div class='discard-modal' id='discard-cards-${pId}'></div>`,
+        scale: 0.9,
+        breakpoint: 800,
+        onStartShow: () => {
+          this.closeCurrentTooltip();
+          $(`discard-cards-${pId}`).insertAdjacentElement('beforeend', $(`discard-${pos}`));
+        },
+        onStartHide: () => {
+          this.closeCurrentTooltip();
+          $(`discard-holder-${pos}`).insertAdjacentElement('beforeend', $(`discard-${pos}`));
+        },
+        onShow: () => this.closeCurrentTooltip(),
+      });
+      $(`discard-${pos}`).addEventListener('click', () => {
+        this.closeCurrentTooltip();
+        if (this._discardModals[pId].isDisplayed()) this._discardModals[pId].hide();
+        else this._discardModals[pId].show();
+      });
+    },
+
+    setupTreasureModal(player) {
+      let pId = player.id;
+      let pos = this.getPos(player.id);
+
+      let modal = new customgame.modal('treasureDisplay' + pId, {
+        class: 'goldncrash_treasure_popin',
+        autoShow: false,
+        closeIcon: 'fa-times',
+        closeAction: 'hide',
+        title: _('Your treasure'),
+        verticalAlign: 'flex-start',
+        contentsTpl: `<div class='treasure-modal' id='treasure-cards-${pId}'></div>`,
+        scale: 0.9,
+        breakpoint: 800,
+        onStartShow: () => {
+          this.closeCurrentTooltip();
+          $(`treasure-cards-${pId}`).insertAdjacentElement('beforeend', $(`treasure-${pos}`));
+        },
+        onStartHide: () => {
+          this.closeCurrentTooltip();
+          $(`chest-holder-${pos}`).insertAdjacentElement('beforeend', $(`treasure-${pos}`));
+        },
+        onShow: () => this.closeCurrentTooltip(),
+      });
+      $(`treasure-${pos}`).addEventListener('click', () => {
+        this.closeCurrentTooltip();
+        if (modal.isDisplayed()) modal.hide();
+        else modal.show();
       });
     },
 
@@ -685,7 +760,7 @@ define([
         return $(`discard-${this.getCPos(t[1])}`);
       }
       if (t[0] == 'treasure') {
-        return $(`chest-${this.getCPos(t[1])}`);
+        return $(`treasure-${this.getCPos(t[1])}`);
       }
       if (t[0] == 'column') {
         return $(`column-${this.getCPos(t[2])}-${t[1]}`);
@@ -856,43 +931,54 @@ define([
 
       let card = n.args.card;
       let pos = this.getPos(n.args.player_id);
-
       let oCard = $(`card-${card.id}`);
-      let oCard2 = oCard.cloneNode(true);
-      let inner = oCard2.querySelector('.card-inner');
-      inner.dataset.type = 'BACK';
-      inner.dataset.value = '';
-      oCard.id += 'old';
 
-      this.flipAndReplace(oCard, oCard2).then(() => {
-        this.slide(`card-${card.id}`, $(`chest-${pos}`));
-        $(`card-${card.id}_animated`).style.marginTop = '0px';
-        $(`card-${card.id}_animated`).style.transform = `rotate(-90deg)`;
-      });
+      if (n.args.player_id == this.player_id) {
+        this.slide(`card-${card.id}`, $(`treasure-${pos}`));
+      } else {
+        let oCard2 = oCard.cloneNode(true);
+        let inner = oCard2.querySelector('.card-inner');
+        inner.dataset.type = 'BACK';
+        inner.dataset.value = '';
+        oCard.id += 'old';
+
+        this.flipAndReplace(oCard, oCard2).then(() => {
+          this.slide(`card-${card.id}`, $(`treasure-${pos}`));
+          $(`card-${card.id}_animated`).style.marginTop = '0px';
+          $(`card-${card.id}_animated`).style.transform = `rotate(-90deg)`;
+        });
+      }
     },
 
     notif_crackSafe(n) {
       debug('Notif: Crack safe', n);
 
-      let card = n.args.card;
       let pos = this.getPos(n.args.player_id);
-      let oCard = $(`card-${card.id}`);
-
       let lastTreasure = n.args.lastTreasure;
       if (lastTreasure && !$(`card-${lastTreasure.id}`)) {
-        lastTreasure.type = 'BACK';
         this.addCard(lastTreasure);
-        oCard.insertAdjacentElement('beforebegin', $(`card-${lastTreasure.id}`));
       }
+      this.slide(`card-${lastTreasure.id}`, $(`discard-${pos}`), { rotate: true });
 
-      oCard.id += 'old';
-      this.addCard(card, this.getVisibleTitleContainer());
-      let oCard2 = $(`card-${card.id}`);
+      // let card = n.args.card;
+      // let pos = this.getPos(n.args.player_id);
+      // let oCard = $(`card-${card.id}`);
 
-      this.flipAndReplace(oCard, oCard2).then(() => {
-        this.slide(`card-${card.id}`, $(`discard-${pos}`), { rotate: true });
-        $(`card-${card.id}_animated`).style.transform = `rotate(0deg)`;
-      });
+      // let lastTreasure = n.args.lastTreasure;
+      // if (lastTreasure && !$(`card-${lastTreasure.id}`)) {
+      //   lastTreasure.type = 'BACK';
+      //   this.addCard(lastTreasure);
+      //   oCard.insertAdjacentElement('beforebegin', $(`card-${lastTreasure.id}`));
+      // }
+
+      // oCard.id += 'old';
+      // this.addCard(card, this.getVisibleTitleContainer());
+      // let oCard2 = $(`card-${card.id}`);
+
+      // this.flipAndReplace(oCard, oCard2).then(() => {
+      //   this.slide(`card-${card.id}`, $(`discard-${pos}`), { rotate: true });
+      //   $(`card-${card.id}_animated`).style.transform = `rotate(0deg)`;
+      // });
     },
 
     notif_drawCards(n) {
