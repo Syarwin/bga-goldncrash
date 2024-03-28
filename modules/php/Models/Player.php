@@ -171,7 +171,7 @@ class Player extends \GNC\Helpers\DB_Model
   public function getUiData($currentPlayerId = null)
   {
     $data = parent::getUiData();
-    $data['score'] = $currentPlayerId ? $this->countScore() : 0;
+    $data['score'] = ($currentPlayerId == $this->id) ? $this->countScore() : 0;
     return $data;
   }
 

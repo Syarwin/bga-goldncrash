@@ -57,9 +57,7 @@ define([
         ['move', 1200],
         ['callBack', 1200],
         ['clearColumn', null],
-        //  ['confirmSetupObjectives', 1200],
-        //  ['clearTurn', 200],
-        //  ['refreshUI', 200],
+        ['updateScore', 100],
       ];
 
       this._fakeCardCounter = -1;
@@ -572,19 +570,29 @@ define([
         breakpoint: 800,
         onStartShow: () => {
           this.closeCurrentTooltip();
+          $(`popin_treasureDisplay${pId}_title`).innerHTML = _('Your treasure - Score = ') + player.score;
           $(`treasure-cards-${pId}`).insertAdjacentElement('beforeend', $(`treasure-${pos}`));
         },
         onStartHide: () => {
           this.closeCurrentTooltip();
           $(`chest-holder-${pos}`).insertAdjacentElement('beforeend', $(`treasure-${pos}`));
         },
-        onShow: () => this.closeCurrentTooltip(),
+        onShow: () => {
+          this.closeCurrentTooltip();
+        },
       });
       $(`treasure-${pos}`).addEventListener('click', () => {
         this.closeCurrentTooltip();
         if (modal.isDisplayed()) modal.hide();
         else modal.show();
       });
+    },
+
+    notif_updateScore(n) {
+      debug('Notif: update score');
+      let pId = n.args.player_id;
+      this.scoreCtrl[pId].toValue(n.args.score);
+      this.gamedatas.players[pId].score = n.args.score;
     },
 
     addCard(card, location = null) {
