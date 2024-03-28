@@ -954,7 +954,7 @@ define([
       debug('Notif: Crack safe', n);
 
       let pos = this.getPos(n.args.player_id);
-      let lastTreasure = n.args.lastTreasure;
+      let lastTreasure = n.args.card;
       if (lastTreasure && !$(`card-${lastTreasure.id}`)) {
         this.addCard(lastTreasure);
       }

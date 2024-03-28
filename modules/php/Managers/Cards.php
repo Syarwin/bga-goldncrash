@@ -50,7 +50,7 @@ class Cards extends \GNC\Helpers\Pieces
         'discard' => static::getInLocation($discard, null, 'card_state')->toArray(),
         'lastDiscard' => static::getTopOf($discard),
         'nTreasure' => static::countInLocation($treasure),
-        'treasure' => ($isCurrent) ? static::getInLocation($treasure)->toArray() : [],
+        'treasure' => ($isCurrent) ? static::getInLocationOrdered($treasure)->toArray() : [],
         'lastTreasure' => static::bindCard(static::getLastTreasure($character)),
         'nDeck' => static::countInLocation($deck),
         'guests' => [$player->getGuest(0), $player->getGuest(1), $player->getGuest(2)],

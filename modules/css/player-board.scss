@@ -99,6 +99,8 @@
 
                             background-position: 60% 100%;
                             background-size: 600% 400%;
+                            z-index: 1000;
+                            pointer-events: none;
                         }
 
                         .treasure {
