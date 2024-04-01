@@ -63,7 +63,6 @@ trait SecureTrait
 
     if ($remainingActions > 0) {
       Globals::setRemainingActions($remainingActions);
-      Globals::setCanPass();
       Game::transition(AGAIN);
     } else {
       $this->finishMove();
