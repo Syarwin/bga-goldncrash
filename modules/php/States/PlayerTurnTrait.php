@@ -126,7 +126,7 @@ trait PlayerTurnTrait
     $nextState = $this->$method($n, $player, $columnId);
 
     //flag if play twice on same column
-    if (Globals::getActiveColumn($columnId) && Globals::getLastAction('play')) {
+    if (Globals::getActiveColumn() == $columnId && Globals::getLastAction('play')) {
       Globals::setPlayedTwiceOn($columnId);
     }
     Globals::setActiveColumn($columnId);
