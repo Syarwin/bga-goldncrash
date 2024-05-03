@@ -65,7 +65,9 @@ trait PlayerTurnTrait
     $player = Players::getActive();
     self::checkAction('actPass');
 
-    if (!$args['_private'][$player->getId()]['mustPass']) {
+    if ((isset($args['_private']) && !$args['_private'][$player->getId()]['mustPass']) ||
+      isset($args['mustPass']) && !$args['mustPass']
+    ) {
       throw new \BgaVisibleSystemException("You can't pass now.");
     }
 

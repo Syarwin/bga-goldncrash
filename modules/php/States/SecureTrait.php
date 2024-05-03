@@ -38,7 +38,7 @@ trait SecureTrait
     return [
       'cardIds' => $cardIds,
       'remainingActions' => Globals::getRemainingActions(),
-      'canPass' => !$cardIds
+      'mustPass' => !$cardIds
       // 'previousSteps' => Log::getUndoableSteps(),
       // 'previousChoices' => Globals::getChoices(),
     ];
