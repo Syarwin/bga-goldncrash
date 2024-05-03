@@ -377,6 +377,10 @@ define([
           );
         });
       });
+
+      if (args.mustPass) {
+        this.addDangerActionButton('btnPass', _('Pass'), () => this.takeAction('actPass', {}));
+      }
     },
 
     onEnteringStateMove(args) {
