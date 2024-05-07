@@ -15,63 +15,65 @@
  *
  */
 
-var isDebug = window.location.host == 'studio.boardgamearena.com' || window.location.hash.indexOf('debug') > -1;
+var isDebug =
+  window.location.host == "studio.boardgamearena.com" ||
+  window.location.hash.indexOf("debug") > -1;
 var debug = isDebug ? console.info.bind(window.console) : function () {};
 
 define([
-  'dojo',
-  'dojo/_base/declare',
-  'ebg/core/gamegui',
-  'ebg/counter',
-  g_gamethemeurl + 'modules/js/Core/game.js',
-  g_gamethemeurl + 'modules/js/Core/modal.js',
+  "dojo",
+  "dojo/_base/declare",
+  "ebg/core/gamegui",
+  "ebg/counter",
+  g_gamethemeurl + "modules/js/Core/game.js",
+  g_gamethemeurl + "modules/js/Core/modal.js",
 ], function (dojo, declare) {
-  const CHAMOURAI = 'CHAMOURAI';
-  const POULPIRATE = 'POULPIRATE';
-  const GUEST = 'GUEST';
-  const BALLOON = 'BALLOON';
+  const CHAMOURAI = "CHAMOURAI";
+  const POULPIRATE = "POULPIRATE";
+  const GUEST = "GUEST";
+  const BALLOON = "BALLOON";
 
-  const BROWN = 'BROWN';
-  const PURPLE = 'PURPLE';
-  const GREEN = 'GREEN';
-  const YELLOW = 'YELLOW';
-  const BLUE = 'BLUE';
-  const RED = 'RED';
+  const BROWN = "BROWN";
+  const PURPLE = "PURPLE";
+  const GREEN = "GREEN";
+  const YELLOW = "YELLOW";
+  const BLUE = "BLUE";
+  const RED = "RED";
 
-  return declare('bgagame.goldncrash', [customgame.game], {
+  return declare("bgagame.goldncrash", [customgame.game], {
     constructor() {
       this._inactiveStates = [];
       this._notifications = [
-        ['clearTurn', 200],
-        ['refreshUI', 10],
-        ['refreshHand', 10],
-        ['playCard', 1200],
-        ['secure', 2000],
-        ['drawCards', null, (notif) => notif.args.player_id == this.player_id],
-        ['pDrawCards', null],
-        ['bombPass', 2000],
-        ['bombFail', 2000, (notif) => notif.args.player_id2 == this.player_id],
-        ['pBombFail', 3000],
-        ['discard', null],
-        ['crackSafe', 1200],
-        ['move', 1200],
-        ['callBack', 1200],
-        ['clearColumn', null],
-        ['updateScore', 100],
+        ["clearTurn", 200],
+        ["refreshUI", 10],
+        ["refreshHand", 10],
+        ["playCard", 1200],
+        ["secure", 2000],
+        ["drawCards", null, (notif) => notif.args.player_id == this.player_id],
+        ["pDrawCards", null],
+        ["bombPass", 2000],
+        ["bombFail", 2000, (notif) => notif.args.player_id2 == this.player_id],
+        ["pBombFail", 3000],
+        ["discard", null],
+        ["crackSafe", 1200],
+        ["move", 1200],
+        ["callBack", 1200],
+        ["clearColumn", null],
+        ["updateScore", 100],
       ];
 
       this._fakeCardCounter = -1;
       this._discardModals = {};
 
       // Fix mobile viewport (remove CSS zoom)
-      this.default_viewport = 'width=740';
+      this.default_viewport = "width=740";
       this.cardStatuses = {};
     },
     notif_midMessage(n) {},
 
     getSettingsSections() {
       return {
-        layout: _('Layout'),
+        layout: _("Layout"),
         // playerBoard: _('Player Board/Panel'),
         // gameFlow: _('Game Flow'),
         // other: _('Other'),
@@ -82,8 +84,8 @@ define([
       return {
         boardScale: {
           default: 70,
-          name: _('Board scale'),
-          type: 'slider',
+          name: _("Board scale"),
+          type: "slider",
           sliderConfig: {
             step: 3,
             padding: 0,
@@ -92,7 +94,7 @@ define([
               max: [100],
             },
           },
-          section: 'layout',
+          section: "layout",
         },
       };
     },
@@ -106,9 +108,9 @@ define([
      *	- mixed gamedatas : contains all datas retrieved by the getAllDatas PHP method.
      */
     setup(gamedatas) {
-      debug('SETUP', gamedatas);
+      debug("SETUP", gamedatas);
       // Create a new div for "subtitle"
-      dojo.place("<div id='pagesubtitle'></div>", 'maintitlebar_content');
+      dojo.place("<div id='pagesubtitle'></div>", "maintitlebar_content");
 
       this.setupInfoPanel();
       this.setupPlayers();
@@ -123,8 +125,13 @@ define([
         0
       );
       let nPlayers = Object.keys(this.gamedatas.players).length;
-      this.forEachPlayer((player) => (player.order = (player.no + nPlayers - currentNo) % nPlayers));
-      this.orderedPlayers = Object.values(this.gamedatas.players).sort((a, b) => a.order - b.order);
+      this.forEachPlayer(
+        (player) =>
+          (player.order = (player.no + nPlayers - currentNo) % nPlayers)
+      );
+      this.orderedPlayers = Object.values(this.gamedatas.players).sort(
+        (a, b) => a.order - b.order
+      );
       this.bottomPId = this.orderedPlayers[0].id;
       this.topPId = this.orderedPlayers[1].id;
 
@@ -134,11 +141,19 @@ define([
         let pos = this.getPos(player.id);
         $(`${pos}-player`).dataset.character = player.character;
         // Panels
-        this.place('tplPlayerPanel', player, `overall_player_board_${player.id}`);
+        this.place(
+          "tplPlayerPanel",
+          player,
+          `overall_player_board_${player.id}`
+        );
 
         this._counters[player.id] = {};
-        this._counters[player.id]['deckCount'] = this.createCounter(`deck-counter-${pos}`);
-        this._counters[player.id]['handCount'] = this.createCounter(`counter-${player.id}-hand`);
+        this._counters[player.id]["deckCount"] = this.createCounter(
+          `deck-counter-${pos}`
+        );
+        this._counters[player.id]["handCount"] = this.createCounter(
+          `counter-${player.id}-hand`
+        );
 
         this.setupDiscardModal(player);
         if (player.id == this.player_id) {
@@ -161,11 +176,14 @@ define([
     },
 
     getPos(pId) {
-      return this.bottomPId == pId ? 'bottom' : 'top';
+      return this.bottomPId == pId ? "bottom" : "top";
     },
 
     getCPos(character) {
-      return $(`bottom-player`).dataset.character.toUpperCase() == character.toUpperCase() ? 'bottom' : 'top';
+      return $(`bottom-player`).dataset.character.toUpperCase() ==
+        character.toUpperCase()
+        ? "bottom"
+        : "top";
     },
 
     onLoadingComplete() {
@@ -181,36 +199,43 @@ define([
       if (!$(`log_${notif.logId}`)) return;
       let stepId = notif.msg.args.stepId;
       $(`log_${notif.logId}`).dataset.step = stepId;
-      if ($(`dockedlog_${notif.mobileLogId}`)) $(`dockedlog_${notif.mobileLogId}`).dataset.step = stepId;
+      if ($(`dockedlog_${notif.mobileLogId}`))
+        $(`dockedlog_${notif.mobileLogId}`).dataset.step = stepId;
 
       if (this.gamedatas && this.gamedatas.gamestate) {
         let state = this.gamedatas.gamestate;
         if (state.private_state) state = state.private_state;
 
-        if (state.args && state.args.previousSteps && state.args.previousSteps.includes(parseInt(stepId))) {
+        if (
+          state.args &&
+          state.args.previousSteps &&
+          state.args.previousSteps.includes(parseInt(stepId))
+        ) {
           this.onClick($(`log_${notif.logId}`), () => this.undoToStep(stepId));
 
           if ($(`dockedlog_${notif.mobileLogId}`))
-            this.onClick($(`dockedlog_${notif.mobileLogId}`), () => this.undoToStep(stepId));
+            this.onClick($(`dockedlog_${notif.mobileLogId}`), () =>
+              this.undoToStep(stepId)
+            );
         }
       }
     },
 
     undoToStep(stepId) {
       this.stopActionTimer();
-      this.checkAction('actRestart');
-      this.takeAction('actUndoToStep', { stepId }, false);
+      this.checkAction("actRestart");
+      this.takeAction("actUndoToStep", { stepId }, false);
     },
 
     notif_clearTurn(n) {
-      debug('Notif: restarting turn', n);
+      debug("Notif: restarting turn", n);
       this.cancelLogs(n.args.notifIds);
     },
 
     notif_refreshUI(n) {
-      debug('Notif: refreshing UI', n);
+      debug("Notif: refreshing UI", n);
       this.clearPossible();
-      ['players', 'cards'].forEach((value) => {
+      ["players", "cards"].forEach((value) => {
         this.gamedatas[value] = n.args.datas[value];
       });
 
@@ -218,7 +243,7 @@ define([
     },
 
     notif_refreshHand(n) {
-      debug('Notif: refreshing hand', n);
+      debug("Notif: refreshing hand", n);
       let cards = n.args.hand;
       cards.forEach((card) => this.addCard(card));
     },
@@ -231,53 +256,74 @@ define([
     testNotif() {},
 
     clearPossible() {
-      dojo.empty('pagesubtitle');
+      dojo.empty("pagesubtitle");
       this.inherited(arguments);
     },
 
     onEnteringState(stateName, args) {
-      debug('Entering state: ' + stateName, args);
+      debug("Entering state: " + stateName, args);
       if (this.isFastMode() && ![].includes(stateName)) return;
 
       if (args.args && args.args.descSuffix) {
         this.changePageTitle(args.args.descSuffix);
       }
 
-      if (!this._inactiveStates.includes(stateName) && !this.isCurrentPlayerActive()) return;
+      if (
+        !this._inactiveStates.includes(stateName) &&
+        !this.isCurrentPlayerActive()
+      )
+        return;
 
       // Undo last steps
       if (args.args && args.args.previousSteps) {
         args.args.previousSteps.forEach((stepId) => {
-          let logEntry = $('logs').querySelector(`.log.notif_newUndoableStep[data-step="${stepId}"]`);
+          let logEntry = $("logs").querySelector(
+            `.log.notif_newUndoableStep[data-step="${stepId}"]`
+          );
           if (logEntry) this.onClick(logEntry, () => this.undoToStep(stepId));
 
-          logEntry = document.querySelector(`.chatwindowlogs_zone .log.notif_newUndoableStep[data-step="${stepId}"]`);
+          logEntry = document.querySelector(
+            `.chatwindowlogs_zone .log.notif_newUndoableStep[data-step="${stepId}"]`
+          );
           if (logEntry) this.onClick(logEntry, () => this.undoToStep(stepId));
         });
       }
 
       // Restart turn button
-      if (args.args && args.args.previousChoices && args.args.previousChoices >= 1 && !args.args.automaticAction) {
+      if (
+        args.args &&
+        args.args.previousChoices &&
+        args.args.previousChoices >= 1 &&
+        !args.args.automaticAction
+      ) {
         if (args.args && args.args.previousSteps) {
           let lastStep = Math.max(...args.args.previousSteps);
           if (lastStep > 0)
-            this.addDangerActionButton('btnUndoLastStep', _('Undo last step'), () => this.undoToStep(lastStep), 'restartAction');
+            this.addDangerActionButton(
+              "btnUndoLastStep",
+              _("Undo last step"),
+              () => this.undoToStep(lastStep),
+              "restartAction"
+            );
         }
 
         // Restart whole turn
         this.addDangerActionButton(
-          'btnRestartTurn',
-          _('Restart turn'),
+          "btnRestartTurn",
+          _("Restart turn"),
           () => {
             this.stopActionTimer();
-            this.takeAction('actRestart');
+            this.takeAction("actRestart");
           },
-          'restartAction'
+          "restartAction"
         );
       }
 
       // Call appropriate method
-      var methodName = 'onEnteringState' + stateName.charAt(0).toUpperCase() + stateName.slice(1);
+      var methodName =
+        "onEnteringState" +
+        stateName.charAt(0).toUpperCase() +
+        stateName.slice(1);
       if (this[methodName] !== undefined) this[methodName](args.args);
     },
 
@@ -285,7 +331,8 @@ define([
       if (!$(`log_${notif.logId}`)) return;
       let stepId = notif.msg.args.stepId;
       $(`log_${notif.logId}`).dataset.step = stepId;
-      if ($(`dockedlog_${notif.mobileLogId}`)) $(`dockedlog_${notif.mobileLogId}`).dataset.step = stepId;
+      if ($(`dockedlog_${notif.mobileLogId}`))
+        $(`dockedlog_${notif.mobileLogId}`).dataset.step = stepId;
 
       if (
         this.gamedatas &&
@@ -296,49 +343,65 @@ define([
       ) {
         this.onClick($(`log_${notif.logId}`), () => this.undoToStep(stepId));
 
-        if ($(`dockedlog_${notif.mobileLogId}`)) this.onClick($(`dockedlog_${notif.mobileLogId}`), () => this.undoToStep(stepId));
+        if ($(`dockedlog_${notif.mobileLogId}`))
+          this.onClick($(`dockedlog_${notif.mobileLogId}`), () =>
+            this.undoToStep(stepId)
+          );
       }
     },
 
     onEnteringStateConfirmTurn(args) {
-      this.addPrimaryActionButton('btnConfirmTurn', _('Confirm'), () => {
+      this.addPrimaryActionButton("btnConfirmTurn", _("Confirm"), () => {
         this.stopActionTimer();
-        this.takeAction('actConfirmTurn');
+        this.takeAction("actConfirmTurn");
       });
 
       const OPTION_CONFIRM = 103;
       let n = args.previousChoices;
       let timer = Math.min(10 + 2 * n, 20);
-      this.startActionTimer('btnConfirmTurn', timer, this.prefs[OPTION_CONFIRM].value);
+      this.startActionTimer(
+        "btnConfirmTurn",
+        timer,
+        this.prefs[OPTION_CONFIRM].value
+      );
     },
 
     onEnteringStatePlayerTurn(publicArgs) {
       let args = publicArgs._private;
 
       if (args.canDraw) {
-        this.addPrimaryActionButton('btnDraw', _('Draw'), () => this.takeAction('actDraw', {}));
+        this.addPrimaryActionButton("btnDraw", _("Draw"), () =>
+          this.takeAction("actDraw", {})
+        );
       }
 
       if (args.mustPass) {
-        this.addDangerActionButton('btnPass', _('Pass'), () => this.takeAction('actPass', {}));
+        this.addDangerActionButton("btnPass", _("Pass"), () =>
+          this.takeAction("actPass", {})
+        );
       }
 
       Object.keys(args.playableCardIds).forEach((cardId) => {
         let columns = args.playableCardIds[cardId];
         if (columns.length)
           this.onClick(`card-${cardId}`, () =>
-            this.clientState('playerTurnChooseColumn', _('Where do you want to play that card?'), { cardId, columns })
+            this.clientState(
+              "playerTurnChooseColumn",
+              _("Where do you want to play that card?"),
+              { cardId, columns }
+            )
           );
       });
 
       let selectedCard = null;
       Object.values(args.discardableCardIds).forEach((cardId) => {
         this.onClick(`card-${cardId}`, () => {
-          if (selectedCard !== null) $(`card-${selectedCard}`).classList.remove('selected');
+          if (selectedCard !== null)
+            $(`card-${selectedCard}`).classList.remove("selected");
           selectedCard = cardId;
-          $(`card-${selectedCard}`).classList.add('selected');
-          this.addPrimaryActionButton('btnConfirm', _('Confirm discard'), () =>
-            this.takeAction('actDiscard', { cardId: selectedCard })
+          $(`card-${selectedCard}`).classList.add("selected");
+          this.addPrimaryActionButton("btnConfirm", _("Confirm discard"), () =>
+            this.takeAction("actDiscard", { cardId: selectedCard })
           );
         });
       });
@@ -346,17 +409,18 @@ define([
 
     onEnteringStatePlayerTurnChooseColumn(args) {
       this.addCancelStateBtn();
-      $(`card-${args.cardId}`).classList.add('selected');
+      $(`card-${args.cardId}`).classList.add("selected");
 
       let pos = this.getPos(this.player_id);
       let selectedColumn = null;
       args.columns.forEach((col) => {
         this.onClick(`column-${pos}-${col}`, () => {
-          if (selectedColumn != null) $(`column-${pos}-${selectedColumn}`).classList.remove('selected');
+          if (selectedColumn != null)
+            $(`column-${pos}-${selectedColumn}`).classList.remove("selected");
           selectedColumn = col;
-          $(`column-${pos}-${selectedColumn}`).classList.add('selected');
-          this.addPrimaryActionButton('btnConfirm', _('Confirm'), () =>
-            this.takeAction('actPlay', {
+          $(`column-${pos}-${selectedColumn}`).classList.add("selected");
+          this.addPrimaryActionButton("btnConfirm", _("Confirm"), () =>
+            this.takeAction("actPlay", {
               cardId: args.cardId,
               columnId: selectedColumn,
             })
@@ -369,17 +433,20 @@ define([
       let selectedCard = null;
       args.cardIds.forEach((cardId) => {
         this.onClick(`card-${cardId}`, () => {
-          if (selectedCard !== null) $(`card-${selectedCard}`).classList.remove('selected');
+          if (selectedCard !== null)
+            $(`card-${selectedCard}`).classList.remove("selected");
           selectedCard = cardId;
-          $(`card-${selectedCard}`).classList.add('selected');
-          this.addPrimaryActionButton('btnConfirm', _('Confirm secure'), () =>
-            this.takeAction('actSecure', { cardId: selectedCard })
+          $(`card-${selectedCard}`).classList.add("selected");
+          this.addPrimaryActionButton("btnConfirm", _("Confirm secure"), () =>
+            this.takeAction("actSecure", { cardId: selectedCard })
           );
         });
       });
 
       if (args.mustPass) {
-        this.addDangerActionButton('btnPass', _('Pass'), () => this.takeAction('actPass', {}));
+        this.addDangerActionButton("btnPass", _("Pass"), () =>
+          this.takeAction("actPass", {})
+        );
       }
     },
 
@@ -388,19 +455,23 @@ define([
         let columns = args.cardIds[cardId];
         if (columns.length)
           this.onClick(`card-${cardId}`, () =>
-            this.clientState('moveChooseColumn', _('Where do you want to move that card?'), { cardId, columns })
+            this.clientState(
+              "moveChooseColumn",
+              _("Where do you want to move that card?"),
+              { cardId, columns }
+            )
           );
       });
     },
 
     onEnteringStateMoveChooseColumn(args) {
       this.addCancelStateBtn();
-      $(`card-${args.cardId}`).classList.add('selected');
+      $(`card-${args.cardId}`).classList.add("selected");
 
       let pos = this.getPos(this.player_id);
       args.columns.forEach((col) => {
         this.onClick(`column-${pos}-${col}`, () => {
-          this.takeAction('actMove', {
+          this.takeAction("actMove", {
             cardId: args.cardId,
             columnId: col,
           });
@@ -437,36 +508,43 @@ define([
         top.forEach((cardId, i) => {
           let o = $(`card-${cardId}`);
           o.dataset.nbr = i + 1;
-          o.dataset.pos = _('TOP');
+          o.dataset.pos = _("TOP");
         });
 
         bottom.forEach((cardId, i) => {
           let o = $(`card-${cardId}`);
           o.dataset.nbr = i + 1;
-          o.dataset.pos = _('BOTTOM');
+          o.dataset.pos = _("BOTTOM");
         });
 
-        $('btnConfirm').classList.toggle('disabled', top.length + bottom.length != 2);
+        $("btnConfirm").classList.toggle(
+          "disabled",
+          top.length + bottom.length != 2
+        );
       };
 
       args.cards.forEach((card) => {
         let cardId = card.id;
-        this.addCard(card, $('pending-deck-cards'));
+        this.addCard(card, $("pending-deck-cards"));
         this.onClick(`card-${cardId}`, () => {
-          this.multipleChoiceDialog(_('Where do you want to place that card?'), [_('Top'), _('Bottom')], (choice) => {
-            let onTop = choice == 0;
-            top = top.filter((v) => v != cardId);
-            bottom = bottom.filter((v) => v != cardId);
-            if (onTop) top.push(cardId);
-            else bottom.push(cardId);
+          this.multipleChoiceDialog(
+            _("Where do you want to place that card?"),
+            [_("Top"), _("Bottom")],
+            (choice) => {
+              let onTop = choice == 0;
+              top = top.filter((v) => v != cardId);
+              bottom = bottom.filter((v) => v != cardId);
+              if (onTop) top.push(cardId);
+              else bottom.push(cardId);
 
-            updateStatus();
-          });
+              updateStatus();
+            }
+          );
         });
       });
 
-      this.addPrimaryActionButton('btnConfirm', _('Confirm'), () => {
-        this.takeAction('actObserve', {
+      this.addPrimaryActionButton("btnConfirm", _("Confirm"), () => {
+        this.takeAction("actObserve", {
           cardsToPutBack: JSON.stringify(top),
           cardsToDiscard: JSON.stringify(bottom),
         });
@@ -475,18 +553,21 @@ define([
     },
 
     onLeavingStateObserve() {
-      dojo.empty('pending-deck-cards');
+      dojo.empty("pending-deck-cards");
     },
 
     onEnteringStateCallBack(args) {
       let selectedCard = null;
       args.cardIds.forEach((cardId) => {
         this.onClick(`card-${cardId}`, () => {
-          if (selectedCard !== null) $(`card-${selectedCard}`).classList.remove('selected');
+          if (selectedCard !== null)
+            $(`card-${selectedCard}`).classList.remove("selected");
           selectedCard = cardId;
-          $(`card-${selectedCard}`).classList.add('selected');
-          this.addPrimaryActionButton('btnConfirm', _('Confirm call back'), () =>
-            this.takeAction('actCallBack', { cardId: selectedCard })
+          $(`card-${selectedCard}`).classList.add("selected");
+          this.addPrimaryActionButton(
+            "btnConfirm",
+            _("Confirm call back"),
+            () => this.takeAction("actCallBack", { cardId: selectedCard })
           );
         });
       });
@@ -501,8 +582,8 @@ define([
     ////////////////////////////////
 
     setupCards() {
-      $('goldncrash-main-container')
-        .querySelectorAll('.goldncrash-card')
+      $("goldncrash-main-container")
+        .querySelectorAll(".goldncrash-card")
         .forEach((o) => this.destroy(o));
 
       this.forEachPlayer((player) => {
@@ -513,15 +594,17 @@ define([
           if (card) this.addCard(card);
         });
         cards.discard.forEach((card) => this.addCard(card));
-        cards.columns.forEach((column) => column.forEach((card) => this.addCard(card)));
+        cards.columns.forEach((column) =>
+          column.forEach((card) => this.addCard(card))
+        );
         cards.treasure.forEach((card) => this.addCard(card));
         // if (cards.lastTreasure && player.id != this.player_id) {
         //   cards.lastTreasure.type = 'BACK';
         //   this.addCard(cards.lastTreasure);
         // }
 
-        this._counters[player.id]['deckCount'].toValue(cards.nDeck);
-        this._counters[player.id]['handCount'].toValue(cards.nHand);
+        this._counters[player.id]["deckCount"].toValue(cards.nDeck);
+        this._counters[player.id]["handCount"].toValue(cards.nHand);
       });
     },
 
@@ -529,31 +612,38 @@ define([
       let pId = player.id;
       let pos = this.getPos(player.id);
 
-      this._discardModals[pId] = new customgame.modal('discardDisplay' + pId, {
-        class: 'goldncrash_discard_popin',
+      this._discardModals[pId] = new customgame.modal("discardDisplay" + pId, {
+        class: "goldncrash_discard_popin",
         autoShow: false,
-        closeIcon: 'fa-times',
-        closeAction: 'hide',
-        title: this.fsr(_('Discard of ${player_name}'), {
+        closeIcon: "fa-times",
+        closeAction: "hide",
+        title: this.fsr(_("Discard of ${player_name}"), {
           player_name: player.name,
         }),
-        verticalAlign: 'flex-start',
+        verticalAlign: "flex-start",
         contentsTpl: `<div class='discard-modal' id='discard-cards-${pId}'></div>`,
         scale: 0.9,
         breakpoint: 800,
         onStartShow: () => {
           this.closeCurrentTooltip();
-          $(`discard-cards-${pId}`).insertAdjacentElement('beforeend', $(`discard-${pos}`));
+          $(`discard-cards-${pId}`).insertAdjacentElement(
+            "beforeend",
+            $(`discard-${pos}`)
+          );
         },
         onStartHide: () => {
           this.closeCurrentTooltip();
-          $(`discard-holder-${pos}`).insertAdjacentElement('beforeend', $(`discard-${pos}`));
+          $(`discard-holder-${pos}`).insertAdjacentElement(
+            "beforeend",
+            $(`discard-${pos}`)
+          );
         },
         onShow: () => this.closeCurrentTooltip(),
       });
-      $(`discard-${pos}`).addEventListener('click', () => {
+      $(`discard-${pos}`).addEventListener("click", () => {
         this.closeCurrentTooltip();
-        if (this._discardModals[pId].isDisplayed()) this._discardModals[pId].hide();
+        if (this._discardModals[pId].isDisplayed())
+          this._discardModals[pId].hide();
         else this._discardModals[pId].show();
       });
     },
@@ -562,30 +652,37 @@ define([
       let pId = player.id;
       let pos = this.getPos(player.id);
 
-      let modal = new customgame.modal('treasureDisplay' + pId, {
-        class: 'goldncrash_treasure_popin',
+      let modal = new customgame.modal("treasureDisplay" + pId, {
+        class: "goldncrash_treasure_popin",
         autoShow: false,
-        closeIcon: 'fa-times',
-        closeAction: 'hide',
-        title: _('Your treasure'),
-        verticalAlign: 'flex-start',
+        closeIcon: "fa-times",
+        closeAction: "hide",
+        title: _("Your treasure"),
+        verticalAlign: "flex-start",
         contentsTpl: `<div class='treasure-modal' id='treasure-cards-${pId}'></div>`,
         scale: 0.9,
         breakpoint: 800,
         onStartShow: () => {
           this.closeCurrentTooltip();
-          $(`popin_treasureDisplay${pId}_title`).innerHTML = _('Your treasure - Score = ') + player.score;
-          $(`treasure-cards-${pId}`).insertAdjacentElement('beforeend', $(`treasure-${pos}`));
+          $(`popin_treasureDisplay${pId}_title`).innerHTML =
+            _("Your treasure - Score = ") + player.score;
+          $(`treasure-cards-${pId}`).insertAdjacentElement(
+            "beforeend",
+            $(`treasure-${pos}`)
+          );
         },
         onStartHide: () => {
           this.closeCurrentTooltip();
-          $(`chest-holder-${pos}`).insertAdjacentElement('beforeend', $(`treasure-${pos}`));
+          $(`chest-holder-${pos}`).insertAdjacentElement(
+            "beforeend",
+            $(`treasure-${pos}`)
+          );
         },
         onShow: () => {
           this.closeCurrentTooltip();
         },
       });
-      $(`treasure-${pos}`).addEventListener('click', () => {
+      $(`treasure-${pos}`).addEventListener("click", () => {
         this.closeCurrentTooltip();
         if (modal.isDisplayed()) modal.hide();
         else modal.show();
@@ -593,14 +690,14 @@ define([
     },
 
     notif_updateScore(n) {
-      debug('Notif: update score');
+      debug("Notif: update score");
       let pId = n.args.player_id;
       this.scoreCtrl[pId].toValue(n.args.score);
       this.gamedatas.players[pId].score = n.args.score;
     },
 
     addCard(card, location = null) {
-      let isBack = card.type == 'BACK';
+      let isBack = card.type == "BACK";
       card.uid = card.uid || card.id;
       if (card.uid == -1) card.uid = this._fakeCardCounter--;
       else {
@@ -608,12 +705,16 @@ define([
       }
 
       if (isBack) {
-        card.type = 'BACK';
+        card.type = "BACK";
       }
 
-      if ($('card-' + card.uid)) return;
+      if ($("card-" + card.uid)) return;
 
-      let o = this.place('tplCard', card, location == null ? this.getCardContainer(card) : location);
+      let o = this.place(
+        "tplCard",
+        card,
+        location == null ? this.getCardContainer(card) : location
+      );
       let tooltipDesc = this.getCardTooltip(card);
       if (tooltipDesc != null) {
         this.addCustomTooltip(o.id, tooltipDesc);
@@ -623,114 +724,134 @@ define([
     },
 
     getCardTooltip(card) {
-      card.uid = card.id + 'tooltip';
+      card.uid = card.id + "tooltip";
 
-      let desc = '';
+      let desc = "";
       if (card.type == RED) {
         desc = `<div class='play-effect'>
-          <h4>${_('Play effect: BOMB')}</h4>
+          <h4>${_("Play effect: BOMB")}</h4>
           <p>
             ${_(
-              'Target the Zeppelin of the opposite column of your opponent. The opponent checks if the Zeppelin resists the bombing by looking at the robustness value on the other side of the card.'
+              "Target the Zeppelin of the opposite column of your opponent. The opponent checks if the Zeppelin resists the bombing by looking at the robustness value on the other side of the card."
             )} <br />
             ${_(
-              'If the robustness value is lower than or equal to the number of cards opposite column: the Zeppelin card is flipped face Destroyed up. If an Esteemed Guest was on this Zeppelin, put it back in the box.'
+              "If the robustness value is lower than or equal to the number of cards opposite column: the Zeppelin card is flipped face Destroyed up. If an Esteemed Guest was on this Zeppelin, put it back in the box."
             )} <br />
             ${_(
-              'Otherwise, nothing happens. The player who was just attacked simply states that the Zeppelin resisted the attack, and the Zeppelin card remains with the Undamaged face up.'
+              "Otherwise, nothing happens. The player who was just attacked simply states that the Zeppelin resisted the attack, and the Zeppelin card remains with the Undamaged face up."
             )}
           </p>
         </div>
         <div class='discard-effect'>
-          <h4>${_('Discard effect: CRACK THE SAFE')}</h4>
+          <h4>${_("Discard effect: CRACK THE SAFE")}</h4>
           <p>
-            ${_('Place the card from the top of your opponent’s Treasure in their discard pile.')}
+            ${_(
+              "Place the card from the top of your opponent’s Treasure in their discard pile."
+            )}
           </p>
         </div>`;
       }
       if (card.type == BLUE) {
         desc = `<div class='play-effect'>
-          <h4>${_('Play effect: BOARD')}</h4>
+          <h4>${_("Play effect: BOARD")}</h4>
           <p>
-            ${_('Discard the last card of the opposite column of your opponent, without applying its discard effect.')}
+            ${_(
+              "Discard the last card of the opposite column of your opponent, without applying its discard effect."
+            )}
           </p>
         </div>
         <div class='discard-effect'>
-          <h4>${_('Discard effect: MANOEUVRE')}</h4>
+          <h4>${_("Discard effect: MANOEUVRE")}</h4>
           <p>
-            ${_('Move the last card of one of your columns to an adjacent column but do not trigger its play effect.')}
+            ${_(
+              "Move the last card of one of your columns to an adjacent column but do not trigger its play effect."
+            )}
           </p>
         </div>`;
       }
       if (card.type == PURPLE) {
         desc = `<div class='play-effect'>
-          <h4>${_('Play effect: FISH')}</h4>
+          <h4>${_("Play effect: FISH")}</h4>
           <p>
-            ${_('Take the first card in your discard pile and add it to your hand.')}
+            ${_(
+              "Take the first card in your discard pile and add it to your hand."
+            )}
           </p>
         </div>
         <div class='discard-effect'>
-          <h4>${_('Discard effect: CALL BACK')}</h4>
+          <h4>${_("Discard effect: CALL BACK")}</h4>
           <p>
-            ${_('Take the last card in one of your columns and add it to your hand')}
+            ${_(
+              "Take the last card in one of your columns and add it to your hand"
+            )}
           </p>
         </div>`;
       }
       if (card.type == GREEN) {
         desc = `<div class='play-effect'>
-          <h4>${_('Play effect: REINFORCE')}</h4>
+          <h4>${_("Play effect: REINFORCE")}</h4>
           <p>
-            ${_('Draw the first card of the Crew deck and add it to your hand.')}
+            ${_(
+              "Draw the first card of the Crew deck and add it to your hand."
+            )}
           </p>
         </div>
         <div class='discard-effect'>
-          <h4>${_('Discard effect: OBSERVE')}</h4>
+          <h4>${_("Discard effect: OBSERVE")}</h4>
           <p>
             ${_(
-              'Look at the 2 first cards of your Crew deck and choose, for each card, if you leave it on the top or the bottom of your deck in the order of your choice.'
+              "Look at the 2 first cards of your Crew deck and choose, for each card, if you leave it on the top or the bottom of your deck in the order of your choice."
             )}
           </p>
         </div>`;
       }
       if (card.type == BROWN) {
         desc = `<div class='play-effect'>
-          <h4>${_('Play effect: SECURE')}</h4>
+          <h4>${_("Play effect: SECURE")}</h4>
           <p>
-            ${_('Place face down the last card of one of your adjacent columns in your Treasure.')}
+            ${_(
+              "Place face down the last card of one of your adjacent columns in your Treasure."
+            )}
           </p>
         </div>
         <div class='discard-effect'>
-          <h4>${_('Discard effect: LOOT')}</h4>
+          <h4>${_("Discard effect: LOOT")}</h4>
           <p>
-            ${_('Place face down the top card of your opponent’s discard pile in your Treasure.')}
+            ${_(
+              "Place face down the top card of your opponent’s discard pile in your Treasure."
+            )}
           </p>
         </div>`;
       }
       if (card.type == YELLOW) {
-        desc = `<div class='play-effect'><h4>${_('No play effect')}</h4></div>
+        desc = `<div class='play-effect'><h4>${_("No play effect")}</h4></div>
         <div class='discard-effect'>
-        <h4>Cannot be discarded</h4>`;
+        <h4>${_("Cannot be discarded")}</h4>`;
       }
       if (card.type == GUEST) {
         let guestDescs = {
-          1: _('you have 9 Gold in the column'),
-          2: _('you have played 2 cards in this column in the same turn'),
-          3: _('you have played or moved the 3rd green card in this column'),
-          4: _('you have played or moved the 5th card in this column'),
-          5: _('you have played or moved the 4th card of a different type in this column'),
-          6: _('you have played or moved the 3rd purple card in this column'),
-          7: _('you have played or moved the 2nd yellow card in this column'),
-          8: _('you have played or moved the 3rd blue card in this column'),
+          1: _("you have 9 Gold in the column"),
+          2: _("you have played 2 cards in this column in the same turn"),
+          3: _("you have played or moved the 3rd green card in this column"),
+          4: _("you have played or moved the 5th card in this column"),
+          5: _(
+            "you have played or moved the 4th card of a different type in this column"
+          ),
+          6: _("you have played or moved the 3rd purple card in this column"),
+          7: _("you have played or moved the 2nd yellow card in this column"),
+          8: _("you have played or moved the 3rd blue card in this column"),
         };
         desc = `<div>
-          <h4>${_('Esteemed Guest')}</h4>
+          <h4>${_("Esteemed Guest")}</h4>
           <p>
             ${_(
-              'When you meet the requirements indicated on their card, secure them:place them immediately in your Treasure.'
+              "When you meet the requirements indicated on their card, secure them:place them immediately in your Treasure."
             )} <br/>
-            <b>${_('This card cannot be discarded from your Treasure, nor the cards underneath it.')}</b>
+            <b>${_(
+              "This card cannot be discarded from your Treasure, nor the cards underneath it."
+            )}</b>
           </p>
-          <h4>${_('Secure this Esteemed Guest as soon as :')}</h4>
+          <h4>${_("Secure this Esteemed Guest as soon as :")}</h4>
           <p>
             ${guestDescs[card.id]}
           </p>
@@ -751,48 +872,52 @@ define([
       let uid = card.uid || card.id;
       let horizontal = [BALLOON].includes(card.type);
 
-      return `<div id="card-${uid}" class="goldncrash-card ${card.id < 0 ? 'fake' : ''} ${horizontal ? 'horizontal' : ''}">
+      return `<div id="card-${uid}" class="goldncrash-card ${
+        card.id < 0 ? "fake" : ""
+      } ${horizontal ? "horizontal" : ""}">
         <div class='card-inner' data-id="${card.id}" 
-            data-type="${card.type}" data-deck="${card.deck}" data-value="${card.value}"></div>
+            data-type="${card.type}" data-deck="${card.deck}" data-value="${
+        card.value
+      }"></div>
       </div>`;
     },
 
     getCardContainer(card) {
-      let t = card.location.split('_');
-      if (card.location == 'hand') {
+      let t = card.location.split("_");
+      if (card.location == "hand") {
         return $(`hand-${this.getPos(card.playerId)}`);
       }
-      if (t[0] == 'guest') {
+      if (t[0] == "guest") {
         return $(`guest-${this.getCPos(t[1])}-${card.state}`);
       }
-      if (t[0] == 'balloon') {
+      if (t[0] == "balloon") {
         return $(`zeppelin-${this.getCPos(t[1])}-${card.state}`);
       }
-      if (t[0] == 'discard') {
+      if (t[0] == "discard") {
         return $(`discard-${this.getCPos(t[1])}`);
       }
-      if (t[0] == 'treasure') {
+      if (t[0] == "treasure") {
         return $(`treasure-${this.getCPos(t[1])}`);
       }
-      if (t[0] == 'column') {
+      if (t[0] == "column") {
         return $(`column-${this.getCPos(t[2])}-${t[1]}`);
       }
 
-      console.error('Trying to get container of a card', card);
-      return 'game_play_area';
+      console.error("Trying to get container of a card", card);
+      return "game_play_area";
     },
 
     getCardData(card) {
       let cardId = card.id;
       if (card.flipped && card.id == 0) {
-        let t = card.location.split('_');
+        let t = card.location.split("_");
         let deck = t[1].toUpperCase();
         return {
           id: 0,
           uid: `balloon-${deck}-${card.state}`,
           type: BALLOON,
           deck,
-          value: 'back',
+          value: "back",
         };
       }
 
@@ -885,7 +1010,7 @@ define([
         86: [86, CHAMOURAI, BALLOON, 3],
       };
       if (CARD_DATAS[cardId] == undefined) {
-        console.error('Unknown card:', cardId, card);
+        console.error("Unknown card:", cardId, card);
       }
       return {
         id: cardId,
@@ -896,7 +1021,7 @@ define([
     },
 
     notif_playCard(n) {
-      debug('Notif: play a card', n);
+      debug("Notif: play a card", n);
 
       let card = n.args.card;
       if (!$(`card-${card.id}`)) {
@@ -904,23 +1029,32 @@ define([
       }
 
       let pos = this.getPos(n.args.player_id);
-      let counter = 'handCount';
+      let counter = "handCount";
       this._counters[n.args.player_id][counter].incValue(-1);
-      this.slide(`card-${card.id}`, $(`column-${pos}-${n.args.columnId}`)).then(() => this.updateLayout());
+      this.slide(`card-${card.id}`, $(`column-${pos}-${n.args.columnId}`)).then(
+        () => this.updateLayout()
+      );
     },
 
     notif_move(n) {
-      debug('Notif: move a card', n);
+      debug("Notif: move a card", n);
       let pos = this.getPos(n.args.player_id);
-      this.slide(`card-${n.args.card.id}`, $(`column-${pos}-${n.args.columnId2}`)).then(() => this.updateLayout());
+      this.slide(
+        `card-${n.args.card.id}`,
+        $(`column-${pos}-${n.args.columnId2}`)
+      ).then(() => this.updateLayout());
     },
 
     notif_discard(n) {
-      debug('Notif: discard cards', n);
+      debug("Notif: discard cards", n);
 
       let pos = this.getPos(n.args.player_id);
       Promise.all(
-        n.args.cards.map((card, i) => this.wait(100 * i).then(() => this.slide(`card-${card.id}`, $(`discard-${pos}`))))
+        n.args.cards.map((card, i) =>
+          this.wait(100 * i).then(() =>
+            this.slide(`card-${card.id}`, $(`discard-${pos}`))
+          )
+        )
       ).then(() => {
         this.notifqueue.setSynchronousDuration(100);
         this.updateLayout();
@@ -928,18 +1062,26 @@ define([
     },
 
     notif_clearColumn(n) {
-      debug('Notif: clear column cards', n);
+      debug("Notif: clear column cards", n);
 
       let pos = this.getPos(n.args.player_id);
-      let cards = [...$(`column-${pos}-${n.args.columnId}`).querySelectorAll('.goldncrash-card')];
-      Promise.all(cards.map((card, i) => this.wait(100 * i).then(() => this.slide(card, $(`discard-${pos}`))))).then(() => {
+      let cards = [
+        ...$(`column-${pos}-${n.args.columnId}`).querySelectorAll(
+          ".goldncrash-card"
+        ),
+      ];
+      Promise.all(
+        cards.map((card, i) =>
+          this.wait(100 * i).then(() => this.slide(card, $(`discard-${pos}`)))
+        )
+      ).then(() => {
         this.notifqueue.setSynchronousDuration(100);
         this.updateLayout();
       });
     },
 
     notif_secure(n) {
-      debug('Notif: secure a card', n);
+      debug("Notif: secure a card", n);
 
       let card = n.args.card;
       let pos = this.getPos(n.args.player_id);
@@ -949,28 +1091,30 @@ define([
         this.slide(`card-${card.id}`, $(`treasure-${pos}`));
       } else {
         let oCard2 = oCard.cloneNode(true);
-        let inner = oCard2.querySelector('.card-inner');
-        inner.dataset.type = 'BACK';
-        inner.dataset.value = '';
-        oCard.id += 'old';
+        let inner = oCard2.querySelector(".card-inner");
+        inner.dataset.type = "BACK";
+        inner.dataset.value = "";
+        oCard.id += "old";
 
         this.flipAndReplace(oCard, oCard2).then(() => {
           this.slide(`card-${card.id}`, $(`treasure-${pos}`));
-          $(`card-${card.id}_animated`).style.marginTop = '0px';
+          $(`card-${card.id}_animated`).style.marginTop = "0px";
           $(`card-${card.id}_animated`).style.transform = `rotate(-90deg)`;
         });
       }
     },
 
     notif_crackSafe(n) {
-      debug('Notif: Crack safe', n);
+      debug("Notif: Crack safe", n);
 
       let pos = this.getPos(n.args.player_id);
       let lastTreasure = n.args.card;
       if (lastTreasure && !$(`card-${lastTreasure.id}`)) {
         this.addCard(lastTreasure);
       }
-      this.slide(`card-${lastTreasure.id}`, $(`discard-${pos}`), { rotate: true });
+      this.slide(`card-${lastTreasure.id}`, $(`discard-${pos}`), {
+        rotate: true,
+      });
 
       // let card = n.args.card;
       // let pos = this.getPos(n.args.player_id);
@@ -994,24 +1138,26 @@ define([
     },
 
     notif_drawCards(n) {
-      debug('Notif: drawing cards', n);
+      debug("Notif: drawing cards", n);
 
-      let counter = 'handCount';
+      let counter = "handCount";
       let nCards = n.args.n;
-      if (n.args.fromDeck) this._counters[n.args.player_id]['deckCount'].incValue(-nCards);
+      if (n.args.fromDeck)
+        this._counters[n.args.player_id]["deckCount"].incValue(-nCards);
       if (this.isFastMode()) {
         this._counters[this.player_id][counter].incValue(nCards);
         return;
       }
 
-      let deck = this.gamedatas.players[n.args.player_id].character.toUpperCase();
+      let deck =
+        this.gamedatas.players[n.args.player_id].character.toUpperCase();
       Promise.all(
         Array.from(Array(nCards), (x, i) => i).map((i) => {
           return this.wait(100 * i).then(() => {
             let source = n.args.fromDeck
               ? $(`deck-${this.getPos(n.args.player_id)}`)
               : $(`discard-${this.getPos(n.args.player_id)}`);
-            let o = this.addCard({ uid: -1, deck, type: 'BACK' }, source);
+            let o = this.addCard({ uid: -1, deck, type: "BACK" }, source);
             return this.slide(o, `player_board_${n.args.player_id}`, {
               duration: 1000,
               destroy: true,
@@ -1026,11 +1172,14 @@ define([
     },
 
     notif_pDrawCards(n) {
-      debug('Notif: private drawing cards', n);
+      debug("Notif: private drawing cards", n);
 
-      if (n.args.fromDeck) this._counters[this.player_id]['deckCount'].incValue(-n.args.cards.length);
+      if (n.args.fromDeck)
+        this._counters[this.player_id]["deckCount"].incValue(
+          -n.args.cards.length
+        );
 
-      let counter = 'handCount';
+      let counter = "handCount";
       if (this.isFastMode()) {
         n.args.cards.forEach((card) => {
           this.addCard(card);
@@ -1046,7 +1195,9 @@ define([
             this.addCard(card);
             let container = this.getCardContainer(card);
             // let source = n.args.pilfering ? $(`counter-${n.args.pilfering}-${counter}`) :  $(`deck-${this.getPos(this.player_id)}`);
-            let source = n.args.fromDeck ? $(`deck-${this.getPos(this.player_id)}`) : $(`discard-${this.getPos(this.player_id)}`);
+            let source = n.args.fromDeck
+              ? $(`deck-${this.getPos(this.player_id)}`)
+              : $(`discard-${this.getPos(this.player_id)}`);
 
             return this.slide(`card-${card.id}`, container, {
               from: source,
@@ -1063,7 +1214,7 @@ define([
     },
 
     notif_bombPass(n) {
-      debug('Notif: bomb success', n);
+      debug("Notif: bomb success", n);
 
       let elem = `<div id='bomb-animation'>
       ${n.args.force}
@@ -1071,10 +1222,12 @@ define([
         <div class="goldncrash-icon icon-bomb"></div>
       </div>
     </div>`;
-      $('page-content').insertAdjacentHTML('beforeend', elem);
+      $("page-content").insertAdjacentHTML("beforeend", elem);
 
-      let target = $(`card-balloon-${n.args.card.deck.toUpperCase()}-${n.args.columnId}`);
-      this.slide('bomb-animation', target, {
+      let target = $(
+        `card-balloon-${n.args.card.deck.toUpperCase()}-${n.args.columnId}`
+      );
+      this.slide("bomb-animation", target, {
         from: $(`column-${this.getPos(n.args.player_id)}-${n.args.columnId}`),
         destroy: true,
         phantom: false,
@@ -1083,13 +1236,15 @@ define([
         this.addCard(n.args.card);
         this.flipAndReplace(target, `card-${n.args.card.id}`);
 
-        let guest = $(`guest-${this.getCPos(n.args.card.deck)}-${n.args.columnId}`).querySelector('.goldncrash-card');
+        let guest = $(
+          `guest-${this.getCPos(n.args.card.deck)}-${n.args.columnId}`
+        ).querySelector(".goldncrash-card");
         if (guest) this.fadeOutAndDestroy(guest);
       });
     },
 
     notif_bombFail(n) {
-      debug('Notif: bomb fail', n);
+      debug("Notif: bomb fail", n);
       if (this.isFastMode()) return;
 
       let elem = `<div id='bomb-animation'>
@@ -1098,22 +1253,24 @@ define([
         <div class="goldncrash-icon icon-bomb"></div>
       </div>
     </div>`;
-      $('page-content').insertAdjacentHTML('beforeend', elem);
+      $("page-content").insertAdjacentHTML("beforeend", elem);
 
-      let target = $(`card-balloon-${n.args.balloonDeck.toUpperCase()}-${n.args.columnId}`);
-      this.slide('bomb-animation', target, {
+      let target = $(
+        `card-balloon-${n.args.balloonDeck.toUpperCase()}-${n.args.columnId}`
+      );
+      this.slide("bomb-animation", target, {
         from: $(`column-${this.getPos(n.args.player_id)}-${n.args.columnId}`),
         destroy: true,
         phantom: false,
         duration: 1200,
       }).then(() => {
-        target.classList.add('shake-it');
-        this.wait(900).then(() => target.classList.remove('shake-it'));
+        target.classList.add("shake-it");
+        this.wait(900).then(() => target.classList.remove("shake-it"));
       });
     },
 
     notif_pBombFail(n) {
-      debug('Notif: bomb fail', n);
+      debug("Notif: bomb fail", n);
       if (this.isFastMode()) return;
 
       let elem = `<div id='bomb-animation'>
@@ -1122,38 +1279,46 @@ define([
         <div class="goldncrash-icon icon-bomb"></div>
       </div>
     </div>`;
-      $('page-content').insertAdjacentHTML('beforeend', elem);
+      $("page-content").insertAdjacentHTML("beforeend", elem);
 
-      let target = $(`card-balloon-${n.args.balloonDeck.toUpperCase()}-${n.args.columnId}`);
+      let target = $(
+        `card-balloon-${n.args.balloonDeck.toUpperCase()}-${n.args.columnId}`
+      );
       this.addCard(n.args.card, target);
-      this.wait(300).then(() => $(`card-${n.args.card.id}`).classList.add('fade-in'));
+      this.wait(300).then(() =>
+        $(`card-${n.args.card.id}`).classList.add("fade-in")
+      );
 
-      this.slide('bomb-animation', target, {
+      this.slide("bomb-animation", target, {
         from: $(`column-${this.getPos(n.args.player_id)}-${n.args.columnId}`),
         destroy: true,
         phantom: false,
         duration: 1200,
       }).then(() => {
-        target.classList.add('shake-it');
+        target.classList.add("shake-it");
         this.wait(900).then(() => {
-          target.classList.remove('shake-it');
-          $(`card-${n.args.card.id}`).classList.remove('fade-in');
+          target.classList.remove("shake-it");
+          $(`card-${n.args.card.id}`).classList.remove("fade-in");
           this.wait(800).then(() => $(`card-${n.args.card.id}`).remove());
         });
       });
     },
 
     notif_callBack(n) {
-      debug('Notif: call back a card', n);
+      debug("Notif: call back a card", n);
 
       let card = n.args.card;
-      let counter = 'handCount';
+      let counter = "handCount";
       this._counters[n.args.player_id][counter].incValue(1);
       if (n.args.player_id == this.player_id) {
         let container = this.getCardContainer(card);
-        this.slide(`card-${card.id}`, container).then(() => this.updateLayout());
+        this.slide(`card-${card.id}`, container).then(() =>
+          this.updateLayout()
+        );
       } else {
-        this.slide(`card-${card.id}`, `player_board_${n.args.player_id}`, { destroy: true }).then(() => this.updateLayout());
+        this.slide(`card-${card.id}`, `player_board_${n.args.player_id}`, {
+          destroy: true,
+        }).then(() => this.updateLayout());
       }
     },
 
@@ -1173,9 +1338,13 @@ define([
       let type = lowerCase ? name.toLowerCase() : name;
       const NO_TEXT_ICONS = [];
       let noText = NO_TEXT_ICONS.includes(name);
-      let text = n == null ? '' : `<span>${n}</span>`;
-      return `${noText ? text : ''}<div class="icon-container icon-container-${type}">
-             <div class="goldncrash-icon icon-${type}">${noText ? '' : text}</div>
+      let text = n == null ? "" : `<span>${n}</span>`;
+      return `${
+        noText ? text : ""
+      }<div class="icon-container icon-container-${type}">
+             <div class="goldncrash-icon icon-${type}">${
+        noText ? "" : text
+      }</div>
            </div>`;
     },
 
@@ -1183,11 +1352,14 @@ define([
       const ICONS = [];
 
       ICONS.forEach((name) => {
-        const regex = new RegExp('<' + name + ':([^>]+)>', 'g');
-        str = str.replaceAll(regex, this.formatIcon(name, '<span>$1</span>'));
-        str = str.replaceAll(new RegExp('<' + name + '>', 'g'), this.formatIcon(name));
+        const regex = new RegExp("<" + name + ":([^>]+)>", "g");
+        str = str.replaceAll(regex, this.formatIcon(name, "<span>$1</span>"));
+        str = str.replaceAll(
+          new RegExp("<" + name + ">", "g"),
+          this.formatIcon(name)
+        );
       });
-      str = str.replace(/\*\*([^\*]+)\*\*/g, '<b>$1</b>');
+      str = str.replace(/\*\*([^\*]+)\*\*/g, "<b>$1</b>");
 
       return str;
     },
@@ -1204,7 +1376,7 @@ define([
           log = this.formatString(_(log));
         }
       } catch (e) {
-        console.error(log, args, 'Exception thrown', e.stack);
+        console.error(log, args, "Exception thrown", e.stack);
       }
 
       return this.inherited(arguments);
@@ -1219,17 +1391,17 @@ define([
     //////////////////////////////////////////////////////
 
     setupInfoPanel() {
-      dojo.place(this.tplInfoPanel(), 'player_boards', 'first');
-      let chk = $('help-mode-chk');
-      dojo.connect(chk, 'onchange', () => this.toggleHelpMode(chk.checked));
-      this.addTooltip('help-mode-switch', '', _('Toggle help/safe mode.'));
+      dojo.place(this.tplInfoPanel(), "player_boards", "first");
+      let chk = $("help-mode-chk");
+      dojo.connect(chk, "onchange", () => this.toggleHelpMode(chk.checked));
+      this.addTooltip("help-mode-switch", "", _("Toggle help/safe mode."));
 
-      this._settingsModal = new customgame.modal('showSettings', {
-        class: 'goldncrash_popin',
-        closeIcon: 'fa-times',
-        title: _('Settings'),
-        closeAction: 'hide',
-        verticalAlign: 'flex-start',
+      this._settingsModal = new customgame.modal("showSettings", {
+        class: "goldncrash_popin",
+        closeIcon: "fa-times",
+        title: _("Settings"),
+        closeAction: "hide",
+        verticalAlign: "flex-start",
         contentsTpl: `<div id='goldncrash-settings'>
               <div id='goldncrash-settings-header'></div>
               <div id="settings-controls-container"></div>
@@ -1275,7 +1447,7 @@ define([
 
     updatePlayerOrdering() {
       this.inherited(arguments);
-      dojo.place('player_board_config', 'player_boards', 'first');
+      dojo.place("player_board_config", "player_boards", "first");
     },
 
     onChangeBoardScaleSetting() {
@@ -1287,12 +1459,14 @@ define([
 
       const ROOT = document.documentElement;
 
-      const WIDTH = $('goldncrash-main-wrapper').getBoundingClientRect()['width'] - 5;
+      const WIDTH =
+        $("goldncrash-main-wrapper").getBoundingClientRect()["width"] - 5;
       const BOARD_WIDTH = 1142;
       const BOARD_SIZE = (WIDTH * this.settings.boardScale) / 100;
       let boardScale = BOARD_SIZE / BOARD_WIDTH;
-      ROOT.style.setProperty('--goldncrashBoardScale', boardScale);
-      $('goldncrash-main-wrapper').style.height = boardScale * $('goldncrash-main-container').offsetHeight + 'px';
+      ROOT.style.setProperty("--goldncrashBoardScale", boardScale);
+      $("goldncrash-main-wrapper").style.height =
+        boardScale * $("goldncrash-main-container").offsetHeight + "px";
     },
   });
 });
