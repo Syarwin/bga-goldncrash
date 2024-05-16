@@ -51,10 +51,10 @@ trait MoveTrait
 		$card = Cards::get($cardId);
 		$player->move($card, $columnId);
 
-		//check if the column must be discarded entirely
-		if (Cards::getNOfSpecificColor($player, $columnId, $card->getType()) >= 3) {
-			$player->clearColumn($columnId);
-		}
+		// //check if the column must be discarded entirely
+		// if (Cards::getNOfSpecificColor($player, $columnId, $card->getType()) >= 3) {
+		// 	$player->clearColumn($columnId);
+		// }
 
 		$this->finishMove();
 	}
