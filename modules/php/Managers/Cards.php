@@ -115,7 +115,7 @@ class Cards extends \GNC\Helpers\Pieces
           }
           break;
         case GREEN:
-          if (static::countInLocation($player->getDeckName()) > 2) {
+          if (static::countInLocation($player->getDeckName()) >= 2) {
             $result[$i] = $card->getId();
           }
           break;
