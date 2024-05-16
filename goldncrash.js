@@ -709,7 +709,7 @@ define([
       if (card.type == YELLOW) {
         desc = `<div class='play-effect'><h4>${_('No play effect')}</h4></div>
         <div class='discard-effect'>
-        <h4>Cannot be discarded</h4>`;
+        <h4>${_('Cannot be discarded')}</h4>`;
       }
       if (card.type == GUEST) {
         let guestDescs = {
@@ -970,7 +970,9 @@ define([
       if (lastTreasure && !$(`card-${lastTreasure.id}`)) {
         this.addCard(lastTreasure);
       }
-      this.slide(`card-${lastTreasure.id}`, $(`discard-${pos}`), { rotate: true });
+      this.slide(`card-${lastTreasure.id}`, $(`discard-${pos}`), {
+        rotate: true,
+      });
 
       // let card = n.args.card;
       // let pos = this.getPos(n.args.player_id);
@@ -1153,7 +1155,9 @@ define([
         let container = this.getCardContainer(card);
         this.slide(`card-${card.id}`, container).then(() => this.updateLayout());
       } else {
-        this.slide(`card-${card.id}`, `player_board_${n.args.player_id}`, { destroy: true }).then(() => this.updateLayout());
+        this.slide(`card-${card.id}`, `player_board_${n.args.player_id}`, {
+          destroy: true,
+        }).then(() => this.updateLayout());
       }
     },
 
