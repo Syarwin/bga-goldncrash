@@ -634,7 +634,7 @@ define([
               'Target the Zeppelin of the opposite column of your opponent. The opponent checks if the Zeppelin resists the bombing by looking at the robustness value on the other side of the card.'
             )} <br />
             ${_(
-              'If the robustness value is lower than or equal to the number of cards opposite column: the Zeppelin card is flipped face Destroyed up. If an Esteemed Guest was on this Zeppelin, put it back in the box.'
+              'If the robustness value is lower than or equal to the number of BOMB cards in opposite column: the Zeppelin card is flipped face Destroyed up. If an Esteemed Guest was on this Zeppelin, put it back in the box.'
             )} <br />
             ${_(
               'Otherwise, nothing happens. The player who was just attacked simply states that the Zeppelin resisted the attack, and the Zeppelin card remains with the Undamaged face up.'
