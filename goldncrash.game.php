@@ -249,13 +249,13 @@ class GoldnCrash extends Table
   /////////////////////////////////////////////////////////////
 
   // Exposing protected method getCurrentPlayerId
-  public static function getCurrentPId()
+  public function getCurrentPId()
   {
     return self::getCurrentPlayerId();
   }
 
   // Exposing protected method translation
-  public static function translate($text)
+  public function translate($text)
   {
     return self::_($text);
   }

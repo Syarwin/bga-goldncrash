@@ -96,7 +96,7 @@ abstract class Utils extends \APP_DbObject
     }
 }
 
-function array_uunique($array, $comparator)
+static function array_uunique($array, $comparator)
 {
     $unique_array = [];
     do {

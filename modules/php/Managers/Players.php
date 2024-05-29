@@ -53,17 +53,17 @@ class Players extends \GNC\Helpers\DB_Manager
     Game::get()->reloadPlayersBasicInfos();
   }
 
-  public function getActiveId()
+  public static function getActiveId()
   {
     return Game::get()->getActivePlayerId();
   }
 
-  public function getCurrentId()
+  public static function getCurrentId()
   {
     return (int) Game::get()->getCurrentPId();
   }
 
-  public function getAll()
+  public static function getAll()
   {
     return self::DB()->get(false);
   }
@@ -71,7 +71,7 @@ class Players extends \GNC\Helpers\DB_Manager
   /*
    * get : returns the Player object for the given player ID
    */
-  public function get($pId = null)
+  public static function get($pId = null)
   {
     $pId = $pId ?: self::getActiveId();
     return self::DB()
@@ -89,7 +89,7 @@ class Players extends \GNC\Helpers\DB_Manager
     return self::get(self::getCurrentId());
   }
 
-  public function getNextId($player = null)
+  public static function getNextId($player = null)
   {
     $player = $player ?? Players::getCurrent();
     $pId = is_int($player) ? $player : $player->getId();
@@ -100,7 +100,7 @@ class Players extends \GNC\Helpers\DB_Manager
   /*
    * Return the number of players
    */
-  public function count()
+  public static function count()
   {
     return self::DB()->count();
   }
@@ -120,7 +120,7 @@ class Players extends \GNC\Helpers\DB_Manager
   /**
    * Get current turn order according to first player variable
    */
-  public function getTurnOrder($firstPlayer = null)
+  public static function getTurnOrder($firstPlayer = null)
   {
     $firstPlayer = $firstPlayer ?? Globals::getFirstPlayer();
     $order = [];

@@ -233,7 +233,7 @@ class Cards extends \GNC\Helpers\Pieces
     }
   }
 
-  public function getCards()
+  public static function getCards()
   {
     $f = function ($data) {
       return [

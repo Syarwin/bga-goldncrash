@@ -113,7 +113,7 @@ class Pieces extends DB_Manager
     /****
      * Return a select query with a where condition
      */
-    protected function addWhereClause(
+    protected static function addWhereClause(
         &$query,
         $id = null,
         $location = null,
@@ -207,7 +207,7 @@ class Pieces extends DB_Manager
         }
     }
 
-    final function checkIdArray($arr)
+    final static function checkIdArray($arr)
     {
         if (is_null($arr)) {
             throw new \BgaVisibleSystemException(
@@ -434,7 +434,7 @@ class Pieces extends DB_Manager
     /**
      * getFilteredQuery : many times the DB scheme has a pId and a type extra field, this allow for a shortcut for a query for these case
      */
-    public function getFilteredQuery($pId, $location = null, $type = null)
+    public static function getFilteredQuery($pId, $location = null, $type = null)
     {
         $query = self::getSelectQuery()->wherePlayer($pId);
         if ($location != null) {
@@ -454,7 +454,7 @@ class Pieces extends DB_Manager
         return $query;
     }
 
-    public function getFiltered($pId, $location = null, $type = null)
+    public static function getFiltered($pId, $location = null, $type = null)
     {
         return static::getFilteredQuery($pId, $location, $type)->get();
     }
@@ -696,7 +696,7 @@ class Pieces extends DB_Manager
      *     "state" => <state>             // Optional argument specifies integer state, if not specified and $token_state_global is not specified auto-increment is used
      */
 
-    function create(
+    static function create(
         $pieces,
         $globalLocation = null,
         $globalState = null,
@@ -772,7 +772,7 @@ class Pieces extends DB_Manager
     /*
      * Create a single token
      */
-    function singleCreate($token)
+    static function singleCreate($token)
     {
         $tokens = self::create([$token]);
         return self::get(is_array($tokens) ? $tokens[0] : $tokens);
