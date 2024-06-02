@@ -50,7 +50,7 @@ class Player extends \GNC\Helpers\DB_Model
   public function move($card, $toColumnId)
   {
     $fromColumnId = $card->getColumnId();
-    $card->setLocation($this->getColumnName($toColumnId));
+    Cards::insertOnTop($card->getId(), $this->getColumnName($toColumnId));
     Notifications::move($card, $fromColumnId, $toColumnId, $this);
   }
 
