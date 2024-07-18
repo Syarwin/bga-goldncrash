@@ -71,7 +71,7 @@ trait PlayerTurnTrait
       throw new \BgaVisibleSystemException("You can't pass now.");
     }
 
-    Game::transition(END_TURN);
+    $this->finishMove();
   }
 
   public function actDiscard($cardId)
