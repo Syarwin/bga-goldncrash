@@ -36,7 +36,7 @@ trait DiscardTrait
     $card = Cards::getTopOf($opp->getTreasureName());
 
     if ($card->getDeck() != GUEST) {
-      Cards::move($card->getId(), $opp->getDiscardName());
+      Cards::insertOnTop($card->getId(), $opp->getDiscardName());
       $lastTreasure = Cards::getLastTreasure($opp->getCharacter());
       Notifications::crackSafe($card, $opp, $lastTreasure);
 
