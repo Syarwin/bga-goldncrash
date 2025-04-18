@@ -147,7 +147,7 @@ class Cards extends \GNC\Helpers\Pieces
       $columnSizes[$i] = $player->getColumn($i)->count();
     }
     $max = max(array_values($columnSizes));
-    $lowests = array_keys(array_filter($columnSizes, fn ($value) => $value != $max));
+    $lowests = array_keys(array_filter($columnSizes, fn($value) => $value != $max));
     return $lowests ? $lowests : [0, 1, 2]; //if all columns are max, return all
   }
 
@@ -155,13 +155,13 @@ class Cards extends \GNC\Helpers\Pieces
   {
     return $player
       ->getColumn($columnId)
-      ->filter(fn ($card) => $card->getType() == $color)
+      ->filter(fn($card) => $card->getType() == $color)
       ->count();
   }
 
   public static function getNColors($player, $columnId)
   {
-    return $player->getColumn($columnId)->countDifferent(fn ($card) => $card->getType());
+    return $player->getColumn($columnId)->countDifferent(fn($card) => $card->getType());
   }
 
   public static function getTotalValue($cards)
@@ -214,7 +214,7 @@ class Cards extends \GNC\Helpers\Pieces
 
     self::create($cards);
 
-    foreach ([DECK_CHAMOURAI, DECK_POULPIRATE, GUEST, BALLOONS_CHAMOURAI, BALLOONS_POULPIRATE] as $deck) {
+    foreach ([DECK_CHAMOURAI, DECK_POULPIRATE, DECK_GUEST, BALLOONS_CHAMOURAI, BALLOONS_POULPIRATE] as $deck) {
       static::shuffle($deck);
     }
 
